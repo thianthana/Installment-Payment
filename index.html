@@ -266,17 +266,11 @@
               <div class="grid-2"><div class="form-group"><label class="form-label">เลือกลูกหนี้</label><select id="a-user" class="form-input" required></select></div><div class="form-group"><label class="form-label">บัตรที่ใช้</label><select id="a-card" class="form-input" required></select></div></div>
               <div class="grid-2"><div class="form-group"><label class="form-label">ประเภท</label><select id="a-type" class="form-input" required><option value="ผ่อนสินค้า">ผ่อนสินค้า</option><option value="กดเงินสด">กดเงินสด</option></select></div><div class="form-group"><label class="form-label">ยอดจัดเต็มจำนวน (฿)</label><input type="number" id="a-amount" class="form-input" required oninput="calcAdd()"></div></div>
               <div class="grid-2"><div class="form-group"><label class="form-label">ดอกเบี้ยต่อปี (%)</label><input type="number" id="a-interest" class="form-input" value="0" step="0.01" required oninput="calcAdd()"></div><div class="form-group"><label class="form-label">จำนวนงวด (เดือน)</label><input type="number" id="a-months" class="form-input" required oninput="calcAdd()"></div></div>
-              
-              <div class="grid-2">
-                <div class="form-group"><label class="form-label">เริ่มผ่อน (ดด/ปปปป)</label><input type="month" id="a-start" class="form-input" required></div>
-                <div class="form-group"><label class="form-label">ดิวชำระทุกวันที่ (1-31)</label><input type="number" id="a-due" class="form-input" min="1" max="31" required></div>
-              </div>
-              
+              <div class="grid-2"><div class="form-group"><label class="form-label">เริ่มผ่อน (ดด/ปปปป)</label><input type="month" id="a-start" class="form-input" required></div><div class="form-group"><label class="form-label">ดิวชำระทุกวันที่ (1-31)</label><input type="number" id="a-due" class="form-input" min="1" max="31" required></div></div>
               <div class="form-group" style="padding: 15px; border-radius: 12px; border: 1px dashed var(--warning); background: #FFFBEB;">
                 <label class="form-label" style="color: var(--warning);">ชำระไปแล้วกี่งวด (ระบุเพื่อเพิ่มสัญญาย้อนหลัง - หากเพิ่งเริ่มใส่ 0)</label>
                 <input type="number" id="a-paid" class="form-input" value="0" min="0" required>
               </div>
-
               <div class="form-group card-border-green" style="padding: 15px; border-radius: 12px; background: #ECFDF5;">
                 <label class="form-label" style="color: var(--primary);">ยอดชำระต่อเดือน (ระบบคำนวณเบื้องต้น)</label>
                 <input type="number" id="a-monthly" class="form-input" step="0.01" style="font-weight:bold; font-size: 1.2rem;" required>
@@ -314,7 +308,7 @@
   </div>
 
   <script>
-    // 🛑 ใส่ API URL ของคุณตรงนี้
+    // 🛑 1. ใส่ API URL ของคุณตรงนี้
     const API_URL = "https://script.google.com/macros/s/AKfycbxeI_pV6TgnY3RgQL52T00b6tY09bGRWSRjjl7sNZIKPrgJfBOsnDiJLJ-C2_aIy35i/exec";
     
     let currentUser = {};
@@ -416,7 +410,7 @@
       if(viewName === 'overview') { titleEl.innerText = "ภาพรวมพอร์ตลูกหนี้"; subEl.innerText = "สรุปยอดหนี้คงค้างและข้อมูลลูกหนี้รายบุคคล"; loadAdminData(); }
       if(viewName === 'profile') { titleEl.innerText = "ข้อมูลเชิงลึก"; subEl.innerText = "รายละเอียด การแก้ไข และการลบข้อมูลสัญญา"; }
       if(viewName === 'add') { titleEl.innerText = "เพิ่มสัญญาหนี้"; subEl.innerText = "สร้างรายการผ่อนใหม่เข้าระบบส่วนกลาง"; }
-      if(viewName === 'approve') { titleEl.innerText = "รายการรอตรวจสอบ"; subEl.innerText = "ตรวจสอบการโอนเงินและการขอปิดยอด"; loadAdminData(); }
+      if(viewName === 'approve') { titleEl.innerText = "รายการรอตรวจสอบ"; subEl.innerText = "ตรวจสอบและยืนยันการรับเงินจากลูกหนี้"; loadAdminData(); }
     }
 
     // --- User Dashboard ---
@@ -433,6 +427,7 @@
       if(!selectedMonthStr) return;
       const [vYear, vMonth] = selectedMonthStr.split('-');
       let monthlyTotalToPay = 0; const list = document.getElementById('user-debt-list'); list.innerHTML = '';
+
       const sortedDebts = [...globalUserDebts].sort((a, b) => a.dueDay - b.dueDay);
 
       sortedDebts.forEach(item => {
@@ -505,17 +500,18 @@
           </div>`;
       });
 
-      const pList = document.getElementById('admin-pending-list'); pList.innerHTML = res.pending.length === 0 ? '<div class="white-card" style="text-align:center; color: var(--text-muted);">✅ ไม่พบรายการรอตรวจสอบ</div>' : '';
+      const pList = document.getElementById('admin-pending-list'); pList.innerHTML = res.pending.length === 0 ? '<div class="white-card" style="text-align:center; color: var(--text-muted);">✅ จัดการครบถ้วน ไม่มีรายการรอตรวจสอบ</div>' : '';
       res.pending.forEach(p => {
         let isPayOff = (p.requestType === 'รอตรวจสอบปิดยอด');
         let titleText = isPayOff ? `🔥 ขอปิดยอดบัญชี: ${p.userName}` : `🔔 แจ้งชำระค่างวด: ${p.userName}`;
         let amountText = isPayOff ? `ยอดโอนปิดบัญชี: ฿${money.format(p.remainAmt)}` : `ยอดโอนค่างวด: ฿${money.format(p.monthlyPayment)}`;
-        let btnHtml = isPayOff ? `<button class="btn-action btn-purple" onclick="approvePayOff('${p.id}')">✅ อนุมัติปิดยอด</button>` : `<button class="btn-action btn-success" onclick="approvePayment('${p.id}')">✅ อนุมัติรับเงิน</button>`;
+        
+        let btnHtml = isPayOff ? `<button class="btn-action btn-purple" onclick="approvePayOff('${p.id}')">✅ อนุมัติปิดยอด</button>` : `<button class="btn-action btn-success" onclick="approvePayment('${p.id}', true)">✅ อนุมัติรับเงิน</button>`;
         btnHtml += `<button class="btn-outline" style="border-color:var(--danger); color:var(--danger); padding: 10px;" onclick="promptReject('${p.id}')">❌ ปฏิเสธ</button>`;
 
         pList.innerHTML += `
           <div class="debt-item" style="border-left-color: ${isPayOff ? 'var(--purple)' : 'var(--warning)'};">
-            <div class="debt-info"><h3 style="color:${isPayOff ? 'var(--purple)' : 'inherit'};">${titleText}</h3><div class="debt-meta">บัตร: ${p.cardName} | กำลังจ่ายงวดที่ ${p.paidMonths + 1}/${p.totalMonths}</div></div>
+            <div class="debt-info"><h3 style="color:${isPayOff ? 'var(--purple)' : 'inherit'};">${titleText}</h3><div class="debt-meta">บัตร: ${p.cardName} | ยืนยันชำระงวดที่ ${p.paidMonths + 1}/${p.totalMonths}</div></div>
             <div class="debt-actions"><div class="debt-amount" style="color: ${isPayOff ? 'var(--purple)' : 'var(--info)'}; font-size:1.2rem; margin-bottom:10px;">${amountText}</div><div style="display:flex; gap:10px; justify-content:flex-end;">${btnHtml}</div></div>
           </div>`;
       });
@@ -598,7 +594,7 @@
         userPin: document.getElementById('a-user').value, cardName: document.getElementById('a-card').value, type: document.getElementById('a-type').value, 
         amount: parseFloat(document.getElementById('a-amount').value), interest: parseFloat(document.getElementById('a-interest').value), months: parseInt(document.getElementById('a-months').value),
         startMonth: document.getElementById('a-start').value, dueDay: parseInt(document.getElementById('a-due').value), monthly: parseFloat(document.getElementById('a-monthly').value),
-        paidMonths: parseInt(document.getElementById('a-paid').value) || 0 // 🆕 ดึงยอดชำระไปแล้ว
+        paidMonths: parseInt(document.getElementById('a-paid').value) || 0
       };
       const res = await apiCall('addDebt', { data: payload });
       if(res.status === 'success') { Swal.fire('สำเร็จ', 'บันทึกสัญญาเข้าระบบแล้ว', 'success'); document.querySelectorAll('#view-add .form-input').forEach(i => i.value = ''); document.getElementById('a-paid').value = '0'; loadAdminData(); switchView('overview'); }
@@ -645,8 +641,14 @@
         const res = await apiCall('approvePayment', { debtId: id });
         if(res.status === 'success') { 
           Swal.fire('สำเร็จ', 'ตัดยอดให้ลูกหนี้เรียบร้อย', 'success'); 
-          if(fromPendingList) { loadAdminData(); } 
-          else { const updatedProfile = await apiCall('getDebtorProfile', { targetPin: globalAdminCurrentDebtorProfile[0].userPin }); globalAdminCurrentDebtorProfile = updatedProfile.items; renderAdminProfileMonthly(); }
+          // โหลดข้อมูลใหม่ทั้งหมด
+          await loadAdminData(); 
+          // ถ้าเปิดหน้าโปรไฟล์อยู่ให้โหลดข้อมูลโปรไฟล์ใหม่ด้วย
+          if (!document.getElementById('view-profile').classList.contains('hidden') && globalAdminCurrentDebtorProfile.length > 0) { 
+            const updatedProfile = await apiCall('getDebtorProfile', { targetPin: globalAdminCurrentDebtorProfile[0].userPin }); 
+            globalAdminCurrentDebtorProfile = updatedProfile.items; 
+            renderAdminProfileMonthly(); 
+          } 
         }
       }
     }
@@ -655,7 +657,15 @@
       const confirm = await Swal.fire({ title: 'ยืนยันปิดยอดบัญชี', text: "ระบบจะเคลียร์ค่างวดทั้งหมดและเปลี่ยนสถานะเป็น ปิดยอดแล้ว", icon: 'warning', showCancelButton: true, confirmButtonColor: '#8B5CF6', confirmButtonText: 'อนุมัติการปิดยอด' });
       if (confirm.isConfirmed) {
         const res = await apiCall('approvePayOff', { debtId: id });
-        if(res.status === 'success') { Swal.fire('ปิดยอดสำเร็จ', 'สถานะสัญญาถูกเปลี่ยนเป็นปิดยอดแล้ว', 'success'); loadAdminData(); }
+        if(res.status === 'success') { 
+          Swal.fire('ปิดยอดสำเร็จ', 'สถานะสัญญาถูกเปลี่ยนเป็นปิดยอดแล้ว', 'success'); 
+          await loadAdminData(); 
+          if (!document.getElementById('view-profile').classList.contains('hidden') && globalAdminCurrentDebtorProfile.length > 0) { 
+            const updatedProfile = await apiCall('getDebtorProfile', { targetPin: globalAdminCurrentDebtorProfile[0].userPin }); 
+            globalAdminCurrentDebtorProfile = updatedProfile.items; 
+            renderAdminProfileMonthly(); 
+          } 
+        }
       }
     }
 
