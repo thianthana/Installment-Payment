@@ -11,44 +11,50 @@
     :root {
       --primary: #10B981; --primary-hover: #059669; --bg-color: #F1F5F9; --sidebar-bg: #FFFFFF;
       --text-main: #1E293B; --text-muted: #64748B; --border: #E2E8F0;
-      --danger: #EF4444; --warning: #F59E0B; --success: #10B981; --info: #3B82F6; --purple: #8B5CF6;
+      --danger: #EF4444; --warning: #F59E0B; --success: #10B981; --info: #3B82F6;
+      --purple: #8B5CF6;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', sans-serif; }
     body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; height: 100vh; margin: 0; }
     .hidden { display: none !important; }
+    
     .fade-enter { animation: fadeIn 0.4s ease-out forwards; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* --- Login UI --- */
+    /* Login Section */
     #login-wrapper { position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, #E0F2FE 0%, #F0FDF4 100%); display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease, visibility 0.5s; }
     #login-wrapper.hide-login { opacity: 0; visibility: hidden; }
     .secure-card { background: #FFFFFF; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08); padding: 40px 30px; width: 90%; max-width: 380px; text-align: center; }
     .shield-icon { width: 64px; height: 64px; background: linear-gradient(135deg, var(--primary), #34D399); border-radius: 18px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.25); }
     .bank-title { font-size: 1.5rem; font-weight: 700; color: var(--text-main); margin-bottom: 5px; }
     .bank-sub { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 30px; }
+    
     .input-wrapper { position: relative; width: 100%; margin-bottom: 25px; }
     .input-wrapper::before { content: '🔒'; position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 2; opacity: 0.7; }
     .secure-input { width: 100%; padding: 16px 50px 16px 45px; font-size: 1.1rem; font-weight: 600; text-align: left; border: 2px solid #CBD5E1; border-radius: 12px; outline: none; transition: 0.3s; background: #F8FAFC; color: var(--text-main); letter-spacing: 2px; }
     .secure-input:focus { border-color: var(--primary); background: #FFFFFF; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1); }
     .eye-toggle { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94A3B8; cursor: pointer; padding: 5px; }
+
     .login-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--primary), var(--primary-hover)); border: none; border-radius: 12px; color: #FFF; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); display: flex; align-items: center; justify-content: center; gap: 10px; }
     .login-btn:disabled { opacity: 0.7; cursor: not-allowed; }
     .btn-loader { width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #FFF; border-radius: 50%; animation: spin 1s linear infinite; display: none; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* --- Dashboard UI --- */
+    /* Dashboard Layout */
     #app-container { display: flex; height: 100vh; overflow: hidden; }
     .sidebar { width: 260px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px 0; z-index: 10; }
     .brand { text-align: center; padding-bottom: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
-    .brand h2 { color: var(--text-main); font-size: 1.3rem; font-weight: 800; margin-top: 10px; }
+    .brand h2 { color: var(--text-main); font-size: 1.2rem; margin-top: 10px; font-weight: 700;}
     .role-badge { font-size: 0.8rem; color: var(--primary); font-weight: 600; background: #D1FAE5; padding: 4px 16px; border-radius: 20px; display: inline-block; margin-top: 5px; }
     
     .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 5px; padding: 0 15px; }
     .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-radius: 12px; cursor: pointer; color: var(--text-muted); font-weight: 500; transition: all 0.2s ease; border: none; background: transparent; text-align: left; font-size: 0.95rem; }
     .nav-item:hover { background: #F1F5F9; color: var(--text-main); }
     .nav-item.active { background: var(--primary); color: #FFF; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+    
     .badge-notification { background: var(--danger); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; margin-left: auto; box-shadow: 0 2px 4px rgba(239,68,68,0.3); }
+
     .logout-btn { margin: 15px; padding: 12px; border: 1px solid var(--danger); color: var(--danger); background: transparent; border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; }
     .logout-btn:hover { background: #FEF2F2; }
 
@@ -56,6 +62,7 @@
     .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: #FFFFFF; position: sticky; top: 0; z-index: 5; border-bottom: 1px solid var(--border); }
     .page-title h1 { font-size: 1.4rem; color: var(--text-main); font-weight: 700; }
     .page-subtitle { font-size: 0.85rem; color: var(--text-muted); }
+    
     .user-profile { display: flex; align-items: center; gap: 15px; background: #FFF; padding: 6px 16px; border-radius: 50px; border: 1px solid var(--border); }
     .avatar { width: 35px; height: 35px; border-radius: 50%; background: var(--primary); color: #FFF; display: flex; align-items: center; justify-content: center; font-weight: bold; }
     .user-details { display: flex; flex-direction: column; }
@@ -66,7 +73,7 @@
     .content-area { padding: 30px 40px 40px; }
     
     .white-card { background: #FFF; border-radius: 16px; border: 1px solid var(--border); padding: 30px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-    .summary-wrapper { border: 2px solid var(--primary); border-radius: 16px; padding: 2px; background: #FFF; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(16,185,129,0.05);}
+    .summary-wrapper { border: 2px solid var(--primary); border-radius: 16px; padding: 2px; background: #FFF; margin-bottom: 25px; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .summary-box { background: #F8FAFC; padding: 25px 20px; border-radius: 12px; text-align: center; }
     .summary-box span { color: var(--text-muted); font-size: 0.9rem; font-weight: 500;}
@@ -76,8 +83,8 @@
     .debt-item { border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; background: #FFF; transition: 0.2s; border-left-width: 5px; }
     .debt-item:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.05); transform: translateY(-2px); }
     .debt-info h3 { font-size: 1.1rem; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
-    .debt-meta { color: var(--text-muted); font-size: 0.85rem; margin-top: 6px; line-height: 1.5;}
-    .debt-actions { text-align: right; min-width: 200px;}
+    .debt-meta { color: var(--text-muted); font-size: 0.85rem; margin-top: 6px;}
+    .debt-actions { text-align: right; }
     .debt-amount { font-size: 1.4rem; font-weight: 700; color: var(--text-main); margin-bottom: 5px; }
     
     .status-badge { font-size: 0.75rem; padding: 4px 10px; border-radius: 8px; font-weight: 600; letter-spacing: 0.5px; }
@@ -87,7 +94,7 @@
     .status-info    { background: #DBEAFE; color: #2563EB; }
     .status-gray    { background: #F1F5F9; color: #475569; }
     
-    .btn-action { color: #FFF; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; font-family: 'Prompt';}
+    .btn-action { color: #FFF; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%;}
     .btn-action:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
     .btn-primary { background: linear-gradient(135deg, #3B82F6, #2563EB); }
     .btn-danger  { background: linear-gradient(135deg, #EF4444, #DC2626); }
@@ -97,34 +104,32 @@
     .btn-disabled:hover { transform: none; box-shadow: none; }
     .btn-outline { border: 1px solid var(--border); background: #FFF; padding: 8px 15px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; font-weight: 600; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px;}
     .btn-outline:hover { background: #F1F5F9; }
-    .clickable { cursor: pointer; }
-    .clickable:hover { border-color: var(--primary); }
 
-    /* Form UI */
+    .clickable { cursor: pointer; }
+    .clickable:hover { transform: translateX(5px); border-color: var(--primary); }
+
     .form-group { margin-bottom: 20px; }
-    .form-label { display: block; font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; color: var(--text-main);}
-    .form-input { width: 100%; padding: 14px 15px; border: 1px solid var(--border); border-radius: 12px; font-size: 1rem; outline: none; background: #F8FAFC; transition: 0.2s; font-family: 'Prompt';}
-    .form-input:focus { border-color: var(--primary); background: #FFF; box-shadow: 0 0 0 4px rgba(16,185,129,0.1); }
-    
+    .form-label { display: block; font-size: 0.95rem; font-weight: 500; margin-bottom: 8px; }
+    .form-input { width: 100%; padding: 12px 15px; border: 1px solid var(--border); border-radius: 12px; font-size: 1rem; outline: none; background: #F8FAFC; transition: 0.2s; font-family: 'Prompt';}
+    .form-input:focus { border-color: var(--primary); background: #FFF; box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
     .month-picker-container { display: flex; align-items: center; justify-content: space-between; background: #FFF; padding: 15px 25px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
     .month-input { padding: 10px 15px; border: 1px solid var(--border); border-radius: 10px; font-size: 1rem; font-family: 'Prompt'; outline: none; color: var(--primary); font-weight: 600; cursor: pointer; background: #F8FAFC;}
 
-    /* Interactive Pills */
+    .profile-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .tab-container { display: flex; gap: 10px; background: #F1F5F9; padding: 5px; border-radius: 12px; }
+    .tab-btn { padding: 8px 20px; border: none; background: transparent; border-radius: 8px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.2s;}
+    .tab-btn.active { background: #FFF; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+    /* Visual Pill Selector */
     .pill-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; max-height: 150px; overflow-y: auto; padding: 10px; border: 1px solid var(--border); border-radius: 12px; background: #FFF; }
     .month-pill { padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; background: #F1F5F9; color: var(--text-muted); border: 1px solid transparent; transition: 0.2s; user-select: none; }
     .month-pill:hover { border-color: var(--primary); color: var(--primary);}
     .month-pill.paid { background: #D1FAE5; color: #059669; border-color: #059669; }
 
-    /* Profile Tabs */
-    .profile-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 20px;}
-    .tab-container { display: flex; gap: 10px; background: #F1F5F9; padding: 5px; border-radius: 12px; }
-    .tab-btn { padding: 8px 20px; border: none; background: transparent; border-radius: 8px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.2s;}
-    .tab-btn.active { background: #FFF; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-
     /* Modal Overlay */
     .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); opacity: 0; visibility: hidden; transition: 0.3s; }
     .modal-overlay.show { opacity: 1; visibility: visible; }
-    .modal-content { background: #FFF; width: 90%; max-width: 550px; border-radius: 24px; padding: 30px; max-height: 90vh; overflow-y: auto; transform: translateY(20px); transition: 0.3s; box-shadow: 0 20px 40px rgba(0,0,0,0.2);}
+    .modal-content { background: #FFF; width: 90%; max-width: 500px; border-radius: 24px; padding: 30px; max-height: 90vh; overflow-y: auto; transform: translateY(20px); transition: 0.3s; }
     .modal-overlay.show .modal-content { transform: translateY(0); }
 
     @media (max-width: 768px) {
@@ -138,7 +143,6 @@
       .content-area { padding: 20px 20px 40px; }
       .grid-2 { grid-template-columns: 1fr; }
       .month-picker-container { flex-direction: column; gap: 15px; align-items: flex-start; }
-      .month-input { width: 100%; }
       .debt-item { flex-direction: column; align-items: flex-start; gap: 15px; }
       .debt-actions { width: 100%; text-align: left; display: flex; flex-direction: column; align-items: stretch; gap: 10px;}
       .profile-header { flex-direction: column; align-items: flex-start; gap: 15px;}
@@ -152,6 +156,7 @@
       <div class="shield-icon"><svg viewBox="0 0 24 24" width="32" stroke="white" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
       <h1 class="bank-title">ธนาคารตรวจสอบหนี้สิน</h1>
       <p class="bank-sub">โปรดเข้าสู่ระบบเพื่อดำเนินการต่อ</p>
+      
       <div class="input-wrapper">
         <input type="password" id="debtor-id" class="secure-input" placeholder="รหัสผ่านเข้าสู่ระบบ" autocomplete="off">
         <button type="button" class="eye-toggle" onclick="togglePassword()">
@@ -160,6 +165,7 @@
           </svg>
         </button>
       </div>
+      
       <button class="login-btn" id="login-btn" onclick="triggerLogin()">
         <div class="btn-loader" id="btn-loader"></div>
         <span class="btn-text" id="btn-text">เข้าสู่ระบบอย่างปลอดภัย</span>
@@ -179,7 +185,8 @@
         <button class="nav-item hidden admin-only" id="menu-overview" onclick="switchView('overview')"><span>👥</span> ภาพรวมพอร์ตลูกหนี้</button>
         <button class="nav-item hidden admin-only" id="menu-add" onclick="switchView('add')"><span>➕</span> เพิ่มสัญญาหนี้</button>
         <button class="nav-item hidden admin-only" id="menu-approve" onclick="switchView('approve')">
-          <span>🔔</span> รายการตรวจสอบ <span id="pending-badge" class="badge-notification hidden">0</span>
+          <span>🔔</span> รายการตรวจสอบ 
+          <span id="pending-badge" class="badge-notification hidden">0</span>
         </button>
       </div>
       <button class="logout-btn" onclick="logout()"><span>🚪</span> ออกจากระบบ</button>
@@ -257,39 +264,24 @@
 
         <div id="view-add" class="view-section hidden admin-only fade-enter">
           <div class="white-card">
-            <h3 style="margin-bottom: 20px; color:var(--primary); font-size: 1.4rem;">สร้างสัญญาหนี้ใหม่</h3>
+            <h3 style="margin-bottom: 20px;">เพิ่มรายการสัญญาหนี้ใหม่</h3>
             <form onsubmit="event.preventDefault(); submitAddDebt();">
-              <div class="grid-2">
-                <div class="form-group"><label class="form-label">เลือกลูกหนี้</label><select id="a-user" class="form-input" required></select></div>
-                <div class="form-group"><label class="form-label">บัตรที่ใช้</label><select id="a-card" class="form-input" required></select></div>
-              </div>
-              <div class="grid-2">
-                <div class="form-group"><label class="form-label">ประเภท</label><select id="a-type" class="form-input" required><option value="ผ่อนสินค้า">ผ่อนสินค้า</option><option value="กดเงินสด">กดเงินสด</option></select></div>
-                <div class="form-group"><label class="form-label">ยอดจัดเต็มจำนวน (฿)</label><input type="number" id="a-amount" class="form-input" required></div>
-              </div>
-              <div class="grid-2">
-                <div class="form-group"><label class="form-label">ดอกเบี้ยต่อปี (%)</label><input type="number" id="a-interest" class="form-input" value="0" step="0.01" required></div>
-                <div class="form-group"><label class="form-label">จำนวนงวด (เดือน)</label><input type="number" id="a-months" class="form-input" required></div>
-              </div>
-              <div class="grid-2">
-                <div class="form-group"><label class="form-label">เริ่มผ่อนงวดแรก (ดด/ปปปป)</label><input type="month" id="a-start" class="form-input" required></div>
-                <div class="form-group"><label class="form-label">ดิวชำระทุกวันที่ (1-31)</label><input type="number" id="a-due" class="form-input" min="1" max="31" required></div>
-              </div>
+              <div class="grid-2"><div class="form-group"><label class="form-label">เลือกลูกหนี้</label><select id="a-user" class="form-input" required></select></div><div class="form-group"><label class="form-label">บัตรที่ใช้</label><select id="a-card" class="form-input" required></select></div></div>
+              <div class="grid-2"><div class="form-group"><label class="form-label">ประเภท</label><select id="a-type" class="form-input" required><option value="ผ่อนสินค้า">ผ่อนสินค้า</option><option value="กดเงินสด">กดเงินสด</option></select></div><div class="form-group"><label class="form-label">ยอดจัดเต็มจำนวน (฿)</label><input type="number" id="a-amount" class="form-input" required></div></div>
+              <div class="grid-2"><div class="form-group"><label class="form-label">ดอกเบี้ยต่อปี (%)</label><input type="number" id="a-interest" class="form-input" value="0" step="0.01" required></div><div class="form-group"><label class="form-label">จำนวนงวด (เดือน)</label><input type="number" id="a-months" class="form-input" required></div></div>
+              <div class="grid-2"><div class="form-group"><label class="form-label">เริ่มผ่อนงวดแรก (ดด/ปปปป)</label><input type="month" id="a-start" class="form-input" required></div><div class="form-group"><label class="form-label">ดิวชำระทุกวันที่ (1-31)</label><input type="number" id="a-due" class="form-input" min="1" max="31" required></div></div>
               
               <div class="form-group" style="padding: 15px; border-radius: 12px; border: 1px solid var(--border); background: #F8FAFC;">
                 <label class="form-label" style="color: var(--text-main); margin-bottom:0;">บันทึกยอดชำระย้อนหลัง</label>
                 <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">คลิกที่ปุ่มเดือนเพื่อระบุว่าลูกหนี้จ่ายไปแล้วถึงงวดไหน</div>
                 <input type="hidden" id="a-paid" value="0">
-                <div id="a-paid-selector" class="pill-container">
-                  <span style="color:gray; font-size:0.85rem; padding: 5px;">(กรุณาระบุเริ่มผ่อนงวดแรก และจำนวนงวดก่อน)</span>
-                </div>
+                <div id="a-paid-selector" class="pill-container"><span style="color:gray; font-size:0.85rem; padding: 5px;">(กรุณาระบุเริ่มผ่อนงวดแรก และจำนวนงวดก่อน)</span></div>
               </div>
 
               <div class="form-group" style="padding: 20px; border-radius: 16px; background: #ECFDF5; border: 2px solid var(--primary); text-align:center;">
                 <label class="form-label" style="color: var(--primary); font-size:1rem;">ยอดชำระต่อเดือน <br><span style="font-size: 0.8rem; font-weight:normal;">(หากปรับยอดชำระต่อเดือน ระบบจะคำนวณดอกเบี้ยให้ใหม่โดยอัตโนมัติ)</span></label>
                 <input type="number" id="a-monthly" class="form-input" step="0.01" style="font-weight:800; font-size: 1.8rem; color:var(--primary); text-align:center; background: transparent; border:none; box-shadow:none; padding:0;" required>
               </div>
-              
               <button type="submit" class="btn-action btn-primary" style="width: 100%; padding: 15px; font-size: 1.1rem;">บันทึกรายการสัญญาเข้าระบบ</button>
             </form>
           </div>
@@ -298,6 +290,7 @@
         <div id="view-approve" class="view-section hidden admin-only fade-enter">
           <div id="admin-pending-list"></div>
         </div>
+
       </div>
     </main>
   </div>
@@ -342,32 +335,108 @@
     let allCards = []; 
     
     const money = new Intl.NumberFormat('th-TH', { minimumFractionDigits: 2 });
-    const SESSION_TIMEOUT = 10 * 60 * 1000; 
+    
+    // --- 🕒 INACTIVITY TIMEOUT LOGIC (15 MINS) ---
+    const INACTIVITY_LIMIT = 15 * 60 * 1000; // 15 นาที
+    const WARNING_TIME = 30 * 1000; // แจ้งเตือน 30 วิ ก่อนเด้ง
+    let inactivityTimer;
+    let isWarningShowing = false;
 
-    // --- INIT ---
     window.onload = () => {
       const today = new Date();
       const currentMonthVal = today.getFullYear() + '-' + (today.getMonth() + 1).toString().padStart(2, '0');
       document.getElementById('user-month-selector').value = currentMonthVal;
       document.getElementById('admin-profile-month').value = currentMonthVal;
+      
+      setupActivityListeners();
       checkSession();
-      setupFormListeners(); // Initialize 2-Way Binding Math
+      setupFormListeners();
     };
+
+    function setupActivityListeners() {
+      ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt => {
+        document.addEventListener(evt, resetInactivityTimer, true);
+      });
+    }
+
+    function resetInactivityTimer() {
+      if (!currentUser || !currentUser.pin) return; 
+      if (isWarningShowing) return; 
+
+      localStorage.setItem('debtBankLastActivity', Date.now().toString());
+      startInactivityTimer();
+    }
+
+    function startInactivityTimer() {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(showTimeoutWarning, INACTIVITY_LIMIT);
+    }
+
+    function showTimeoutWarning() {
+      isWarningShowing = true;
+      let timerInterval;
+      
+      Swal.fire({
+        title: 'เซสชันกำลังจะหมดอายุ',
+        html: 'เนื่องจากไม่มีการขยับ/ทำรายการเกิน 15 นาที<br>ระบบจะออกจากระบบอัตโนมัติใน <b></b> วินาที',
+        icon: 'warning',
+        timer: WARNING_TIME,
+        timerProgressBar: true,
+        showCancelButton: true,
+        confirmButtonColor: '#10B981',
+        cancelButtonColor: '#EF4444',
+        confirmButtonText: 'ทำรายการต่อ',
+        cancelButtonText: 'ออกจากระบบ',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+          const b = Swal.getHtmlContainer().querySelector('b');
+          timerInterval = setInterval(() => {
+            b.textContent = Math.ceil(Swal.getTimerLeft() / 1000);
+          }, 100);
+        },
+        willClose: () => {
+          clearInterval(timerInterval);
+        }
+      }).then((result) => {
+        isWarningShowing = false;
+        if (result.isConfirmed) {
+          resetInactivityTimer(); 
+        } else {
+          logout(); 
+        }
+      });
+    }
 
     function checkSession() {
       const savedUser = localStorage.getItem('debtBankUser');
-      const loginTime = localStorage.getItem('debtBankLoginTime');
-      if (savedUser && loginTime && (Date.now() - parseInt(loginTime) < SESSION_TIMEOUT)) {
-        currentUser = JSON.parse(savedUser);
-        transitionToDashboard(true);
-        setTimeout(() => { Swal.fire('หมดเวลา', 'ออกจากระบบอัตโนมัติเพื่อความปลอดภัย', 'info').then(() => logout()); }, SESSION_TIMEOUT - (Date.now() - parseInt(loginTime)));
+      const lastActivity = localStorage.getItem('debtBankLastActivity');
+      
+      if (savedUser && lastActivity) {
+        const timePassed = Date.now() - parseInt(lastActivity);
+        if (timePassed < INACTIVITY_LIMIT) {
+          currentUser = JSON.parse(savedUser);
+          transitionToDashboard(true);
+          startInactivityTimer();
+        } else {
+          clearSession();
+          document.getElementById('login-wrapper').classList.remove('hidden');
+        }
       } else {
-        clearSession(); document.getElementById('login-wrapper').classList.remove('hidden');
+        clearSession();
+        document.getElementById('login-wrapper').classList.remove('hidden');
       }
     }
 
-    function saveSession(user) { localStorage.setItem('debtBankUser', JSON.stringify(user)); localStorage.setItem('debtBankLoginTime', Date.now().toString()); }
-    function clearSession() { localStorage.removeItem('debtBankUser'); localStorage.removeItem('debtBankLoginTime'); }
+    function saveSession(user) { 
+      localStorage.setItem('debtBankUser', JSON.stringify(user)); 
+      localStorage.setItem('debtBankLastActivity', Date.now().toString()); 
+    }
+    function clearSession() { 
+      localStorage.removeItem('debtBankUser'); 
+      localStorage.removeItem('debtBankLastActivity'); 
+      clearTimeout(inactivityTimer);
+    }
     function logout() { clearSession(); location.reload(); }
 
     function togglePassword() {
@@ -413,6 +482,7 @@
         document.getElementById('sidebar-role').innerText = `บทบาท: ${currentUser.role === 'admin' ? 'เจ้าหน้าที่ธนาคาร' : 'บัญชีลูกค้า'}`;
         if (currentUser.role === 'admin') { document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden')); switchView('overview'); } 
         else { fetchAndRenderUserData(); switchView('dashboard'); }
+        startInactivityTimer(); // เริ่มจับเวลาหลังจากเข้าระบบ
       };
       if (instant) doTransition(); else { document.getElementById('login-wrapper').classList.add('hide-login'); setTimeout(doTransition, 500); }
     }
@@ -447,6 +517,7 @@
       if(!selectedMonthStr) return;
       const [vYear, vMonth] = selectedMonthStr.split('-');
       let monthlyTotalToPay = 0; const list = document.getElementById('user-debt-list'); list.innerHTML = '';
+
       const sortedDebts = [...globalUserDebts].sort((a, b) => a.dueDay - b.dueDay);
 
       sortedDebts.forEach(item => {
@@ -513,7 +584,7 @@
       res.debtors.forEach(d => {
         debtorList.innerHTML += `
           <div class="debt-item clickable" style="border-left-color: var(--primary);" onclick="viewDebtorProfile('${d.pin}')">
-            <div class="debt-info"><h3>👤 ${d.name} <span class="status-badge" style="background:#F1F5F9; color:#475569;">รหัส: ${d.pin}</span></h3><div class="debt-meta">สถานะบัญชี: ${d.activeDebts} สัญญาที่กำลังผ่อนชำระ</div></div>
+            <div class="debt-info"><h3>👤 ${d.name} <span class="status-badge status-gray">รหัส: ${d.pin}</span></h3><div class="debt-meta">สถานะบัญชี: ${d.activeDebts} สัญญาที่กำลังผ่อนชำระ</div></div>
             <div class="debt-actions"><div style="font-size: 0.85rem; color: var(--text-muted);">เรียกเก็บต่อเดือน: ฿${money.format(d.monthlyExpected)}</div><div class="debt-amount" style="color: var(--danger); font-size: 1.2rem;">ยอดคงค้างพอร์ต: ฿${money.format(d.totalRemaining)}</div></div>
           </div>`;
       });
@@ -602,52 +673,35 @@
       });
     }
 
-    // ------------------------------------------------------------------
-    // 🧠 2-Way Calculation & Visual Pills Logic
-    // ------------------------------------------------------------------
+    // --- 2-WAY BINDING MATH & PILLS ---
     function setupFormListeners() {
-      // Add Form
-      document.getElementById('a-amount').addEventListener('input', () => calcForward('a'));
-      document.getElementById('a-interest').addEventListener('input', () => calcForward('a'));
-      document.getElementById('a-months').addEventListener('input', () => { calcForward('a'); renderPillSelector('a'); });
-      document.getElementById('a-start').addEventListener('change', () => renderPillSelector('a'));
-      document.getElementById('a-monthly').addEventListener('input', () => calcBackward('a')); // Two-way!
-
-      // Edit Form
-      document.getElementById('e-amount').addEventListener('input', () => calcForward('e'));
-      document.getElementById('e-interest').addEventListener('input', () => calcForward('e'));
-      document.getElementById('e-months').addEventListener('input', () => { calcForward('e'); renderPillSelector('e'); });
-      document.getElementById('e-start').addEventListener('change', () => renderPillSelector('e'));
-      document.getElementById('e-monthly').addEventListener('input', () => calcBackward('e')); // Two-way!
+      ['a', 'e'].forEach(prefix => {
+        document.getElementById(`${prefix}-amount`).addEventListener('input', () => calcForward(prefix));
+        document.getElementById(`${prefix}-interest`).addEventListener('input', () => calcForward(prefix));
+        document.getElementById(`${prefix}-months`).addEventListener('input', () => { calcForward(prefix); renderPillSelector(prefix); });
+        document.getElementById(`${prefix}-start`).addEventListener('change', () => renderPillSelector(prefix));
+        document.getElementById(`${prefix}-monthly`).addEventListener('input', () => calcBackward(prefix)); 
+      });
     }
 
-    // คำนวณไปข้างหน้า (เงินต้น -> หายอดรายเดือน)
     function calcForward(prefix) {
       const a = parseFloat(document.getElementById(`${prefix}-amount`).value) || 0;
       const i = parseFloat(document.getElementById(`${prefix}-interest`).value) || 0;
       const m = parseInt(document.getElementById(`${prefix}-months`).value) || 0;
-      if (a > 0 && m > 0) {
-        document.getElementById(`${prefix}-monthly`).value = ((a + (a * (i / 100) * (m / 12))) / m).toFixed(2);
-      }
+      if (a > 0 && m > 0) document.getElementById(`${prefix}-monthly`).value = ((a + (a * (i / 100) * (m / 12))) / m).toFixed(2);
     }
 
-    // คำนวณย้อนกลับ (ยอดรายเดือนที่ธนาคารปัดเศษ -> หาดอกเบี้ยจริง)
     function calcBackward(prefix) {
       const a = parseFloat(document.getElementById(`${prefix}-amount`).value) || 0;
       const monthly = parseFloat(document.getElementById(`${prefix}-monthly`).value) || 0;
       const m = parseInt(document.getElementById(`${prefix}-months`).value) || 0;
       if (a > 0 && m > 0 && monthly > 0) {
         const totalInterest = (monthly * m) - a;
-        if (totalInterest >= 0) {
-          const newInterestRate = ((totalInterest / a) / (m / 12)) * 100;
-          document.getElementById(`${prefix}-interest`).value = newInterestRate.toFixed(2);
-        } else {
-          document.getElementById(`${prefix}-interest`).value = 0;
-        }
+        if (totalInterest >= 0) document.getElementById(`${prefix}-interest`).value = (((totalInterest / a) / (m / 12)) * 100).toFixed(2);
+        else document.getElementById(`${prefix}-interest`).value = 0;
       }
     }
 
-    // สร้างปุ่มเดือน 
     function renderPillSelector(prefix) {
       const startVal = document.getElementById(`${prefix}-start`).value;
       const totalMonths = parseInt(document.getElementById(`${prefix}-months`).value) || 0;
@@ -682,10 +736,7 @@
       const totalMonths = parseInt(document.getElementById(`${prefix}-months`).value) || 0;
       for(let i=1; i<=totalMonths; i++) {
         let pill = document.getElementById(`${prefix}-pill-${i}`);
-        if(pill) {
-          if(i <= count) pill.classList.add('paid');
-          else pill.classList.remove('paid');
-        }
+        if(pill) { if(i <= count) pill.classList.add('paid'); else pill.classList.remove('paid'); }
       }
     }
 
