@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบเช็คยอดผ่อนชำระ</title>
+  <style>
+    :root {
+      --primary: #4F46E5;
+      --bg: #F3F4F6;
+      --card-bg: #FFFFFF;
+      --text: #1F2937;
+    }
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+    }
+    /* Login Section */
+    #login-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .login-box {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .pin-input {
+      font-size: 2rem;
+      letter-spacing: 0.5rem;
+      text-align: center;
+      width: 200px;
+      padding: 10px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    
+    /* Dashboard Section */
+    #dashboard-section {
+      display: none;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #ddd;
+      margin-bottom: 20px;
+    }
+    .user-name {
+      font-weight: bold;
+      color: var(--primary);
+    }
+    
+    /* Debt Cards */
+    .debt-card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      margin-bottom: 15px;
+    }
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .due-date { color: #DC2626; font-size: 0.9rem; }
+    .debt-details { display: flex; justify-content: space-between; margin-bottom: 15px;}
+    .detail-item { text-align: center; }
+    .detail-item span { display: block; font-size: 0.8rem; color: #6B7280; }
+    .detail-item strong { font-size: 1.1rem; }
+    
+    /* Progress Bar */
+    .progress-container {
+      width: 100%;
+      background-color: #E5E7EB;
+      border-radius: 999px;
+      height: 10px;
+      margin-bottom: 5px;
+    }
+    .progress-bar {
+      background-color: #10B981;
+      height: 10px;
+      border-radius: 999px;
+    }
+    .progress-text { font-size: 0.8rem; color: #6B7280; text-align: right; }
+  </style>
+</head>
+<body>
+
+  <script>
+    // หากต้องการใช้กับหน้าเว็บภายนอก (External HTML) ให้นำ URL ที่ได้จากตอน Deploy มาใส่ที่นี่
+    // const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/......./exec";
+    
+    // แต่ถ้าคุณรันเป็น Web App ผ่าน Apps Script อยู่แล้ว ไม่ต้องเปลี่ยนอะไรเลยครับ ระบบจะใช้ google.script.run อัตโนมัติ
+  </script>
+
+  <div id="login-section">
+    <div class="login-box">
+      <h2>เข้าสู่ระบบ</h2>
+      <p>กรุณาใส่รหัส 4 หลัก</p>
+      <input type="password" id="pin-input" class="pin-input" maxlength="4" oninput="checkLength(this)">
+      <br>
+      <button onclick="login()">เข้าสู่ระบบ</button>
+      <p id="login-msg" style="color: red; display: none;">รหัส PIN ไม่ถูกต้อง</p>
+    </div>
+  </div>
+
+  <div id="dashboard-section">
+    <div class="header">
+      <h2>รายการผ่อนชำระ</h2>
+      <div class="user-name">👤 <span id="display-name">ชื่อผู้ใช้</span></div>
+    </div>
+    
+    <div id="debt-list">
+      <p>กำลังโหลดข้อมูล...</p>
+    </div>
+  </div>
+
+  <script>
+    let currentUserPin = '';
+
+    // เช็คว่าพิมพ์ครบ 4 หลักหรือยัง (ถ้าครบให้กดปุ่มอัตโนมัติได้ แต่ตอนนี้ให้กดเองก่อน)
+    function checkLength(input) {
+      if(input.value.length === 4) {
+        // สามารถตั้งให้ login อัตโนมัติเมื่อครบ 4 หลักได้ โดยเปิด comment บรรทัดล่าง
+        // login();
+      }
+    }
+
+    // ฟังก์ชัน Login
+    function login() {
+      const pin = document.getElementById('pin-input').value;
+      if(pin.length !== 4) return;
+      
+      document.getElementById('login-msg').style.display = 'none';
+      
+      // เรียกใช้ฟังก์ชัน backend Code.gs
+      google.script.run.withSuccessHandler(function(response) {
+        if(response.status === 'success') {
+          currentUserPin = pin;
+          document.getElementById('display-name').innerText = response.name;
+          document.getElementById('login-section').style.display = 'none';
+          document.getElementById('dashboard-section').style.display = 'block';
+          
+          // โหลดข้อมูลหนี้
+          loadDebts();
+        } else {
+          document.getElementById('login-msg').style.display = 'block';
+        }
+      }).checkLogin(pin);
+    }
+
+    // ฟังก์ชันดึงและแสดงข้อมูลบัตร
+    function loadDebts() {
+      google.script.run.withSuccessHandler(function(data) {
+        const debtList = document.getElementById('debt-list');
+        debtList.innerHTML = '';
+        
+        if(data.length === 0) {
+          debtList.innerHTML = '<p style="text-align:center;">🎉 ไม่มีรายการหนี้ที่ต้องชำระ</p>';
+          return;
+        }
+
+        data.forEach(debt => {
+          // จัดรูปแบบตัวเลขให้มีคอมม่า
+          const formatter = new Intl.NumberFormat('th-TH');
+          const monthly = formatter.format(debt.Monthly_Payment);
+          const remaining = formatter.format(debt.Remaining_Amount);
+          
+          const cardHtml = `
+            <div class="debt-card">
+              <div class="card-title">
+                <span>💳 ${debt.Card_Name}</span>
+                <span class="due-date">ชำระภายในวันที่ ${debt.Due_Day} ของเดือน</span>
+              </div>
+              
+              <div class="debt-details">
+                <div class="detail-item">
+                  <span>ยอดที่ต้องชำระงวดนี้</span>
+                  <strong>฿${monthly}</strong>
+                </div>
+                <div class="detail-item">
+                  <span>งวดที่</span>
+                  <strong>${debt.Paid_Months} / ${debt.Total_Months}</strong>
+                </div>
+                <div class="detail-item">
+                  <span>หนี้คงเหลือ</span>
+                  <strong>฿${remaining}</strong>
+                </div>
+              </div>
+
+              <div class="progress-container">
+                <div class="progress-bar" style="width: ${debt.Progress_Percent}%"></div>
+              </div>
+              <div class="progress-text">ผ่อนไปแล้ว ${Math.round(debt.Progress_Percent)}%</div>
+            </div>
+          `;
+          debtList.innerHTML += cardHtml;
+        });
+        
+      }).getDebtData(currentUserPin);
+    }
+  </script>
+</body>
+</html>
