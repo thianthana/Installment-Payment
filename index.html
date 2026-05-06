@@ -9,25 +9,42 @@
   
   <style>
     :root {
-      --primary: #10B981; --primary-hover: #059669; --bg-color: #F4F7F9; --sidebar-bg: #FFFFFF;
-      --text-main: #1E293B; --text-muted: #64748B; --border: #E2E8F0;
-      --danger: #EF4444; --warning: #F59E0B; --success: #10B981; --info: #3B82F6;
-      --purple: #8B5CF6; --action-blue: #2563EB; 
+      /* Theme Modern Banking */
+      --primary: #00B981; 
+      --primary-hover: #059669; 
+      --bg-color: #F8FAFC; 
+      --sidebar-bg: #FFFFFF;
+      --card-bg: #FFFFFF;
+      --text-main: #0F172A; 
+      --text-muted: #64748B; 
+      --border: #E2E8F0;
+      
+      /* Status Colors */
+      --danger: #EF4444; 
+      --warning: #F59E0B; 
+      --success: #10B981; 
+      --info: #3B82F6;
+      --purple: #8B5CF6;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', sans-serif; }
     body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; height: 100vh; margin: 0; }
     .hidden { display: none !important; }
-    .fade-enter { animation: fadeIn 0.4s ease-out forwards; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* Animations */
+    .fade-enter { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* --- Login Section --- */
-    #login-wrapper { position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease, visibility 0.5s; }
+    /* =========================================
+       1. LOGIN SECTION 
+       ========================================= */
+    #login-wrapper { position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease, visibility 0.5s; }
     #login-wrapper.hide-login { opacity: 0; visibility: hidden; }
-    .secure-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.1); padding: 40px 30px; width: 90%; max-width: 380px; text-align: center; }
-    .shield-icon { width: 64px; height: 64px; background: linear-gradient(135deg, var(--info), #0ea5e9); border-radius: 18px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(56, 189, 248, 0.25); }
+    .secure-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.1); padding: 40px 30px; width: 90%; max-width: 380px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+    .shield-icon { width: 64px; height: 64px; background: linear-gradient(135deg, var(--info), #0ea5e9); border-radius: 18px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(56, 189, 248, 0.2); }
     .bank-title { font-size: 1.5rem; font-weight: 700; color: #FFF; margin-bottom: 5px; }
     .bank-sub { font-size: 0.95rem; color: #94A3B8; margin-bottom: 30px; }
+    
     .input-wrapper { position: relative; width: 100%; margin-bottom: 25px; }
     .input-wrapper::before { content: '🔑'; position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 2; font-size: 1.1rem; }
     .secure-input { width: 100%; padding: 16px 50px 16px 45px; font-size: 1.1rem; font-weight: 600; text-align: left; border: 1px solid #334155; border-radius: 12px; outline: none; transition: 0.3s; background: rgba(15,23,42,0.6); color: #FFF; letter-spacing: 2px; }
@@ -39,109 +56,127 @@
     .btn-loader { width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #FFF; border-radius: 50%; animation: spin 1s linear infinite; display: none; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* --- Dashboard Layout --- */
+    /* =========================================
+       2. DASHBOARD LAYOUT 
+       ========================================= */
     #app-container { display: flex; height: 100vh; overflow: hidden; }
-    .sidebar { width: 260px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px 0; z-index: 10; }
-    .brand { text-align: center; padding-bottom: 20px; margin-bottom: 10px; }
-    .brand h2 { color: var(--text-main); font-size: 1.4rem; margin-top: 10px; font-weight: 800;}
-    .role-badge { font-size: 0.8rem; color: var(--primary); font-weight: 600; background: #D1FAE5; padding: 4px 16px; border-radius: 20px; display: inline-block; margin-top: 5px; }
     
-    .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 5px; padding: 0 15px; }
-    .nav-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-radius: 12px; cursor: pointer; color: var(--text-muted); font-weight: 500; transition: all 0.2s ease; border: none; background: transparent; text-align: left; font-size: 0.95rem; }
+    /* --- Sidebar --- */
+    .sidebar { width: 260px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 25px 0; z-index: 10; }
+    .brand { text-align: center; padding-bottom: 25px; margin-bottom: 15px; }
+    .brand h2 { color: var(--text-main); font-size: 1.5rem; margin-top: 10px; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif;}
+    .role-badge { font-size: 0.75rem; color: var(--primary); font-weight: 600; background: #D1FAE5; padding: 4px 16px; border-radius: 20px; display: inline-block; margin-top: 5px; }
+    
+    .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 0 15px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-radius: 12px; cursor: pointer; color: var(--text-muted); font-weight: 600; transition: all 0.2s ease; border: none; background: transparent; text-align: left; font-size: 0.95rem; }
     .nav-item:hover { background: #F1F5F9; color: var(--text-main); }
-    .nav-item.active { background: var(--primary); color: #FFF; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+    .nav-item.active { background: var(--primary); color: #FFF; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25); }
     
     .badge-notification { background: var(--danger); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; margin-left: auto; }
-    .logout-btn { margin: 15px; padding: 12px; border: 1px solid var(--danger); color: var(--danger); background: transparent; border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; }
+    .logout-btn { margin: 15px; padding: 14px; border: 1px solid var(--danger); color: var(--danger); background: transparent; border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; }
     .logout-btn:hover { background: #FEF2F2; }
 
+    /* --- Main Content --- */
     .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-color); overflow-y: auto; scroll-behavior: smooth; }
+    
     .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: #FFFFFF; position: sticky; top: 0; z-index: 5; border-bottom: 1px solid var(--border); }
-    .page-title h1 { font-size: 1.5rem; color: var(--text-main); font-weight: 700; margin-bottom: 4px;}
-    .page-subtitle { font-size: 0.9rem; color: var(--text-muted); }
+    .page-title { display: flex; align-items: center; gap: 15px; }
+    .page-title h1 { font-size: 1.4rem; color: var(--text-main); font-weight: 700; margin: 0;}
+    .page-subtitle { font-size: 0.9rem; color: var(--text-muted); margin: 0; border-left: 2px solid var(--border); padding-left: 15px; }
     
-    .user-profile { display: flex; align-items: center; gap: 15px; background: #FFF; padding: 6px 16px; border-radius: 50px; border: 1px solid var(--border); box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
-    .avatar { width: 35px; height: 35px; border-radius: 50%; background: var(--primary); color: #FFF; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+    .user-profile { display: flex; align-items: center; gap: 12px; background: #FFF; padding: 6px 16px 6px 6px; border-radius: 50px; border: 1px solid var(--border); }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: #FFF; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem;}
     .user-details { display: flex; flex-direction: column; }
-    .user-details strong { font-size: 0.9rem; }
-    .status-online { font-size: 0.75rem; color: var(--success); display: flex; align-items: center; gap: 4px; }
-    .status-online::before { content: ''; width: 8px; height: 8px; background: var(--success); border-radius: 50%; }
+    .user-details strong { font-size: 0.85rem; line-height: 1; margin-bottom: 2px;}
+    .status-online { font-size: 0.7rem; color: var(--success); display: flex; align-items: center; gap: 4px; }
+    .status-online::before { content: ''; width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
 
-    .content-area { padding: 30px 40px 40px; max-width: 1200px; margin: 0 auto; width: 100%;}
+    .content-area { padding: 40px; max-width: 1200px; margin: 0 auto; width: 100%;}
     
-    /* --- Cards & Boxes --- */
-    .white-card { background: #FFFFFF; border-radius: 20px; border: 1px solid var(--border); padding: 30px; margin-bottom: 20px; }
+    /* --- Modern Bank Cards & Boxes --- */
+    .white-card { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border); padding: 35px; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
     
-    .summary-wrapper { border: 1.5px solid var(--primary); border-radius: 20px; padding: 25px; background: #FFFFFF; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(16,185,129,0.05);}
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .section-header h3 { font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin: 0; display: flex; align-items: center; gap: 8px;}
+    
+    .month-picker-container { display: flex; align-items: center; gap: 10px; background: #FFF; padding: 6px 12px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.02);}
+    .month-picker-container span { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
+    .month-input { padding: 6px; border: none; font-size: 0.95rem; outline: none; color: var(--primary); font-weight: 700; cursor: pointer; background: transparent;}
+
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
-    .summary-box { background: #F8FAFC; padding: 20px; border-radius: 12px; text-align: center; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center;}
-    .summary-box.highlight { background: #ECFDF5; border-color: var(--primary); }
-    .summary-box span { color: var(--text-muted); font-size: 0.9rem; font-weight: 500;}
-    .summary-box h2 { color: var(--primary); font-size: 2.2rem; margin-top: 8px; font-weight: 800;}
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+    
+    .summary-box { background: #FFFFFF; padding: 25px 20px; border-radius: 16px; text-align: center; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.01);}
+    .summary-box.highlight { background: #F0FDF4; border: 1.5px solid var(--primary); }
+    .summary-box span { color: var(--text-muted); font-size: 0.9rem; font-weight: 600; margin-bottom: 5px;}
+    .summary-box.highlight span { color: var(--primary-hover); }
+    .summary-box h2 { color: var(--text-main); font-size: 2.2rem; margin: 0; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif;}
     .summary-box h2.red-text { color: var(--danger); }
-    .summary-box h2.blue-text { color: var(--action-blue); }
+    .summary-box h2.blue-text { color: var(--info); }
+    .summary-box h2.green-text { color: var(--primary); }
 
     /* --- Debt Items --- */
     .debt-item { 
       border: 1px solid var(--border); border-radius: 16px; padding: 25px; 
-      margin-bottom: 15px; display: flex; justify-content: space-between; 
-      align-items: center; background: #FFFFFF; transition: 0.2s; 
+      margin-bottom: 16px; display: flex; justify-content: space-between; 
+      align-items: center; background: #FFFFFF; transition: all 0.3s ease; 
       border-left-width: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
-    .debt-item:hover { box-shadow: 0 6px 15px rgba(0,0,0,0.05); transform: translateY(-2px); }
-    .debt-info h3 { font-size: 1.2rem; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--text-main);}
+    .debt-item:hover { box-shadow: 0 10px 20px rgba(0,0,0,0.05); transform: translateY(-2px); border-color: var(--border); border-left-color: inherit; }
+    
+    .debt-info { flex: 1; }
+    .debt-info h3 { font-size: 1.15rem; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--text-main);}
     .debt-meta { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;}
-    .debt-actions { text-align: right; min-width: 220px; display: flex; flex-direction: column; justify-content: center;}
-    .debt-amount { font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
+    
+    .debt-actions { text-align: right; min-width: 200px; display: flex; flex-direction: column; justify-content: center; align-items: flex-end;}
+    .debt-amount { font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; font-family: 'Plus Jakarta Sans', sans-serif;}
+    .due-text { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; }
     
     /* --- Badges & Buttons --- */
-    .status-badge { font-size: 0.8rem; padding: 4px 12px; border-radius: 8px; font-weight: 600; letter-spacing: 0.3px; }
+    .status-badge { font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; font-weight: 600; letter-spacing: 0.3px; }
     .status-success { background: #D1FAE5; color: #059669; }
     .status-warning { background: #FEF3C7; color: #D97706; }
     .status-danger  { background: #FEE2E2; color: #DC2626; }
     .status-info    { background: #DBEAFE; color: #2563EB; }
     .status-gray    { background: #F1F5F9; color: #475569; }
     
-    .btn-action { color: #FFF; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; width: 100%; font-size: 0.95rem;}
-    .btn-action:hover { transform: translateY(-1px); filter: brightness(1.1); }
-    .btn-primary { background: var(--action-blue); box-shadow: 0 4px 10px rgba(37,99,235,0.2); }
-    .btn-danger  { background: var(--danger); box-shadow: 0 4px 10px rgba(239,68,68,0.2); }
-    .btn-success { background: var(--success); box-shadow: 0 4px 10px rgba(16,185,129,0.2); }
-    .btn-purple  { background: var(--purple); box-shadow: 0 4px 10px rgba(139,92,246,0.2); } 
-    .btn-disabled { background: #F1F5F9; color: #94A3B8; cursor: not-allowed; box-shadow: none; }
-    .btn-disabled:hover { transform: none; filter: none; }
-    .btn-outline { border: 1px solid var(--border); background: #FFF; padding: 8px 16px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; font-weight: 600; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;}
-    .btn-outline:hover { background: #F8FAFC; }
+    .btn-action { color: #FFF; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; width: 100%; font-size: 0.95rem; font-family: 'Prompt';}
+    .btn-action:hover { transform: translateY(-1px); filter: brightness(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.15);}
+    .btn-primary { background: var(--info); }
+    .btn-danger  { background: var(--danger); }
+    .btn-success { background: var(--success); }
+    .btn-purple  { background: var(--purple); } 
+    .btn-disabled { background: #F1F5F9; color: #94A3B8; cursor: not-allowed; }
+    .btn-disabled:hover { transform: none; filter: none; box-shadow: none;}
+    
+    .btn-outline { border: 1px solid var(--border); background: #FFF; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; font-weight: 600; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px;}
+    .btn-outline:hover { background: #F8FAFC; border-color: #CBD5E1;}
 
     .clickable { cursor: pointer; }
-    .clickable:hover { border-color: var(--primary); }
+    .clickable:hover { border-right-color: var(--primary); border-top-color: var(--primary); border-bottom-color: var(--primary);}
 
-    /* --- Form & Pickers --- */
+    /* --- Forms & Pickers --- */
     .form-group { margin-bottom: 20px; }
     .form-label { display: block; font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; color: var(--text-main);}
     .form-input { width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; font-size: 1rem; outline: none; background: #F8FAFC; transition: 0.2s;}
     .form-input:focus { border-color: var(--primary); background: #FFF; box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
     
-    .month-picker-container { display: flex; align-items: center; justify-content: space-between; background: #F8FAFC; padding: 15px 25px; border-radius: 16px; margin-bottom: 20px; }
-    .month-input { padding: 10px 15px; border: 1px solid var(--border); border-radius: 10px; font-size: 1rem; outline: none; color: var(--primary); font-weight: 700; cursor: pointer; background: #FFF;}
-
-    /* --- Profile Tabs Layout --- */
-    .profile-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 20px;}
-    .tab-container { display: flex; gap: 8px; background: #F1F5F9; padding: 6px; border-radius: 14px; }
-    .tab-btn { padding: 10px 24px; border: none; background: transparent; border-radius: 10px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.2s;}
+    /* --- Profile Header (Admin) --- */
+    .profile-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; padding-bottom: 25px; border-bottom: 1px solid var(--border);}
+    .tab-container { display: flex; gap: 5px; background: #F1F5F9; padding: 5px; border-radius: 12px; }
+    .tab-btn { padding: 10px 24px; border: none; background: transparent; border-radius: 8px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.2s;}
     .tab-btn.active { background: #FFF; color: var(--text-main); box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
 
     /* --- Visual Pill Selector --- */
-    .pill-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; max-height: 150px; overflow-y: auto; padding: 5px; border: 1px solid var(--border); border-radius: 12px; background: #FFF; }
-    .month-pill { padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; background: #F1F5F9; color: var(--text-muted); border: 1px solid transparent; transition: 0.2s; user-select: none; }
-    .month-pill:hover { border-color: var(--primary); }
+    .pill-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; max-height: 150px; overflow-y: auto; padding: 10px; border: 1px solid var(--border); border-radius: 12px; background: #FFF; }
+    .month-pill { padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; background: #F1F5F9; color: var(--text-muted); border: 1px solid transparent; transition: 0.2s; user-select: none; }
+    .month-pill:hover { border-color: var(--primary); color: var(--primary);}
     .month-pill.paid { background: #D1FAE5; color: #059669; border-color: #059669; }
 
     /* --- Modal --- */
     .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); opacity: 0; visibility: hidden; transition: 0.3s; }
     .modal-overlay.show { opacity: 1; visibility: visible; }
-    .modal-content { background: #FFF; width: 90%; max-width: 550px; border-radius: 24px; padding: 30px; max-height: 90vh; overflow-y: auto; transform: translateY(20px); transition: 0.3s; box-shadow: 0 20px 40px rgba(0,0,0,0.2);}
+    .modal-content { background: #FFF; width: 90%; max-width: 550px; border-radius: 24px; padding: 35px; max-height: 90vh; overflow-y: auto; transform: translateY(20px); transition: 0.3s; box-shadow: 0 20px 40px rgba(0,0,0,0.2);}
     .modal-overlay.show .modal-content { transform: translateY(0); }
 
     @media (max-width: 768px) {
@@ -151,14 +186,13 @@
       .nav-item { white-space: nowrap; }
       .brand { padding-bottom: 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; border-bottom: none; }
       .brand h2 { margin: 0; }
-      .topbar { padding: 15px 20px; flex-direction: column; align-items: flex-start; gap: 15px; }
-      .content-area { padding: 20px 20px 40px; }
-      .grid-2 { grid-template-columns: 1fr; }
-      .grid-3 { grid-template-columns: 1fr; }
-      .month-picker-container { flex-direction: column; gap: 15px; align-items: flex-start; }
-      .month-input { width: 100%; }
+      .topbar { padding: 15px 20px; flex-direction: column; align-items: flex-start; gap: 10px; }
+      .page-subtitle { border-left: none; padding-left: 0; margin-top: 5px;}
+      .content-area { padding: 20px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .section-header { flex-direction: column; align-items: flex-start; gap: 15px;}
       .debt-item { flex-direction: column; align-items: flex-start; gap: 15px; }
-      .debt-actions { width: 100%; text-align: left; display: flex; flex-direction: column; align-items: stretch; gap: 10px;}
+      .debt-actions { width: 100%; text-align: left; display: flex; flex-direction: column; align-items: stretch;}
       .profile-header { flex-direction: column; align-items: flex-start; gap: 15px;}
       .tab-container { width: 100%; justify-content: space-between;}
       .tab-btn { flex: 1; text-align: center;}
@@ -169,7 +203,9 @@
 
   <div id="login-wrapper">
     <div class="secure-card">
-      <div class="shield-icon"><svg viewBox="0 0 24 24" width="32" stroke="white" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
+      <div class="shield-icon">
+        <svg viewBox="0 0 24 24" width="32" stroke="white" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      </div>
       <h1 class="bank-title">ธนาคารตรวจสอบหนี้สิน</h1>
       <p class="bank-sub">โปรดเข้าสู่ระบบเพื่อดำเนินการต่อ</p>
       <div class="input-wrapper">
@@ -194,7 +230,9 @@
         <button class="nav-item active" id="menu-dashboard" onclick="switchView('dashboard')"><span>📊</span> บัญชีของฉัน</button>
         <button class="nav-item hidden admin-only" id="menu-overview" onclick="switchView('overview')"><span>👥</span> ภาพรวมพอร์ตลูกหนี้</button>
         <button class="nav-item hidden admin-only" id="menu-add" onclick="switchView('add')"><span>➕</span> เพิ่มสัญญาหนี้</button>
-        <button class="nav-item hidden admin-only" id="menu-approve" onclick="switchView('approve')"><span>🔔</span> รายการตรวจสอบ <span id="pending-badge" class="badge-notification hidden">0</span></button>
+        <button class="nav-item hidden admin-only" id="menu-approve" onclick="switchView('approve')">
+          <span>🔔</span> รายการตรวจสอบ <span id="pending-badge" class="badge-notification hidden">0</span>
+        </button>
       </div>
       <button class="logout-btn" onclick="logout()"><span>🚪</span> ออกจากระบบ</button>
     </aside>
@@ -203,7 +241,7 @@
       <header class="topbar">
         <div class="page-title">
           <h1 id="page-title-text">บัญชีของฉัน</h1>
-          <div class="page-subtitle" id="page-subtitle-text">สรุปข้อมูลยอดผ่อนชำระของคุณ</div>
+          <p class="page-subtitle" id="page-subtitle-text">สรุปข้อมูลยอดผ่อนชำระของคุณ</p>
         </div>
         <div class="user-profile">
           <div class="avatar" id="avatar-initial">U</div>
@@ -214,9 +252,12 @@
       <div class="content-area">
         
         <div id="view-dashboard" class="view-section fade-enter">
-          <div class="month-picker-container" style="background: transparent; border: none; padding: 0 0 20px 0;">
-            <div><h3 style="color: var(--text-main); margin-bottom: 4px;">📅 เลือกรอบบิลตรวจสอบ</h3></div>
-            <input type="month" id="user-month-selector" class="month-input" onchange="renderUserDashboard()">
+          
+          <div class="section-header">
+            <h3>📅 เลือกรอบบิลตรวจสอบ</h3>
+            <div class="month-picker-container">
+              <input type="month" id="user-month-selector" class="month-input" onchange="renderUserDashboard()">
+            </div>
           </div>
           
           <div id="user-monthly-summary" class="grid-3" style="margin-bottom: 30px;">
@@ -226,13 +267,15 @@
         </div>
 
         <div id="view-overview" class="view-section hidden admin-only fade-enter">
-          <div class="summary-wrapper">
-            <div class="grid-2">
-              <div class="summary-box"><span>ยอดเรียกเก็บเดือนนี้ (ทั้งพอร์ต)</span><h2 id="bank-expected-monthly" class="blue-text">฿0.00</h2></div>
-              <div class="summary-box"><span>ยอดหนี้ลูกหนี้คงเหลือสุทธิ</span><h2 id="bank-total-remaining" class="red-text">฿0.00</h2></div>
-            </div>
+          <div class="section-header">
+            <h3>ภาพรวมพอร์ตลูกหนี้ทั้งหมด</h3>
           </div>
-          <h3 style="margin-bottom: 15px; font-size: 1.2rem; font-weight:700;">รายชื่อลูกหนี้ (คลิกเพื่อดูข้อมูลเชิงลึก)</h3>
+          <div class="grid-2" style="margin-bottom: 30px;">
+            <div class="summary-box"><span>ยอดเรียกเก็บเดือนนี้ (ทั้งพอร์ต)</span><h2 id="bank-expected-monthly" class="green-text">฿0.00</h2></div>
+            <div class="summary-box"><span>ยอดหนี้ลูกหนี้คงเหลือสุทธิ</span><h2 id="bank-total-remaining" class="red-text">฿0.00</h2></div>
+          </div>
+          
+          <h3 style="margin-bottom: 15px; font-size: 1.1rem; font-weight:700;">รายชื่อลูกหนี้ (คลิกเพื่อดูข้อมูลเชิงลึก)</h3>
           <div id="admin-debtor-list"></div>
         </div>
 
@@ -241,7 +284,7 @@
             ← กลับไปหน้าภาพรวม
           </button>
           
-          <div class="white-card" style="padding: 40px 30px;">
+          <div class="white-card">
             <div class="profile-header">
               <div>
                 <h2 id="profile-user-name" style="margin-bottom: 8px; font-size:1.6rem; color:var(--text-main);">ประวัติลูกหนี้: -</h2>
@@ -257,9 +300,11 @@
             </div>
 
             <div id="pcontent-monthly">
-              <div class="month-picker-container" style="background: transparent; border: none; padding: 0 0 20px 0; margin-bottom:0;">
-                <span style="font-weight: 700; font-size:1.1rem;">เลือกรอบบิลตรวจสอบ:</span>
-                <input type="month" id="admin-profile-month" class="month-input" onchange="renderAdminProfileMonthly()">
+              <div class="section-header">
+                <h3>📅 เลือกรอบบิลตรวจสอบ</h3>
+                <div class="month-picker-container" style="background: transparent; border: none; box-shadow: none;">
+                  <input type="month" id="admin-profile-month" class="month-input" onchange="renderAdminProfileMonthly()">
+                </div>
               </div>
               
               <div id="profile-monthly-summary" class="grid-3" style="margin-bottom: 30px;">
@@ -276,23 +321,23 @@
 
         <div id="view-add" class="view-section hidden admin-only fade-enter">
           <div class="white-card">
-            <h3 style="margin-bottom: 25px; color:var(--text-main); font-size: 1.5rem;">เพิ่มสัญญาหนี้</h3>
+            <h3 style="margin-bottom: 25px; color:var(--text-main); font-size: 1.4rem;">สร้างสัญญาหนี้ใหม่</h3>
             <form onsubmit="event.preventDefault(); submitAddDebt();">
               <div class="grid-2"><div class="form-group"><label class="form-label">เลือกลูกหนี้</label><select id="a-user" class="form-input" required></select></div><div class="form-group"><label class="form-label">บัตรที่ใช้</label><select id="a-card" class="form-input" required></select></div></div>
-              <div class="grid-2"><div class="form-group"><label class="form-label">ประเภท</label><select id="a-type" class="form-input" required><option value="ผ่อนสินค้า">ผ่อนสินค้า</option><option value="กดเงินสด">กดเงินสด</option></select></div><div class="form-group"><label class="form-label">ยอดจัดเต็มจำนวน (฿)</label><input type="number" id="a-amount" class="form-input" required></div></div>
-              <div class="grid-2"><div class="form-group"><label class="form-label">ดอกเบี้ยต่อปี (%)</label><input type="number" id="a-interest" class="form-input" value="0" step="0.01" required></div><div class="form-group"><label class="form-label">จำนวนงวด (เดือน)</label><input type="number" id="a-months" class="form-input" required></div></div>
-              <div class="grid-2"><div class="form-group"><label class="form-label">เริ่มผ่อนงวดแรก (ดด/ปปปป)</label><input type="month" id="a-start" class="form-input" required></div><div class="form-group"><label class="form-label">ดิวชำระทุกวันที่ (1-31)</label><input type="number" id="a-due" class="form-input" min="1" max="31" required></div></div>
+              <div class="grid-2"><div class="form-group"><label class="form-label">ประเภท</label><select id="a-type" class="form-input" required><option value="ผ่อนสินค้า">ผ่อนสินค้า</option><option value="กดเงินสด">กดเงินสด</option></select></div><div class="form-group"><label class="form-label">ยอดจัดเต็มจำนวน (฿)</label><input type="number" id="a-amount" class="form-input" required oninput="calcForward('a')"></div></div>
+              <div class="grid-2"><div class="form-group"><label class="form-label">ดอกเบี้ยต่อปี (%)</label><input type="number" id="a-interest" class="form-input" value="0" step="0.01" required oninput="calcForward('a')"></div><div class="form-group"><label class="form-label">จำนวนงวด (เดือน)</label><input type="number" id="a-months" class="form-input" required oninput="calcForward('a'); renderPillSelector('a');"></div></div>
+              <div class="grid-2"><div class="form-group"><label class="form-label">เริ่มผ่อนงวดแรก (ดด/ปปปป)</label><input type="month" id="a-start" class="form-input" required onchange="renderPillSelector('a')"></div><div class="form-group"><label class="form-label">ดิวชำระทุกวันที่ (1-31)</label><input type="number" id="a-due" class="form-input" min="1" max="31" required></div></div>
               
-              <div class="form-group" style="padding: 20px; border-radius: 12px; background: #F8FAFC; border: 1px solid var(--border);">
+              <div class="form-group" style="padding: 20px; border-radius: 16px; background: #F8FAFC; border: 1px solid var(--border);">
                 <label class="form-label" style="margin-bottom:0;">บันทึกยอดชำระย้อนหลัง</label>
                 <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">คลิกที่ปุ่มเดือนเพื่อระบุว่าจ่ายถึงเดือนไหนแล้ว (ระบบจะบันทึกสถานะให้ตรงกัน)</div>
                 <input type="hidden" id="a-paid" value="0">
                 <div id="a-paid-selector" class="pill-container"><span style="color:gray; font-size:0.85rem; padding: 5px;">(กรุณาระบุเริ่มผ่อนงวดแรก และจำนวนงวดก่อน)</span></div>
               </div>
 
-              <div class="form-group" style="padding: 25px; border-radius: 16px; background: #ECFDF5; border: 2px solid var(--primary); text-align:center;">
-                <label class="form-label" style="color: var(--primary); font-size:1.1rem;">ยอดชำระต่อเดือน (ระบบคำนวณเบื้องต้น)</label>
-                <input type="number" id="a-monthly" class="form-input" step="0.01" style="font-weight:800; font-size: 2rem; color:var(--primary); text-align:center; background: transparent; border:none; box-shadow:none; padding:0;" required>
+              <div class="form-group" style="padding: 25px; border-radius: 16px; background: #F0FDF4; border: 2px solid var(--primary); text-align:center;">
+                <label class="form-label" style="color: var(--primary); font-size:1.1rem;">ยอดชำระต่อเดือน <br><span style="font-size:0.8rem; font-weight:normal;">(หากแก้ไขยอดชำระ ระบบจะคำนวณดอกเบี้ยกลับให้อัตโนมัติ)</span></label>
+                <input type="number" id="a-monthly" class="form-input" step="0.01" style="font-weight:800; font-size: 2rem; color:var(--primary); text-align:center; background: transparent; border:none; box-shadow:none; padding:0;" required oninput="calcBackward('a')">
               </div>
               <button type="submit" class="btn-action btn-primary" style="padding: 16px; font-size: 1.1rem;">บันทึกรายการสัญญาเข้าระบบ</button>
             </form>
@@ -300,6 +345,9 @@
         </div>
 
         <div id="view-approve" class="view-section hidden admin-only fade-enter">
+          <div class="section-header">
+            <h3>รายการรอตรวจสอบ</h3>
+          </div>
           <div id="admin-pending-list"></div>
         </div>
 
@@ -309,28 +357,28 @@
 
   <div id="edit-modal" class="modal-overlay">
     <div class="modal-content">
-      <h3 style="margin-bottom: 25px; color: var(--text-main); font-size:1.5rem; font-weight:700;">แก้ไขข้อมูลสัญญาหนี้</h3>
+      <h3 style="margin-bottom: 25px; color: var(--text-main); font-size:1.4rem; font-weight:700;">แก้ไขข้อมูลสัญญาหนี้</h3>
       <form onsubmit="event.preventDefault(); submitEditDebt();">
         <input type="hidden" id="e-id">
         <div class="grid-2"><div class="form-group"><label class="form-label">บัตรที่ใช้</label><select id="e-card" class="form-input" required></select></div><div class="form-group"><label class="form-label">ประเภท</label><select id="e-type" class="form-input" required><option value="ผ่อนสินค้า">ผ่อนสินค้า</option><option value="กดเงินสด">กดเงินสด</option></select></div></div>
-        <div class="grid-2"><div class="form-group"><label class="form-label">ยอดจัด (฿)</label><input type="number" id="e-amount" class="form-input" required></div><div class="form-group"><label class="form-label">ดอกเบี้ย (%)</label><input type="number" id="e-interest" class="form-input" step="0.01" required></div></div>
-        <div class="grid-2"><div class="form-group"><label class="form-label">จำนวนงวดทั้งหมด</label><input type="number" id="e-months" class="form-input" required></div><div class="form-group"><label class="form-label">ดิวชำระ (1-31)</label><input type="number" id="e-due" class="form-input" min="1" max="31" required></div></div>
-        <div class="form-group"><label class="form-label">เริ่มผ่อนงวดแรก (ดด/ปปปป)</label><input type="month" id="e-start" class="form-input" required></div>
+        <div class="grid-2"><div class="form-group"><label class="form-label">ยอดจัด (฿)</label><input type="number" id="e-amount" class="form-input" required oninput="calcForward('e')"></div><div class="form-group"><label class="form-label">ดอกเบี้ย (%)</label><input type="number" id="e-interest" class="form-input" step="0.01" required oninput="calcForward('e')"></div></div>
+        <div class="grid-2"><div class="form-group"><label class="form-label">จำนวนงวดทั้งหมด</label><input type="number" id="e-months" class="form-input" required oninput="calcForward('e'); renderPillSelector('e');"></div><div class="form-group"><label class="form-label">ดิวชำระ (1-31)</label><input type="number" id="e-due" class="form-input" min="1" max="31" required></div></div>
+        <div class="form-group"><label class="form-label">เริ่มผ่อนงวดแรก (ดด/ปปปป)</label><input type="month" id="e-start" class="form-input" required onchange="renderPillSelector('e')"></div>
         
-        <div class="form-group" style="padding: 15px; border-radius: 12px; border: 1px solid var(--border); background: #F8FAFC;">
+        <div class="form-group" style="padding: 15px; border-radius: 16px; border: 1px solid var(--border); background: #F8FAFC;">
           <label class="form-label" style="margin-bottom:2px;">สถานะการชำระล่าสุด</label>
           <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">คลิกที่ปุ่มเดือนเพื่อระบุว่าลูกหนี้จ่ายไปแล้วถึงงวดไหน</div>
           <input type="hidden" id="e-paid" value="0">
           <div id="e-paid-selector" class="pill-container"></div>
         </div>
 
-        <div class="form-group" style="padding: 20px; border-radius: 12px; background: #EFF6FF; border: 2px solid var(--info); text-align:center;">
+        <div class="form-group" style="padding: 20px; border-radius: 16px; background: #EFF6FF; border: 2px solid var(--info); text-align:center;">
           <label class="form-label" style="color: var(--info);">ชำระเดือนละ (฿)</label>
-          <input type="number" id="e-monthly" class="form-input" step="0.01" style="font-weight:bold; font-size:1.8rem; color:var(--info); text-align:center; background:transparent; border:none; box-shadow:none; padding:0;" required>
+          <input type="number" id="e-monthly" class="form-input" step="0.01" style="font-weight:bold; font-size:1.8rem; color:var(--info); text-align:center; background:transparent; border:none; box-shadow:none; padding:0;" required oninput="calcBackward('e')">
         </div>
         
         <div class="grid-2" style="margin-top:25px;">
-          <button type="button" class="btn-outline" onclick="closeEditModal()">ยกเลิก</button>
+          <button type="button" class="btn-outline" onclick="closeEditModal()" style="width: 100%;">ยกเลิก</button>
           <button type="submit" class="btn-action btn-primary">บันทึกการแก้ไข</button>
         </div>
       </form>
@@ -358,7 +406,7 @@
       document.getElementById('user-month-selector').value = currentMonthVal;
       document.getElementById('admin-profile-month').value = currentMonthVal;
       
-      setupActivityListeners(); checkSession(); setupFormListeners();
+      setupActivityListeners(); checkSession();
     };
 
     function setupActivityListeners() { ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt => document.addEventListener(evt, resetInactivityTimer, true)); }
@@ -430,7 +478,7 @@
       if(viewName === 'approve') { titleEl.innerText = "รายการรอตรวจสอบ"; subEl.innerText = "ตรวจสอบและยืนยันการรับเงินจากลูกหนี้"; loadAdminData(); }
     }
 
-    // --- USER DASHBOARD ---
+    // --- USER DASHBOARD (Triple Summary & Smart Notice) ---
     async function fetchAndRenderUserData() {
       const res = await apiCall('getUserData', { pin: currentUser.pin });
       globalUserDebts = res.items; 
@@ -453,25 +501,22 @@
         const [sYear, sMonth] = item.startMonth.split('-');
         const targetInstallment = (parseInt(vYear) - parseInt(sYear)) * 12 + (parseInt(vMonth) - parseInt(sMonth)) + 1;
         
-        // 🧮 การคำนวณยอด 3 กล่อง
+        // Triple Summary Math
         totalOverallRemaining += item.remainAmt;
         if (targetInstallment > 0 && targetInstallment <= item.totalMonths) {
           monthTotalExpected += item.monthlyPayment;
-          if (item.paidMonths < targetInstallment && item.status !== 'ปิดยอดแล้ว') {
-            monthRemainingPay += item.monthlyPayment;
-          }
+          if (item.paidMonths < targetInstallment && item.status !== 'ปิดยอดแล้ว') { monthRemainingPay += item.monthlyPayment; }
         }
 
         if (targetInstallment <= 0 || (targetInstallment > item.totalMonths && item.status !== "ปิดยอดแล้ว")) return; 
 
-        // ⏰ คำนวณวันคงเหลือ
-        const today = new Date();
-        today.setHours(0,0,0,0);
+        // ⏰ Smart Due Notice
+        const today = new Date(); today.setHours(0,0,0,0);
         const dueDateObj = new Date(parseInt(vYear), parseInt(vMonth) - 1, item.dueDay);
         const diffDays = Math.ceil((dueDateObj - today) / (1000 * 60 * 60 * 24));
         
         let dueNoticeHtml = '';
-        if (item.paidMonths < targetInstallment && item.status !== 'ปิดยอดแล้ว' && item.status !== 'รอตรวจสอบ' && item.status !== 'รอตรวจสอบปิดยอด') {
+        if (item.paidMonths < targetInstallment && item.status !== 'ปิดยอดแล้ว' && !item.status.includes('รอตรวจสอบ')) {
           if (diffDays > 0 && diffDays <= 5) dueNoticeHtml = `<span style="color: var(--warning); font-size: 0.8rem; font-weight: 600;">⏰ ใกล้กำหนด (เหลือ ${diffDays} วัน)</span>`;
           else if (diffDays === 0) dueNoticeHtml = `<span style="color: var(--danger); font-size: 0.8rem; font-weight: 600;">🚨 ครบกำหนดวันนี้!</span>`;
           else if (diffDays < 0) dueNoticeHtml = `<span style="color: var(--danger); font-size: 0.8rem; font-weight: 600;">⚠️ เลยกำหนดชำระ ${Math.abs(diffDays)} วัน</span>`;
@@ -480,25 +525,25 @@
         let statusText = '', badgeClass = '', borderColor = '', actionButton = '', payoffButton = '';
         
         if (item.status.startsWith('ปฏิเสธ')) { statusText = `❌ ${item.status}`; badgeClass = 'status-danger'; borderColor = 'var(--danger)'; actionButton = `<button class="btn-action btn-danger" onclick="notifyPayment('${item.id}')">แจ้งชำระใหม่</button>`; }
-        else if (item.status === 'รอตรวจสอบ') { statusText = '⏳ รอตรวจสอบ'; badgeClass = 'status-warning'; borderColor = 'var(--warning)'; actionButton = `<button class="btn-action btn-disabled" disabled>รอธนาคารตรวจสอบ</button>`; } 
-        else if (item.status === 'รอตรวจสอบปิดยอด') { statusText = '⏳ รอตรวจสอบปิดยอด'; badgeClass = 'status-warning'; borderColor = 'var(--warning)'; actionButton = `<button class="btn-action btn-disabled" disabled>รอตรวจสอบยอดปิด</button>`; }
+        else if (item.status === 'รอตรวจสอบ') { statusText = '⏳ รอตรวจสอบ'; badgeClass = 'status-warning'; borderColor = 'var(--warning)'; actionButton = `<button class="btn-action btn-disabled" disabled>รอธนาคารอนุมัติ</button>`; } 
+        else if (item.status === 'รอตรวจสอบปิดยอด') { statusText = '⏳ แจ้งปิดยอดแล้ว'; badgeClass = 'status-warning'; borderColor = 'var(--warning)'; actionButton = `<button class="btn-action btn-disabled" disabled>รอตรวจสอบปิดยอด</button>`; }
         else if (item.paidMonths >= targetInstallment || item.status === 'ปิดยอดแล้ว') { statusText = '✅ ชำระแล้ว'; badgeClass = 'status-success'; borderColor = 'var(--success)'; actionButton = `<button class="btn-action btn-disabled" disabled>ชำระเรียบร้อย</button>`; } 
         else if (targetInstallment > item.paidMonths + 1) { statusText = '⚠️ ค้างชำระ (เลยกำหนด)'; badgeClass = 'status-danger'; borderColor = 'var(--danger)'; actionButton = `<button class="btn-action btn-danger" onclick="notifyPayment('${item.id}')">แจ้งชำระ (บิลค้าง)</button>`; } 
-        else { statusText = '🔵 รอชำระงวดนี้'; badgeClass = 'status-info'; borderColor = 'var(--action-blue)'; actionButton = `<button class="btn-action btn-primary" onclick="notifyPayment('${item.id}')">แจ้งชำระเงินงวดนี้</button>`; }
+        else { statusText = '🔵 รอชำระงวดนี้'; badgeClass = 'status-info'; borderColor = 'var(--info)'; actionButton = `<button class="btn-action btn-primary" onclick="notifyPayment('${item.id}')">แจ้งชำระเงินงวดนี้</button>`; }
 
-        if (item.remainAmt > 0 && !item.status.startsWith('รอตรวจสอบ') && item.status !== 'ปิดยอดแล้ว') {
+        if (item.remainAmt > 0 && !item.status.includes('รอตรวจสอบ') && item.status !== 'ปิดยอดแล้ว') {
           payoffButton = `<button class="btn-outline" style="width:100%; border-color:var(--purple); color:var(--purple); margin-top:8px;" onclick="notifyPayOff('${item.id}', ${item.remainAmt})">✨ แจ้งปิดยอด (฿${money.format(item.remainAmt)})</button>`;
         } else { payoffButton = ''; }
 
         list.innerHTML += `
           <div class="debt-item" style="border-left-color: ${borderColor};">
-            <div class="debt-info" style="flex: 1;">
+            <div class="debt-info">
               <h3>💳 ${item.cardName} <span class="status-badge ${badgeClass}">${statusText}</span></h3>
               <div class="debt-meta">รอบบิล: งวดที่ ${targetInstallment} (จากทั้งหมด ${item.totalMonths} งวด)<br>ความคืบหน้า: จ่ายแล้ว ${item.paidMonths} งวด | หนี้คงเหลือ: ฿${money.format(item.remainAmt)}</div>
             </div>
-            <div class="debt-actions" style="width: 210px;">
+            <div class="debt-actions">
               <div class="debt-amount">฿${money.format(item.monthlyPayment)}</div>
-              <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 8px;">ดิววันที่ <strong>${item.dueDay}</strong> ของเดือน <br>${dueNoticeHtml}</div>
+              <div class="due-text">ดิววันที่ <strong>${item.dueDay}</strong> ของเดือน <br>${dueNoticeHtml}</div>
               ${actionButton}${payoffButton}
             </div>
           </div>`;
@@ -506,18 +551,9 @@
       if(list.innerHTML === '') list.innerHTML = `<div class="white-card" style="text-align:center; color:var(--text-muted);">🎉 ไม่มียอดเรียกเก็บในเดือนที่คุณเลือก</div>`;
       
       const summaryHTML = `
-        <div class="summary-box highlight">
-          <span>ยอดเดือนนี้คงเหลือชำระ</span>
-          <h2 class="blue-text">฿${money.format(monthRemainingPay)}</h2>
-        </div>
-        <div class="summary-box">
-          <span>ยอดเรียกเก็บของเดือนนี้</span>
-          <h2 style="color: var(--text-main);">฿${money.format(monthTotalExpected)}</h2>
-        </div>
-        <div class="summary-box">
-          <span>ยอดหนี้รวมคงเหลือทั้งหมด</span>
-          <h2 class="red-text">฿${money.format(totalOverallRemaining)}</h2>
-        </div>
+        <div class="summary-box highlight"><span>ยอดเดือนนี้คงเหลือชำระ</span><h2 class="blue-text">฿${money.format(monthRemainingPay)}</h2></div>
+        <div class="summary-box"><span>ยอดเรียกเก็บของเดือนนี้</span><h2 style="color: var(--text-main);">฿${money.format(monthTotalExpected)}</h2></div>
+        <div class="summary-box"><span>ยอดหนี้รวมคงเหลือทั้งหมด</span><h2 class="red-text">฿${money.format(totalOverallRemaining)}</h2></div>
       `;
       document.getElementById('user-monthly-summary').innerHTML = summaryHTML;
     }
@@ -569,12 +605,12 @@
         let amountText = isPayOff ? `ยอดโอนปิดบัญชี: ฿${money.format(p.remainAmt)}` : `ยอดโอนค่างวด: ฿${money.format(p.monthlyPayment)}`;
         
         let btnHtml = isPayOff ? `<button class="btn-action btn-purple" onclick="approvePayOff('${p.id}')">✅ อนุมัติปิดยอด</button>` : `<button class="btn-action btn-success" onclick="approvePayment('${p.id}', true)">✅ อนุมัติรับเงิน</button>`;
-        btnHtml += `<button class="btn-outline" style="border-color:var(--danger); color:var(--danger); padding: 10px;" onclick="promptReject('${p.id}')">❌ ปฏิเสธ</button>`;
+        btnHtml += `<button class="btn-outline" style="border-color:var(--danger); color:var(--danger);" onclick="promptReject('${p.id}')">❌ ปฏิเสธ</button>`;
 
         pList.innerHTML += `
           <div class="debt-item" style="border-left-color: ${isPayOff ? 'var(--purple)' : 'var(--warning)'};">
             <div class="debt-info"><h3 style="color:${isPayOff ? 'var(--purple)' : 'inherit'};">${titleText}</h3><div class="debt-meta">บัตร: ${p.cardName} | ยืนยันชำระงวดที่ ${p.paidMonths + 1}/${p.totalMonths}</div></div>
-            <div class="debt-actions"><div class="debt-amount" style="color: ${isPayOff ? 'var(--purple)' : 'var(--action-blue)'}; font-size:1.2rem; margin-bottom:10px;">${amountText}</div><div style="display:flex; gap:10px; justify-content:flex-end;">${btnHtml}</div></div>
+            <div class="debt-actions"><div class="debt-amount" style="color: ${isPayOff ? 'var(--purple)' : 'var(--info)'}; font-size:1.2rem; margin-bottom:10px;">${amountText}</div><div style="display:flex; gap:10px; justify-content:flex-end;">${btnHtml}</div></div>
           </div>`;
       });
     }
@@ -583,7 +619,7 @@
     async function viewDebtorProfile(pin) {
       const res = await apiCall('getDebtorProfile', { targetPin: pin });
       globalAdminCurrentDebtorProfile = res.items; 
-      document.getElementById('profile-user-name').innerText = `คุณป้า (รหัส ${pin})`;
+      document.getElementById('profile-user-name').innerText = `ประวัติลูกหนี้: ${res.userName} (รหัส ${pin})`;
       switchProfileTab('monthly'); 
       switchView('profile');
     }
@@ -601,7 +637,6 @@
       const selectedMonthStr = document.getElementById('admin-profile-month').value; 
       if(!selectedMonthStr) return;
       const [vYear, vMonth] = selectedMonthStr.split('-');
-      
       let monthRemainingPay = 0; let monthTotalExpected = 0; let totalOverallRemaining = 0;
 
       const list = document.getElementById('profile-debt-list-monthly'); list.innerHTML = '';
@@ -625,7 +660,7 @@
         else if (item.status === 'รอตรวจสอบปิดยอด') { statusText = '🔥 รออนุมัติปิดยอด'; badgeClass = 'status-warning'; borderColor = 'var(--purple)'; actionBtn = `<button class="btn-action btn-purple" onclick="approvePayOff('${item.id}')">อนุมัติปิดยอด</button>`; }
         else if (item.paidMonths >= targetInstallment || item.status === 'ปิดยอดแล้ว') { statusText = '✅ ชำระแล้ว'; badgeClass = 'status-success'; borderColor = 'var(--success)'; actionBtn = `<span style="color:var(--success); font-weight:bold;">จ่ายเรียบร้อย</span>`; } 
         else if (targetInstallment > item.paidMonths + 1) { statusText = '⚠️ ค้างชำระ (เลยกำหนด)'; badgeClass = 'status-danger'; borderColor = 'var(--danger)'; actionBtn = `<button class="btn-action btn-danger" onclick="approvePayment('${item.id}')">ตัดยอดแทนลูกค้า (Force)</button>`; } 
-        else { statusText = '🔵 รอชำระงวดนี้'; badgeClass = 'status-info'; borderColor = 'var(--action-blue)'; actionBtn = `<button class="btn-action btn-primary" onclick="approvePayment('${item.id}')">ตัดยอดแทนลูกค้า (Force)</button>`; }
+        else { statusText = '🔵 รอชำระงวดนี้'; badgeClass = 'status-info'; borderColor = 'var(--info)'; actionBtn = `<button class="btn-action btn-primary" onclick="approvePayment('${item.id}')">ตัดยอดแทนลูกค้า (Force)</button>`; }
 
         list.innerHTML += `
           <div class="debt-item" style="border-left-color: ${borderColor};">
@@ -633,13 +668,9 @@
             <div class="debt-actions"><div class="debt-amount">฿${money.format(item.monthlyPayment)}</div>${actionBtn}</div>
           </div>`;
       });
-      if(list.innerHTML === '') list.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 20px;">ไม่มียอดเรียกเก็บในเดือนนี้</div>`;
+      if(list.innerHTML === '') list.innerHTML = `<div class="white-card" style="text-align:center; color:var(--text-muted);">ไม่มียอดเรียกเก็บในเดือนนี้</div>`;
 
-      const summaryHTML = `
-        <div class="summary-box highlight"><span>ยอดเดือนนี้คงเหลือชำระ</span><h2 class="blue-text">฿${money.format(monthRemainingPay)}</h2></div>
-        <div class="summary-box"><span>ยอดเรียกเก็บของเดือนนี้</span><h2 style="color: var(--text-main);">฿${money.format(monthTotalExpected)}</h2></div>
-        <div class="summary-box"><span>ยอดหนี้รวมคงเหลือทั้งหมด</span><h2 class="red-text">฿${money.format(totalOverallRemaining)}</h2></div>
-      `;
+      const summaryHTML = `<div class="summary-box highlight"><span>ยอดเดือนนี้คงเหลือชำระ</span><h2 class="blue-text">฿${money.format(monthRemainingPay)}</h2></div><div class="summary-box"><span>ยอดเรียกเก็บของเดือนนี้</span><h2 style="color: var(--text-main);">฿${money.format(monthTotalExpected)}</h2></div><div class="summary-box"><span>ยอดหนี้รวมคงเหลือทั้งหมด</span><h2 class="red-text">฿${money.format(totalOverallRemaining)}</h2></div>`;
       document.getElementById('profile-monthly-summary').innerHTML = summaryHTML;
     }
 
@@ -658,69 +689,29 @@
                 <button class="btn-outline" style="border-color:var(--danger); color:var(--danger);" onclick="deleteDebt('${item.id}')">🗑️ ลบข้อมูล</button>
               </div>
             </div>
-            <div class="debt-actions" style="width:180px;"><div style="font-size: 0.85rem; color: var(--text-muted);">ตัดบัญชีเดือนละ: ฿${money.format(item.monthlyPayment)}</div><div class="debt-amount">หนี้คงเหลือ: ฿${money.format(item.remainAmt)}</div></div>
+            <div class="debt-actions"><div class="due-text" style="margin-bottom:0;">ตัดบัญชีเดือนละ: ฿${money.format(item.monthlyPayment)}</div><div class="debt-amount">หนี้คงเหลือ: ฿${money.format(item.remainAmt)}</div></div>
           </div>`;
       });
     }
 
-    // --- FORM LOGIC ---
-    function setupFormListeners() {
-      ['a', 'e'].forEach(prefix => {
-        document.getElementById(`${prefix}-amount`).addEventListener('input', () => calcForward(prefix));
-        document.getElementById(`${prefix}-interest`).addEventListener('input', () => calcForward(prefix));
-        document.getElementById(`${prefix}-months`).addEventListener('input', () => { calcForward(prefix); renderPillSelector(prefix); });
-        document.getElementById(`${prefix}-start`).addEventListener('change', () => renderPillSelector(prefix));
-        document.getElementById(`${prefix}-monthly`).addEventListener('input', () => calcBackward(prefix)); 
-      });
-    }
-
-    function calcForward(prefix) {
-      const a = parseFloat(document.getElementById(`${prefix}-amount`).value) || 0; const i = parseFloat(document.getElementById(`${prefix}-interest`).value) || 0; const m = parseInt(document.getElementById(`${prefix}-months`).value) || 0;
-      if (a > 0 && m > 0) document.getElementById(`${prefix}-monthly`).value = ((a + (a * (i / 100) * (m / 12))) / m).toFixed(2);
-    }
-    function calcBackward(prefix) {
-      const a = parseFloat(document.getElementById(`${prefix}-amount`).value) || 0; const monthly = parseFloat(document.getElementById(`${prefix}-monthly`).value) || 0; const m = parseInt(document.getElementById(`${prefix}-months`).value) || 0;
-      if (a > 0 && m > 0 && monthly > 0) {
-        const totalInterest = (monthly * m) - a;
-        if (totalInterest >= 0) document.getElementById(`${prefix}-interest`).value = (((totalInterest / a) / (m / 12)) * 100).toFixed(2);
-        else document.getElementById(`${prefix}-interest`).value = 0;
-      }
-    }
+    // --- 2-WAY BINDING MATH & PILLS ---
+    function calcForward(prefix) { const a = parseFloat(document.getElementById(`${prefix}-amount`).value) || 0; const i = parseFloat(document.getElementById(`${prefix}-interest`).value) || 0; const m = parseInt(document.getElementById(`${prefix}-months`).value) || 0; if (a > 0 && m > 0) document.getElementById(`${prefix}-monthly`).value = ((a + (a * (i / 100) * (m / 12))) / m).toFixed(2); }
+    function calcBackward(prefix) { const a = parseFloat(document.getElementById(`${prefix}-amount`).value) || 0; const monthly = parseFloat(document.getElementById(`${prefix}-monthly`).value) || 0; const m = parseInt(document.getElementById(`${prefix}-months`).value) || 0; if (a > 0 && m > 0 && monthly > 0) { const totalInterest = (monthly * m) - a; if (totalInterest >= 0) document.getElementById(`${prefix}-interest`).value = (((totalInterest / a) / (m / 12)) * 100).toFixed(2); else document.getElementById(`${prefix}-interest`).value = 0; } }
 
     function renderPillSelector(prefix) {
-      const startVal = document.getElementById(`${prefix}-start`).value; const totalMonths = parseInt(document.getElementById(`${prefix}-months`).value) || 0;
-      const container = document.getElementById(`${prefix}-paid-selector`);
-      if(!startVal || totalMonths <= 0) { container.innerHTML = '<span style="color:gray; font-size:0.85rem; padding:5px;">(กรุณาระบุเริ่มผ่อนงวดแรก และจำนวนงวดก่อน)</span>'; return; }
-      
+      const startVal = document.getElementById(`${prefix}-start`).value; const totalMonths = parseInt(document.getElementById(`${prefix}-months`).value) || 0; const container = document.getElementById(`${prefix}-paid-selector`);
+      if(!startVal || totalMonths <= 0) { container.innerHTML = '<span style="color:gray; font-size:0.85rem; padding:5px;">กรุณาระบุเริ่มผ่อนงวดแรก และจำนวนงวดก่อน</span>'; return; }
       let html = ''; const [sYear, sMonth] = startVal.split('-').map(Number); const thMonths = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
-      for(let i=0; i<totalMonths; i++) {
-        let d = new Date(sYear, sMonth - 1 + i, 1); let label = `${thMonths[d.getMonth()]} ${(d.getFullYear()+543).toString().slice(-2)}`;
-        html += `<div class="month-pill" id="${prefix}-pill-${i+1}" onclick="setPaidCount('${prefix}', ${i+1})">งวด ${i+1} (${label})</div>`;
-      }
+      for(let i=0; i<totalMonths; i++) { let d = new Date(sYear, sMonth - 1 + i, 1); let label = `${thMonths[d.getMonth()]} ${(d.getFullYear()+543).toString().slice(-2)}`; html += `<div class="month-pill" id="${prefix}-pill-${i+1}" onclick="setPaidCount('${prefix}', ${i+1})">งวด ${i+1} (${label})</div>`; }
       container.innerHTML = html; updatePillUI(prefix, parseInt(document.getElementById(`${prefix}-paid`).value) || 0);
     }
 
-    function setPaidCount(prefix, count) {
-      const currentPaid = parseInt(document.getElementById(`${prefix}-paid`).value) || 0;
-      if(currentPaid === count) count = count - 1; 
-      document.getElementById(`${prefix}-paid`).value = count; updatePillUI(prefix, count);
-    }
-    function updatePillUI(prefix, count) {
-      const totalMonths = parseInt(document.getElementById(`${prefix}-months`).value) || 0;
-      for(let i=1; i<=totalMonths; i++) {
-        let pill = document.getElementById(`${prefix}-pill-${i}`);
-        if(pill) { if(i <= count) pill.classList.add('paid'); else pill.classList.remove('paid'); }
-      }
-    }
+    function setPaidCount(prefix, count) { const currentPaid = parseInt(document.getElementById(`${prefix}-paid`).value) || 0; if(currentPaid === count) count = count - 1; document.getElementById(`${prefix}-paid`).value = count; updatePillUI(prefix, count); }
+    function updatePillUI(prefix, count) { const totalMonths = parseInt(document.getElementById(`${prefix}-months`).value) || 0; for(let i=1; i<=totalMonths; i++) { let pill = document.getElementById(`${prefix}-pill-${i}`); if(pill) { if(i <= count) pill.classList.add('paid'); else pill.classList.remove('paid'); } } }
 
     // --- ADMIN CRUD ---
     async function submitAddDebt() {
-      const payload = {
-        userPin: document.getElementById('a-user').value, cardName: document.getElementById('a-card').value, type: document.getElementById('a-type').value, 
-        amount: parseFloat(document.getElementById('a-amount').value), interest: parseFloat(document.getElementById('a-interest').value), months: parseInt(document.getElementById('a-months').value),
-        startMonth: document.getElementById('a-start').value, dueDay: parseInt(document.getElementById('a-due').value), monthly: parseFloat(document.getElementById('a-monthly').value),
-        paidMonths: parseInt(document.getElementById('a-paid').value) || 0
-      };
+      const payload = { userPin: document.getElementById('a-user').value, cardName: document.getElementById('a-card').value, type: document.getElementById('a-type').value, amount: parseFloat(document.getElementById('a-amount').value), interest: parseFloat(document.getElementById('a-interest').value), months: parseInt(document.getElementById('a-months').value), startMonth: document.getElementById('a-start').value, dueDay: parseInt(document.getElementById('a-due').value), monthly: parseFloat(document.getElementById('a-monthly').value), paidMonths: parseInt(document.getElementById('a-paid').value) || 0 };
       const res = await apiCall('addDebt', { data: payload });
       if(res.status === 'success') { Swal.fire('สำเร็จ', 'บันทึกสัญญาเข้าระบบแล้ว', 'success'); document.querySelectorAll('#view-add .form-input').forEach(i => i.value = ''); document.getElementById('a-paid').value = '0'; renderPillSelector('a'); loadAdminData(); switchView('overview'); }
     }
@@ -728,22 +719,13 @@
     function openEditModal(id) {
       const debt = globalAdminCurrentDebtorProfile.find(d => d.id === id); if(!debt) return;
       const cardSel = document.getElementById('e-card'); cardSel.innerHTML = ''; allCards.forEach(c => cardSel.innerHTML += `<option value="${c.name}">${c.name}</option>`);
-      
-      document.getElementById('e-id').value = debt.id; document.getElementById('e-card').value = debt.cardName; document.getElementById('e-type').value = debt.type;
-      document.getElementById('e-amount').value = debt.amount; document.getElementById('e-interest').value = debt.interest; document.getElementById('e-months').value = debt.totalMonths;
-      document.getElementById('e-start').value = debt.startMonth; document.getElementById('e-due').value = debt.dueDay; document.getElementById('e-monthly').value = debt.monthlyPayment; document.getElementById('e-paid').value = debt.paidMonths;
-      
+      document.getElementById('e-id').value = debt.id; document.getElementById('e-card').value = debt.cardName; document.getElementById('e-type').value = debt.type; document.getElementById('e-amount').value = debt.amount; document.getElementById('e-interest').value = debt.interest; document.getElementById('e-months').value = debt.totalMonths; document.getElementById('e-start').value = debt.startMonth; document.getElementById('e-due').value = debt.dueDay; document.getElementById('e-monthly').value = debt.monthlyPayment; document.getElementById('e-paid').value = debt.paidMonths;
       renderPillSelector('e'); document.getElementById('edit-modal').classList.add('show');
     }
     function closeEditModal() { document.getElementById('edit-modal').classList.remove('show'); }
 
     async function submitEditDebt() {
-      const payload = {
-        id: document.getElementById('e-id').value, cardName: document.getElementById('e-card').value, type: document.getElementById('e-type').value, 
-        amount: parseFloat(document.getElementById('e-amount').value), interest: parseFloat(document.getElementById('e-interest').value), months: parseInt(document.getElementById('e-months').value),
-        startMonth: document.getElementById('e-start').value, dueDay: parseInt(document.getElementById('e-due').value), monthly: parseFloat(document.getElementById('e-monthly').value),
-        paidMonths: parseInt(document.getElementById('e-paid').value) || 0
-      };
+      const payload = { id: document.getElementById('e-id').value, cardName: document.getElementById('e-card').value, type: document.getElementById('e-type').value, amount: parseFloat(document.getElementById('e-amount').value), interest: parseFloat(document.getElementById('e-interest').value), months: parseInt(document.getElementById('e-months').value), startMonth: document.getElementById('e-start').value, dueDay: parseInt(document.getElementById('e-due').value), monthly: parseFloat(document.getElementById('e-monthly').value), paidMonths: parseInt(document.getElementById('e-paid').value) || 0 };
       closeEditModal(); const res = await apiCall('editDebt', { data: payload });
       if(res.status === 'success') { Swal.fire('สำเร็จ', 'อัปเดตข้อมูลสำเร็จ', 'success'); const updatedProfile = await apiCall('getDebtorProfile', { targetPin: globalAdminCurrentDebtorProfile[0].userPin }); globalAdminCurrentDebtorProfile = updatedProfile.items; renderAdminProfileOverview(); }
     }
@@ -771,10 +753,7 @@
 
     async function promptReject(id) {
       const { value: reason } = await Swal.fire({ title: 'ปฏิเสธการชำระเงิน', input: 'select', inputOptions: { 'ไม่พบยอดเงินโอนเข้า': 'ไม่พบยอดเงินโอนเข้า', 'ยอดโอนไม่ถูกต้อง': 'ยอดโอนไม่ถูกต้อง', 'หลักฐานไม่ชัดเจน': 'หลักฐานไม่ชัดเจน', 'อื่นๆ': 'อื่นๆ (ระบุเพิ่มเติม)' }, inputPlaceholder: 'เลือกเหตุผลการปฏิเสธ', showCancelButton: true, confirmButtonColor: '#EF4444', confirmButtonText: 'ยืนยันปฏิเสธ' });
-      if (reason) {
-        let finalReason = reason; if(reason === 'อื่นๆ') { const { value: text } = await Swal.fire({ title: 'ระบุเหตุผล', input: 'text', showCancelButton: true }); if(!text) return; finalReason = text; }
-        const res = await apiCall('rejectPayment', { debtId: id, reason: finalReason }); if(res.status === 'success') { Swal.fire('สำเร็จ', 'ส่งแจ้งเตือนปฏิเสธให้ลูกค้าแล้ว', 'success'); loadAdminData(); }
-      }
+      if (reason) { let finalReason = reason; if(reason === 'อื่นๆ') { const { value: text } = await Swal.fire({ title: 'ระบุเหตุผล', input: 'text', showCancelButton: true }); if(!text) return; finalReason = text; } const res = await apiCall('rejectPayment', { debtId: id, reason: finalReason }); if(res.status === 'success') { Swal.fire('สำเร็จ', 'ส่งแจ้งเตือนปฏิเสธให้ลูกค้าแล้ว', 'success'); loadAdminData(); } }
     }
   </script>
 </body>
