@@ -4,12 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Debt Management System</title>
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
   <style>
     :root {
-      --primary: #10B981; /* สีเขียวตามเรฟ */
+      /* Theme Login (Neon/Glass) */
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --neon-primary: #00f3ff;
+      --neon-secondary: #ff00ea;
+      
+      /* Theme Dashboard (Green/Clean) */
+      --primary: #10B981; 
       --primary-hover: #059669;
       --bg-color: #F8FAFC;
       --sidebar-bg: #FFFFFF;
@@ -22,19 +29,80 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; }
+    body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; height: 100vh; margin: 0; }
     .hidden { display: none !important; }
 
-    /* --- Login Section --- */
-    #login-section { display: flex; align-items: center; justify-content: center; height: 100vh; background: var(--bg-color); }
-    .login-box { background: #FFF; padding: 40px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); text-align: center; width: 90%; max-width: 400px; }
-    .pin-input { width: 100%; padding: 15px; font-size: 2rem; font-weight: 700; text-align: center; letter-spacing: 15px; border: 2px solid var(--border); border-radius: 12px; outline: none; background: #F8FAFC; color: var(--primary); transition: 0.3s; }
-    .pin-input:focus { border-color: var(--primary); background: #FFF; }
+    /* =========================================
+       1. LOGIN SECTION (NEON & GLASSMORPHISM) 
+       ========================================= */
+    #login-wrapper {
+      position: fixed; inset: 0; z-index: 9999;
+      background: radial-gradient(circle at center, #0a0a0e 0%, #030305 100%);
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    #login-wrapper::before {
+      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: linear-gradient(45deg, #00f3ff 0%, #ff00ea 25%, #1d1d2b 50%, #0a0a0e 100%);
+      background-size: 200% 200%; animation: bg-pan 20s linear infinite; z-index: -1; opacity: 0.15; filter: blur(50px);
+    }
+    @keyframes bg-pan { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
+    
+    .particle { position: absolute; border-radius: 50%; background: white; opacity: 0.2; filter: blur(1px); animation: floating 10s ease-in-out infinite; }
+    @keyframes floating { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-30px); } }
 
-    /* --- Layout Structure --- */
+    .glass-card {
+      background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-radius: 24px; border: 1px solid var(--glass-border); box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      padding: 40px 30px; width: 90%; max-width: 400px; text-align: center; position: relative; animation: card-load 1s ease-out;
+    }
+    @keyframes card-load { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .glass-card::before {
+      content: ''; position: absolute; inset: -5px; border-radius: inherit;
+      background: linear-gradient(45deg, var(--neon-primary), var(--neon-secondary)); z-index: -1; filter: blur(15px); opacity: 0.1;
+    }
+    
+    .brand-logo {
+      width: 60px; height: 60px; border-radius: 12px; background: rgba(255, 255, 255, 0.05);
+      margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; position: relative;
+    }
+    .brand-logo::before { content: ''; position: absolute; inset: -2px; border-radius: inherit; background: linear-gradient(45deg, var(--neon-primary), var(--neon-secondary)); z-index: -1; filter: blur(5px); }
+    .brand-logo .logo-icon { width: 30px; height: 30px; border: 3px solid #FFF; border-radius: 50%; position: relative; }
+    .brand-logo .logo-icon::after { content: ''; position: absolute; top: 50%; left: 50%; width: 6px; height: 12px; border-right: 3px solid #FFF; border-bottom: 3px solid #FFF; transform: translate(-50%, -60%) rotate(45deg); }
+    
+    .system-title { font-size: 1.5rem; font-weight: 700; color: #FFF; margin-bottom: 10px; position: relative; overflow: hidden; }
+    .system-title::before { content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 2px; background: linear-gradient(90deg, var(--neon-primary), var(--neon-secondary)); transform: translateX(-50%); animation: title-underline 3s ease-in-out infinite; }
+    @keyframes title-underline { 0%, 100% { width: 0; } 50% { width: 100%; } }
+    
+    .system-sub { font-size: 0.9rem; color: #AAAAAA; margin-bottom: 30px; }
+    
+    .input-group { position: relative; width: 100%; max-width: 280px; margin: 0 auto 30px; }
+    .input-group::after { content: ''; position: absolute; left: 10px; top: 50%; width: 18px; height: 18px; background: rgba(255, 255, 255, 0.1); border-radius: 4px; transform: translateY(-50%); z-index: 1; }
+    .input-group::before { content: '🔑'; position: absolute; left: 13px; top: 51%; font-size: 14px; transform: translateY(-50%); z-index: 2; color: #FFF; opacity: 0.8; }
+    
+    .input-field {
+      width: 100%; padding: 15px 15px 15px 40px; font-size: 1rem; font-weight: 400; text-align: left;
+      border: 1px solid #444; border-radius: 12px; outline: none; transition: 0.3s;
+      background: rgba(0, 0, 0, 0.2); color: #FFF; font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .input-field:focus { border-color: var(--neon-primary); background: rgba(0, 0, 0, 0.3); box-shadow: 0 0 10px rgba(0, 243, 255, 0.3); }
+    .input-field::placeholder { color: rgba(255, 255, 255, 0.3); font-family: 'Prompt', sans-serif;}
+    
+    .login-btn {
+      width: 100%; max-width: 280px; padding: 15px; background: transparent; border: 1px solid var(--neon-primary);
+      border-radius: 12px; color: #FFF; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: 0.3s;
+      position: relative; overflow: hidden; margin-top: 10px; font-family: 'Prompt', sans-serif;
+    }
+    .login-btn::before { content: ''; position: absolute; inset: 0; background: linear-gradient(45deg, var(--neon-primary), var(--neon-secondary)); opacity: 0.3; transition: 0.3s; }
+    .login-btn:hover::before { opacity: 0.6; }
+    .login-btn .btn-text { position: relative; z-index: 1; }
+
+    /* =========================================
+       2. DASHBOARD SECTION (CLEAN & GREEN) 
+       ========================================= */
     #app-container { display: flex; height: 100vh; overflow: hidden; }
 
-    /* --- Sidebar --- */
+    /* Sidebar */
     .sidebar { width: 260px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px 0; }
     .brand { text-align: center; padding-bottom: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
     .brand h2 { color: var(--text-main); font-size: 1.2rem; margin-top: 10px; }
@@ -48,10 +116,9 @@
     .logout-btn { margin: 15px; padding: 12px; border: 1px solid var(--danger); color: var(--danger); background: transparent; border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; }
     .logout-btn:hover { background: #FEF2F2; }
 
-    /* --- Main Content --- */
+    /* Main Content */
     .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-color); overflow-y: auto; }
     
-    /* Topbar */
     .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: var(--bg-color); }
     .page-title h1 { font-size: 1.4rem; color: var(--text-main); }
     .page-subtitle { font-size: 0.85rem; color: var(--text-muted); }
@@ -63,10 +130,8 @@
     .status-online { font-size: 0.75rem; color: var(--success); display: flex; align-items: center; gap: 4px; }
     .status-online::before { content: ''; width: 8px; height: 8px; background: var(--success); border-radius: 50%; }
 
-    /* Content Area */
     .content-area { padding: 0 40px 40px; }
     
-    /* Cards & Grids */
     .white-card { background: #FFF; border-radius: 20px; border: 1px solid var(--border); padding: 30px; margin-bottom: 20px; }
     .card-border-green { border: 2px solid var(--primary); }
     
@@ -75,7 +140,6 @@
     .summary-box span { color: var(--text-muted); font-size: 0.9rem; }
     .summary-box h2 { color: var(--primary); font-size: 2rem; margin-top: 5px; }
 
-    /* Data Table (Debt Items) */
     .debt-item { border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; background: #FFF; transition: 0.2s; }
     .debt-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .debt-info h3 { font-size: 1.1rem; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
@@ -89,7 +153,6 @@
     .btn-action:hover { background: var(--primary-hover); }
     .btn-disabled { background: #FEF3C7; color: var(--warning); cursor: not-allowed; }
 
-    /* Admin Form */
     .form-group { margin-bottom: 20px; }
     .form-label { display: block; font-size: 0.95rem; font-weight: 500; margin-bottom: 8px; }
     .form-input { width: 100%; padding: 12px 15px; border: 1px solid var(--border); border-radius: 12px; font-size: 1rem; outline: none; background: #F8FAFC; }
@@ -113,19 +176,28 @@
 </head>
 <body>
 
-  <div id="login-section">
-    <div class="login-box">
-      <div style="width: 60px; height: 60px; background: var(--primary); border-radius: 16px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
-        <span style="color: white; font-size: 30px;">💰</span>
+  <div id="login-wrapper">
+    <div class="particle" style="top: 10%; left: 20%; width: 5px; height: 5px; animation-duration: 8s;"></div>
+    <div class="particle" style="top: 30%; left: 80%; width: 3px; height: 3px; animation-duration: 12s;"></div>
+    <div class="particle" style="top: 70%; left: 40%; width: 7px; height: 7px; animation-duration: 15s;"></div>
+    <div class="particle" style="top: 80%; left: 10%; width: 2px; height: 2px; animation-duration: 10s;"></div>
+    
+    <div class="glass-card">
+      <div class="brand-logo"><div class="logo-icon"></div></div>
+      <h1 class="system-title">ธนาคารตรวจสอบหนี้สิน</h1>
+      <p class="system-sub">โปรดกรอกรหัสลูกหนี้ด้านล่างเพื่อเข้าสู่ระบบ</p>
+      
+      <div class="input-group">
+        <input type="text" id="debtor-id" class="input-field" placeholder="รหัสลูกหนี้..." autocomplete="off">
       </div>
-      <h2 style="margin-bottom: 5px;">ระบบจัดการหนี้</h2>
-      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 30px;">กรุณาระบุรหัส PIN 4 หลัก</p>
-      <input type="password" id="pin-input" class="pin-input" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="••••">
+      
+      <button class="login-btn" onclick="triggerLogin()">
+        <span class="btn-text">เข้าสู่ระบบ</span>
+      </button>
     </div>
   </div>
 
   <div id="app-container" class="hidden">
-    
     <aside class="sidebar">
       <div class="brand">
         <h2>ระบบจัดการหนี้</h2>
@@ -150,7 +222,6 @@
     </aside>
 
     <main class="main-content">
-      
       <header class="topbar">
         <div class="page-title">
           <h1 id="page-title-text">ตารางชำระหนี้</h1>
@@ -166,7 +237,6 @@
       </header>
 
       <div class="content-area">
-        
         <div id="view-dashboard" class="view-section">
           <div class="white-card card-border-green">
             <div class="grid-2">
@@ -180,9 +250,7 @@
               </div>
             </div>
           </div>
-          
-          <div id="user-debt-list">
-            </div>
+          <div id="user-debt-list"></div>
         </div>
 
         <div id="view-add" class="view-section hidden admin-only">
@@ -190,87 +258,60 @@
             <h3 style="margin-bottom: 20px;">เพิ่มรายการหนี้ใหม่เข้าระบบ</h3>
             <form onsubmit="event.preventDefault(); submitAddDebt();">
               <div class="grid-2">
-                <div class="form-group">
-                  <label class="form-label">เลือกลูกหนี้ (User)</label>
-                  <select id="a-user" class="form-input" required></select>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">บัตรที่ใช้ทำรายการ</label>
-                  <select id="a-card" class="form-input" required></select>
-                </div>
+                <div class="form-group"><label class="form-label">เลือกลูกหนี้</label><select id="a-user" class="form-input" required></select></div>
+                <div class="form-group"><label class="form-label">บัตรที่ใช้</label><select id="a-card" class="form-input" required></select></div>
               </div>
               <div class="grid-2">
                 <div class="form-group">
                   <label class="form-label">ประเภท</label>
-                  <select id="a-type" class="form-input" required>
-                    <option value="ผ่อนสินค้า">ผ่อนสินค้า</option>
-                    <option value="กดเงินสด">กดเงินสด</option>
-                  </select>
+                  <select id="a-type" class="form-input" required><option value="ผ่อนสินค้า">ผ่อนสินค้า</option><option value="กดเงินสด">กดเงินสด</option></select>
                 </div>
-                <div class="form-group">
-                  <label class="form-label">ยอดจัดเต็มจำนวน (฿)</label>
-                  <input type="number" id="a-amount" class="form-input" required oninput="calc()">
-                </div>
+                <div class="form-group"><label class="form-label">ยอดเต็มจำนวน (฿)</label><input type="number" id="a-amount" class="form-input" required oninput="calc()"></div>
               </div>
               <div class="grid-2">
-                <div class="form-group">
-                  <label class="form-label">ดอกเบี้ยต่อปี (%)</label>
-                  <input type="number" id="a-interest" class="form-input" value="0" step="0.01" required oninput="calc()">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">จำนวนงวด (เดือน)</label>
-                  <input type="number" id="a-months" class="form-input" required oninput="calc()">
-                </div>
+                <div class="form-group"><label class="form-label">ดอกเบี้ยต่อปี (%)</label><input type="number" id="a-interest" class="form-input" value="0" step="0.01" required oninput="calc()"></div>
+                <div class="form-group"><label class="form-label">จำนวนงวด</label><input type="number" id="a-months" class="form-input" required oninput="calc()"></div>
               </div>
               <div class="grid-2">
-                <div class="form-group">
-                  <label class="form-label">เริ่มผ่อนชำระ (เดือน/ปี)</label>
-                  <input type="month" id="a-start" class="form-input" required>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">ชำระทุกวันที่ (1-31)</label>
-                  <input type="number" id="a-due" class="form-input" min="1" max="31" required>
-                </div>
+                <div class="form-group"><label class="form-label">เริ่มผ่อน</label><input type="month" id="a-start" class="form-input" required></div>
+                <div class="form-group"><label class="form-label">ดิวชำระ (1-31)</label><input type="number" id="a-due" class="form-input" min="1" max="31" required></div>
               </div>
-              
               <div class="form-group card-border-green" style="padding: 15px; border-radius: 12px; background: #ECFDF5;">
-                <label class="form-label" style="color: var(--primary);">ยอดชำระ/เดือน (ระบบคำนวณเบื้องต้น สามารถแก้ได้)</label>
+                <label class="form-label" style="color: var(--primary);">ยอดชำระ/เดือน (ระบบคำนวณเบื้องต้น)</label>
                 <input type="number" id="a-monthly" class="form-input" step="0.01" style="font-weight:bold; font-size: 1.2rem;" required>
               </div>
-              
               <button type="submit" class="btn-action" style="width: 100%; padding: 15px; font-size: 1.1rem;">บันทึกรายการหนี้</button>
             </form>
           </div>
         </div>
 
         <div id="view-approve" class="view-section hidden admin-only">
-          <div id="admin-pending-list">
-            </div>
+          <div id="admin-pending-list"></div>
         </div>
-
       </div>
     </main>
   </div>
 
   <script>
-    // 🛑 1. นำ URL ของ API จาก Google Apps Script มาใส่ที่นี่
-    const API_URL = "https://script.google.com/macros/s/AKfycbyFwZ6mu_Xlu1FLhLYQ_RCOuf1JsupMQYkLhuAkMYb99hc5nR1Uaujx6pkdM6S32czz/exec";
+    // 🛑 ใส่ API URL ของคุณตรงนี้
+    const API_URL = "https://script.google.com/macros/s/AKfycbxPYp92Cjdhdruk9sPBTRf7Jw0SlcH4H8u56drPxloggJGBZNRDJbAtdAA8nSkh1Bqj/exec";
     
     let currentUser = {};
     const money = new Intl.NumberFormat('th-TH', { minimumFractionDigits: 2 });
 
-    // Auto Login เมื่อกรอกครบ 4 ตัว
-    document.getElementById('pin-input').addEventListener('input', function() {
-      this.value = this.value.replace(/[^0-9]/g, '');
-      if (this.value.length === 4) {
-        this.blur();
-        processLogin(this.value);
-      }
+    // กด Enter ในช่องกรอกรหัสได้เลย
+    document.getElementById('debtor-id').addEventListener('keypress', function(e) {
+      if(e.key === 'Enter') triggerLogin();
     });
 
-    // Helper: เรียก API
+    function triggerLogin() {
+      const pin = document.getElementById('debtor-id').value.trim();
+      if(!pin) return Swal.fire('แจ้งเตือน', 'กรุณาระบุรหัสลูกหนี้ก่อนเข้าสู่ระบบ', 'warning');
+      processLogin(pin);
+    }
+
     async function apiCall(action, data = {}) {
-      Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      Swal.fire({ title: 'กำลังตรวจสอบข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
       try {
         const payload = { action: action, ...data };
         const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
@@ -283,47 +324,39 @@
       }
     }
 
-    // ฟังก์ชัน Login
     async function processLogin(pin) {
       const res = await apiCall('login', { pin: pin });
       if (res.status === 'success') {
         currentUser = res.user;
         
-        // Setup UI
-        document.getElementById('login-section').classList.add('hidden');
+        // ซ่อนหน้า Login แบบ Neon, โชว์ Dashboard แบบ Clean
+        document.getElementById('login-wrapper').classList.add('hidden');
         document.getElementById('app-container').classList.remove('hidden');
         
         document.getElementById('topbar-name').innerText = currentUser.name;
         document.getElementById('avatar-initial').innerText = currentUser.name.charAt(0).toUpperCase();
         document.getElementById('sidebar-role').innerText = `บทบาท: ${currentUser.role === 'admin' ? 'ผู้ดูแลระบบ' : 'ผู้ใช้งาน'}`;
 
-        // จัดการเมนูแอดมิน
         if (currentUser.role === 'admin') {
           document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
-          loadAdminData(); // โหลดข้อมูลฟอร์มแอดมินเผื่อไว้
+          loadAdminData(); 
         }
 
-        // โหลดหน้าแรก (ตารางชำระหนี้)
         loadUserData();
         switchView('dashboard');
-
       } else {
-        Swal.fire('ไม่สำเร็จ', res.message, 'error');
-        document.getElementById('pin-input').value = '';
+        Swal.fire({ icon: 'error', title: 'ไม่สำเร็จ', text: res.message, confirmButtonColor: '#ff00ea' });
+        document.getElementById('debtor-id').value = '';
       }
     }
 
-    // ฟังก์ชันสลับหน้าจอ (Sidebar Navigation)
     function switchView(viewName) {
-      // 1. เปลี่ยน Active Menu
       document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
       document.getElementById(`menu-${viewName}`).classList.add('active');
 
-      // 2. ซ่อน/แสดง เนื้อหา
       document.querySelectorAll('.view-section').forEach(sec => sec.classList.add('hidden'));
       document.getElementById(`view-${viewName}`).classList.remove('hidden');
 
-      // 3. เปลี่ยน Header Title
       const titleEl = document.getElementById('page-title-text');
       const subEl = document.getElementById('page-subtitle-text');
       if(viewName === 'dashboard') { titleEl.innerText = "ตารางชำระหนี้"; subEl.innerText = "สรุปข้อมูลยอดผ่อนชำระของคุณ"; loadUserData(); }
@@ -331,7 +364,6 @@
       if(viewName === 'approve') { titleEl.innerText = "อนุมัติการชำระ"; subEl.innerText = "ตรวจสอบและยืนยันการรับเงิน"; loadAdminData(); }
     }
 
-    // --- ส่วนการทำงานของ User ---
     async function loadUserData() {
       const res = await apiCall('getUserData', { pin: currentUser.pin });
       document.getElementById('sum-monthly').innerText = "฿" + money.format(res.summary.monthly);
@@ -346,16 +378,11 @@
           <div class="debt-item">
             <div class="debt-info">
               <h3>💳 ${item.cardName} <span class="debt-badge">${item.type}</span></h3>
-              <div class="debt-meta">
-                งวดที่ ${item.paidMonths}/${item.totalMonths} | เริ่ม: ${item.startMonth} | คงเหลือ: ฿${money.format(item.remainAmt)}
-              </div>
+              <div class="debt-meta">งวดที่ ${item.paidMonths}/${item.totalMonths} | เริ่ม: ${item.startMonth} | คงเหลือ: ฿${money.format(item.remainAmt)}</div>
             </div>
             <div class="debt-actions">
-              <div class="debt-amount">฿${money.format(item.monthlyPayment)} <span style="font-size:0.8rem; color:var(--text-muted); font-weight:normal;">(ดิววันที่ ${item.dueDay})</span></div>
-              ${isPending 
-                ? `<button class="btn-action btn-disabled" disabled>รอตรวจสอบ</button>`
-                : `<button class="btn-action" onclick="notifyPayment('${item.id}')">แจ้งชำระ</button>`
-              }
+              <div class="debt-amount">฿${money.format(item.monthlyPayment)} <span style="font-size:0.8rem; font-weight:normal;">(ดิววันที่ ${item.dueDay})</span></div>
+              ${isPending ? `<button class="btn-action btn-disabled" disabled>รอตรวจสอบ</button>` : `<button class="btn-action" onclick="notifyPayment('${item.id}')">แจ้งชำระ</button>`}
             </div>
           </div>
         `;
@@ -363,48 +390,39 @@
     }
 
     async function notifyPayment(id) {
-      const confirm = await Swal.fire({ title: 'ยืนยันแจ้งชำระ?', text: "คุณโอนเงินเรียบร้อยแล้วใช่หรือไม่?", icon: 'question', showCancelButton: true, confirmButtonColor: '#10B981', confirmButtonText: 'ยืนยัน' });
+      const confirm = await Swal.fire({ title: 'ยืนยันแจ้งชำระ?', icon: 'question', showCancelButton: true, confirmButtonColor: '#10B981', confirmButtonText: 'ยืนยัน' });
       if (confirm.isConfirmed) {
         const res = await apiCall('notifyPayment', { debtId: id });
         if(res.status === 'success') { Swal.fire('สำเร็จ', 'ส่งเรื่องแจ้งชำระแล้ว', 'success'); loadUserData(); }
       }
     }
 
-    // --- ส่วนการทำงานของ Admin ---
     async function loadAdminData() {
       if(currentUser.role !== 'admin') return;
       const res = await apiCall('getAdminData');
       
-      // อัปเดต Dropdown ฟอร์มเพิ่มหนี้
       const userSel = document.getElementById('a-user');
       userSel.innerHTML = '<option value="">- เลือกลูกหนี้ -</option>';
-      res.users.forEach(u => userSel.innerHTML += `<option value="${u.pin}">${u.name} (PIN: ${u.pin})</option>`);
+      res.users.forEach(u => userSel.innerHTML += `<option value="${u.pin}">${u.name} (รหัส: ${u.pin})</option>`);
 
       const cardSel = document.getElementById('a-card');
       cardSel.innerHTML = '<option value="">- เลือกบัตร -</option>';
       res.cards.forEach(c => cardSel.innerHTML += `<option value="${c.name}">${c.name}</option>`);
       
-      // อัปเดตรายการรออนุมัติ
       const pList = document.getElementById('admin-pending-list');
       pList.innerHTML = res.pending.length === 0 ? '<div class="white-card" style="text-align:center;">ไม่มีรายการรอตรวจสอบ</div>' : '';
-      
       res.pending.forEach(p => {
         pList.innerHTML += `
           <div class="debt-item">
-            <div class="debt-info">
-              <h3>👤 ลูกหนี้ PIN: ${p.userPin}</h3>
-              <div class="debt-meta">บัตร: ${p.cardName} | กำลังจ่ายงวดที่ ${p.paidMonths + 1}/${p.totalMonths}</div>
-            </div>
+            <div class="debt-info"><h3>👤 รหัสลูกหนี้: ${p.userPin}</h3><div class="debt-meta">บัตร: ${p.cardName} | งวดที่ ${p.paidMonths + 1}/${p.totalMonths}</div></div>
             <div class="debt-actions">
               <div class="debt-amount">ยอดแจ้ง: ฿${money.format(p.monthlyPayment)}</div>
               <button class="btn-action" onclick="approvePayment('${p.id}')">✅ อนุมัติ</button>
             </div>
-          </div>
-        `;
+          </div>`;
       });
     }
 
-    // คำนวณยอดอัตโนมัติ (Admin)
     function calc() {
       const a = parseFloat(document.getElementById('a-amount').value)||0;
       const i = parseFloat(document.getElementById('a-interest').value)||0;
@@ -417,17 +435,12 @@
 
     async function submitAddDebt() {
       const payload = {
-        userPin: document.getElementById('a-user').value,
-        cardName: document.getElementById('a-card').value,
-        type: document.getElementById('a-type').value,
-        amount: parseFloat(document.getElementById('a-amount').value),
-        interest: parseFloat(document.getElementById('a-interest').value),
-        months: parseInt(document.getElementById('a-months').value),
-        startMonth: document.getElementById('a-start').value,
-        dueDay: parseInt(document.getElementById('a-due').value),
+        userPin: document.getElementById('a-user').value, cardName: document.getElementById('a-card').value,
+        type: document.getElementById('a-type').value, amount: parseFloat(document.getElementById('a-amount').value),
+        interest: parseFloat(document.getElementById('a-interest').value), months: parseInt(document.getElementById('a-months').value),
+        startMonth: document.getElementById('a-start').value, dueDay: parseInt(document.getElementById('a-due').value),
         monthly: parseFloat(document.getElementById('a-monthly').value)
       };
-      
       const res = await apiCall('addDebt', { data: payload });
       if(res.status === 'success') {
         Swal.fire('สำเร็จ', 'บันทึกรายการผ่อนชำระแล้ว', 'success');
