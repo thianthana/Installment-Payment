@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Debt Banking System</title>
+  <title>Thianrawich Banking</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
   <style>
     :root {
-      /* Theme Modern Banking */
+      /* Theme Modern Banking (Dashboard) */
       --primary: #00B981; 
       --primary-hover: #059669; 
       --bg-color: #F8FAFC; 
@@ -25,36 +25,107 @@
       --success: #10B981; 
       --info: #3B82F6;
       --purple: #8B5CF6;
+      --action-blue: #2563EB;
+      
+      /* VIP Login Colors */
+      --vip-bg: #090E17;
+      --vip-card: rgba(15, 23, 42, 0.65);
+      --vip-accent: #0EA5E9;
+      --vip-accent-hover: #0284C7;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', sans-serif; }
     body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; height: 100vh; margin: 0; }
     .hidden { display: none !important; }
     
-    /* Animations */
     .fade-enter { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
     /* =========================================
-       1. LOGIN SECTION 
+       1. VIP SECURE LOGIN SECTION
        ========================================= */
-    #login-wrapper { position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease, visibility 0.5s; }
-    #login-wrapper.hide-login { opacity: 0; visibility: hidden; }
-    .secure-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.1); padding: 40px 30px; width: 90%; max-width: 380px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-    .shield-icon { width: 64px; height: 64px; background: linear-gradient(135deg, var(--info), #0ea5e9); border-radius: 18px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(56, 189, 248, 0.2); }
-    .bank-title { font-size: 1.5rem; font-weight: 700; color: #FFF; margin-bottom: 5px; }
-    .bank-sub { font-size: 0.95rem; color: #94A3B8; margin-bottom: 30px; }
+    #login-wrapper {
+      position: fixed; inset: 0; z-index: 9999;
+      background-color: var(--vip-bg);
+      background-image: radial-gradient(circle at 50% 30%, rgba(14, 165, 233, 0.15) 0%, transparent 60%);
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+    }
+    #login-wrapper.hide-login { opacity: 0; visibility: hidden; transform: scale(1.02); }
     
-    .input-wrapper { position: relative; width: 100%; margin-bottom: 25px; }
-    .input-wrapper::before { content: '🔑'; position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 2; font-size: 1.1rem; }
-    .secure-input { width: 100%; padding: 16px 50px 16px 45px; font-size: 1.1rem; font-weight: 600; text-align: left; border: 1px solid #334155; border-radius: 12px; outline: none; transition: 0.3s; background: rgba(15,23,42,0.6); color: #FFF; letter-spacing: 2px; }
-    .secure-input:focus { border-color: var(--info); background: rgba(15,23,42,0.9); }
-    .eye-toggle { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94A3B8; cursor: pointer; padding: 5px; }
+    .vip-login-card {
+      background: var(--vip-card);
+      backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      padding: 45px 35px; width: 90%; max-width: 400px; text-align: center;
+      animation: slideUpCard 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes slideUpCard { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 
-    .login-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #0284c7, #0369a1); border: none; border-radius: 12px; color: #FFF; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
-    .login-btn:disabled { opacity: 0.7; cursor: not-allowed; }
-    .btn-loader { width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #FFF; border-radius: 50%; animation: spin 1s linear infinite; display: none; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .vip-shield {
+      width: 68px; height: 68px;
+      background: linear-gradient(135deg, var(--vip-accent), #38BDF8);
+      border-radius: 20px; margin: 0 auto 24px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 12px 24px rgba(14, 165, 233, 0.3);
+      position: relative;
+    }
+    .vip-shield::after {
+      content: ''; position: absolute; inset: -4px; border-radius: 24px;
+      border: 1px solid rgba(14, 165, 233, 0.4); animation: pulse-ring 2s infinite;
+    }
+    @keyframes pulse-ring { 0% { transform: scale(0.9); opacity: 1; } 100% { transform: scale(1.3); opacity: 0; } }
+    .vip-shield svg { width: 34px; height: 34px; fill: none; stroke: white; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    
+    .vip-title { font-family: 'Plus Jakarta Sans', 'Prompt', sans-serif; font-size: 1.6rem; font-weight: 800; color: #FFFFFF; margin-bottom: 6px; letter-spacing: 0.5px; }
+    .vip-sub { font-size: 0.95rem; color: #94A3B8; margin-bottom: 30px; }
+
+    /* Scroll Bar (Role Toggle) */
+    .role-selector {
+      position: relative; display: flex; background: rgba(0, 0, 0, 0.4);
+      border-radius: 100px; padding: 5px; margin-bottom: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .role-slider {
+      position: absolute; top: 5px; bottom: 5px; left: 5px; width: calc(50% - 5px);
+      background: linear-gradient(135deg, var(--vip-accent), #2563EB);
+      border-radius: 100px; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+      box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3);
+    }
+    .role-btn {
+      position: relative; z-index: 1; flex: 1; padding: 12px 0; border: none; background: transparent;
+      color: #94A3B8; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: color 0.3s;
+    }
+    .role-btn.active { color: #FFFFFF; }
+    
+    .vip-input-wrapper { position: relative; width: 100%; margin-bottom: 25px; }
+    .vip-input-wrapper::before { content: '🔒'; position: absolute; left: 18px; top: 50%; transform: translateY(-50%); z-index: 2; font-size: 1.1rem; filter: grayscale(1) brightness(2); opacity: 0.6; }
+    .vip-input {
+      width: 100%; padding: 18px 50px 18px 50px; font-size: 1.1rem; font-weight: 600; text-align: left;
+      border: 1.5px solid rgba(255, 255, 255, 0.1); border-radius: 16px; outline: none; transition: all 0.3s;
+      background: rgba(0, 0, 0, 0.25); color: #FFF; letter-spacing: 3px; font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .vip-input:focus { border-color: var(--vip-accent); background: rgba(0, 0, 0, 0.4); box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15); }
+    .vip-input::placeholder { color: #64748B; letter-spacing: normal; font-family: 'Prompt', sans-serif; font-size: 0.95rem; font-weight: 400; }
+    
+    .vip-eye { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #64748B; cursor: pointer; padding: 5px; transition: 0.2s;}
+    .vip-eye:hover { color: #FFF; }
+
+    .vip-login-btn {
+      width: 100%; padding: 18px; background: linear-gradient(135deg, var(--vip-accent), var(--vip-accent-hover));
+      border: none; border-radius: 16px; color: #FFF; font-size: 1.1rem; font-weight: 600; cursor: pointer;
+      transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;
+      box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+    }
+    .vip-login-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(14, 165, 233, 0.4); filter: brightness(1.1); }
+    .vip-login-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    
+    .vip-loader { width: 24px; height: 24px; animation: vip-rotate 2s linear infinite; display: none; }
+    .vip-loader circle { stroke: #FFF; stroke-linecap: round; animation: vip-dash 1.5s ease-in-out infinite; }
+    @keyframes vip-rotate { 100% { transform: rotate(360deg); } }
+    @keyframes vip-dash { 0% { stroke-dasharray: 1, 150; stroke-dashoffset: 0; } 50% { stroke-dasharray: 90, 150; stroke-dashoffset: -35; } 100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; } }
 
     /* =========================================
        2. DASHBOARD LAYOUT 
@@ -128,7 +199,7 @@
     .debt-info h3 { font-size: 1.15rem; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--text-main);}
     .debt-meta { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;}
     
-    .debt-actions { text-align: right; min-width: 200px; display: flex; flex-direction: column; justify-content: center; align-items: flex-end;}
+    .debt-actions { text-align: right; min-width: 220px; display: flex; flex-direction: column; justify-content: center; align-items: flex-end;}
     .debt-amount { font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; font-family: 'Plus Jakarta Sans', sans-serif;}
     .due-text { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; }
     
@@ -142,11 +213,11 @@
     
     .btn-action { color: #FFF; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; width: 100%; font-size: 0.95rem; font-family: 'Prompt';}
     .btn-action:hover { transform: translateY(-1px); filter: brightness(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.15);}
-    .btn-primary { background: var(--info); }
-    .btn-danger  { background: var(--danger); }
-    .btn-success { background: var(--success); }
-    .btn-purple  { background: var(--purple); } 
-    .btn-disabled { background: #F1F5F9; color: #94A3B8; cursor: not-allowed; }
+    .btn-primary { background: var(--action-blue); box-shadow: 0 4px 10px rgba(37,99,235,0.2); }
+    .btn-danger  { background: var(--danger); box-shadow: 0 4px 10px rgba(239,68,68,0.2); }
+    .btn-success { background: var(--success); box-shadow: 0 4px 10px rgba(16,185,129,0.2); }
+    .btn-purple  { background: var(--purple); box-shadow: 0 4px 10px rgba(139,92,246,0.2); } 
+    .btn-disabled { background: #F1F5F9; color: #94A3B8; cursor: not-allowed; box-shadow: none; }
     .btn-disabled:hover { transform: none; filter: none; box-shadow: none;}
     
     .btn-outline { border: 1px solid var(--border); background: #FFF; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; font-weight: 600; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px;}
@@ -202,20 +273,31 @@
 <body>
 
   <div id="login-wrapper">
-    <div class="secure-card">
-      <div class="shield-icon">
-        <svg viewBox="0 0 24 24" width="32" stroke="white" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    <div class="vip-login-card">
+      <div class="vip-shield">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
       </div>
-      <h1 class="bank-title">ธนาคารตรวจสอบหนี้สิน</h1>
-      <p class="bank-sub">โปรดเข้าสู่ระบบเพื่อดำเนินการต่อ</p>
-      <div class="input-wrapper">
-        <input type="password" id="debtor-id" class="secure-input" placeholder="รหัสผ่านเข้าสู่ระบบ" autocomplete="off">
-        <button type="button" class="eye-toggle" onclick="togglePassword()">
-          <svg id="eye-icon-svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+      <h1 class="vip-title">Thianrawich Banking</h1>
+      <p class="vip-sub">โปรดเข้าสู่ระบบเพื่อดำเนินการต่อ</p>
+      
+      <div class="role-selector">
+        <div class="role-slider" id="role-slider"></div>
+        <button class="role-btn active" id="btn-customer" onclick="selectRole('customer')">ลูกค้าธนาคาร</button>
+        <button class="role-btn" id="btn-admin" onclick="selectRole('admin')">เจ้าหน้าที่ธนาคาร</button>
+      </div>
+
+      <div class="vip-input-wrapper">
+        <input type="password" id="debtor-id" class="vip-input" placeholder="รหัสลูกค้า (PIN 4 หลัก)" autocomplete="off">
+        <button type="button" class="vip-eye" onclick="togglePassword()">
+          <svg id="eye-icon-svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>
+          </svg>
         </button>
       </div>
-      <button class="login-btn" id="login-btn" onclick="triggerLogin()">
-        <div class="btn-loader" id="btn-loader"></div><span class="btn-text" id="btn-text">เข้าสู่ระบบอย่างปลอดภัย</span>
+      
+      <button class="vip-login-btn" id="login-btn" onclick="triggerLogin()">
+        <svg class="vip-loader" id="btn-loader" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none"></circle></svg>
+        <span id="btn-text">เข้าสู่ระบบอย่างปลอดภัย</span>
       </button>
     </div>
   </div>
@@ -223,15 +305,17 @@
   <div id="app-container" class="hidden">
     <aside class="sidebar">
       <div class="brand">
-        <h2>Debt Banking</h2>
+        <h2>Thianrawich Banking</h2>
         <div class="role-badge" id="sidebar-role">บทบาท: -</div>
       </div>
+      
       <div class="nav-menu">
         <button class="nav-item active" id="menu-dashboard" onclick="switchView('dashboard')"><span>📊</span> บัญชีของฉัน</button>
         <button class="nav-item hidden admin-only" id="menu-overview" onclick="switchView('overview')"><span>👥</span> ภาพรวมพอร์ตลูกหนี้</button>
         <button class="nav-item hidden admin-only" id="menu-add" onclick="switchView('add')"><span>➕</span> เพิ่มสัญญาหนี้</button>
         <button class="nav-item hidden admin-only" id="menu-approve" onclick="switchView('approve')">
-          <span>🔔</span> รายการตรวจสอบ <span id="pending-badge" class="badge-notification hidden">0</span>
+          <span>🔔</span> รายการตรวจสอบ 
+          <span id="pending-badge" class="badge-notification hidden">0</span>
         </button>
       </div>
       <button class="logout-btn" onclick="logout()"><span>🚪</span> ออกจากระบบ</button>
@@ -252,7 +336,6 @@
       <div class="content-area">
         
         <div id="view-dashboard" class="view-section fade-enter">
-          
           <div class="section-header">
             <h3>📅 เลือกรอบบิลตรวจสอบ</h3>
             <div class="month-picker-container">
@@ -260,29 +343,22 @@
             </div>
           </div>
           
-          <div id="user-monthly-summary" class="grid-3" style="margin-bottom: 30px;">
-             </div>
-          
+          <div id="user-monthly-summary" class="grid-3" style="margin-bottom: 30px;"></div>
           <div id="user-debt-list"></div>
         </div>
 
         <div id="view-overview" class="view-section hidden admin-only fade-enter">
-          <div class="section-header">
-            <h3>ภาพรวมพอร์ตลูกหนี้ทั้งหมด</h3>
-          </div>
+          <div class="section-header"><h3>ภาพรวมพอร์ตลูกหนี้ทั้งหมด</h3></div>
           <div class="grid-2" style="margin-bottom: 30px;">
             <div class="summary-box"><span>ยอดเรียกเก็บเดือนนี้ (ทั้งพอร์ต)</span><h2 id="bank-expected-monthly" class="green-text">฿0.00</h2></div>
             <div class="summary-box"><span>ยอดหนี้ลูกหนี้คงเหลือสุทธิ</span><h2 id="bank-total-remaining" class="red-text">฿0.00</h2></div>
           </div>
-          
           <h3 style="margin-bottom: 15px; font-size: 1.1rem; font-weight:700;">รายชื่อลูกหนี้ (คลิกเพื่อดูข้อมูลเชิงลึก)</h3>
           <div id="admin-debtor-list"></div>
         </div>
 
         <div id="view-profile" class="view-section hidden admin-only fade-enter">
-          <button onclick="switchView('overview')" style="background: none; border: none; color: var(--primary); cursor: pointer; margin-bottom: 15px; font-weight: 600; font-size: 1rem; display: flex; align-items:center; gap:5px;">
-            ← กลับไปหน้าภาพรวม
-          </button>
+          <button onclick="switchView('overview')" style="background: none; border: none; color: var(--primary); cursor: pointer; margin-bottom: 15px; font-weight: 600; font-size: 1rem; display: flex; align-items:center; gap:5px;">← กลับไปหน้าภาพรวม</button>
           
           <div class="white-card">
             <div class="profile-header">
@@ -306,10 +382,7 @@
                   <input type="month" id="admin-profile-month" class="month-input" onchange="renderAdminProfileMonthly()">
                 </div>
               </div>
-              
-              <div id="profile-monthly-summary" class="grid-3" style="margin-bottom: 30px;">
-                 </div>
-
+              <div id="profile-monthly-summary" class="grid-3" style="margin-bottom: 30px;"></div>
               <div id="profile-debt-list-monthly"></div>
             </div>
 
@@ -321,21 +394,21 @@
 
         <div id="view-add" class="view-section hidden admin-only fade-enter">
           <div class="white-card">
-            <h3 style="margin-bottom: 25px; color:var(--text-main); font-size: 1.4rem;">สร้างสัญญาหนี้ใหม่</h3>
+            <h3 style="margin-bottom: 25px; color:var(--text-main); font-size: 1.5rem;">เพิ่มสัญญาหนี้</h3>
             <form onsubmit="event.preventDefault(); submitAddDebt();">
               <div class="grid-2"><div class="form-group"><label class="form-label">เลือกลูกหนี้</label><select id="a-user" class="form-input" required></select></div><div class="form-group"><label class="form-label">บัตรที่ใช้</label><select id="a-card" class="form-input" required></select></div></div>
               <div class="grid-2"><div class="form-group"><label class="form-label">ประเภท</label><select id="a-type" class="form-input" required><option value="ผ่อนสินค้า">ผ่อนสินค้า</option><option value="กดเงินสด">กดเงินสด</option></select></div><div class="form-group"><label class="form-label">ยอดจัดเต็มจำนวน (฿)</label><input type="number" id="a-amount" class="form-input" required oninput="calcForward('a')"></div></div>
               <div class="grid-2"><div class="form-group"><label class="form-label">ดอกเบี้ยต่อปี (%)</label><input type="number" id="a-interest" class="form-input" value="0" step="0.01" required oninput="calcForward('a')"></div><div class="form-group"><label class="form-label">จำนวนงวด (เดือน)</label><input type="number" id="a-months" class="form-input" required oninput="calcForward('a'); renderPillSelector('a');"></div></div>
               <div class="grid-2"><div class="form-group"><label class="form-label">เริ่มผ่อนงวดแรก (ดด/ปปปป)</label><input type="month" id="a-start" class="form-input" required onchange="renderPillSelector('a')"></div><div class="form-group"><label class="form-label">ดิวชำระทุกวันที่ (1-31)</label><input type="number" id="a-due" class="form-input" min="1" max="31" required></div></div>
               
-              <div class="form-group" style="padding: 20px; border-radius: 16px; background: #F8FAFC; border: 1px solid var(--border);">
+              <div class="form-group" style="padding: 20px; border-radius: 12px; background: #F8FAFC; border: 1px solid var(--border);">
                 <label class="form-label" style="margin-bottom:0;">บันทึกยอดชำระย้อนหลัง</label>
                 <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">คลิกที่ปุ่มเดือนเพื่อระบุว่าจ่ายถึงเดือนไหนแล้ว (ระบบจะบันทึกสถานะให้ตรงกัน)</div>
                 <input type="hidden" id="a-paid" value="0">
                 <div id="a-paid-selector" class="pill-container"><span style="color:gray; font-size:0.85rem; padding: 5px;">(กรุณาระบุเริ่มผ่อนงวดแรก และจำนวนงวดก่อน)</span></div>
               </div>
 
-              <div class="form-group" style="padding: 25px; border-radius: 16px; background: #F0FDF4; border: 2px solid var(--primary); text-align:center;">
+              <div class="form-group" style="padding: 25px; border-radius: 16px; background: #ECFDF5; border: 2px solid var(--primary); text-align:center;">
                 <label class="form-label" style="color: var(--primary); font-size:1.1rem;">ยอดชำระต่อเดือน <br><span style="font-size:0.8rem; font-weight:normal;">(หากแก้ไขยอดชำระ ระบบจะคำนวณดอกเบี้ยกลับให้อัตโนมัติ)</span></label>
                 <input type="number" id="a-monthly" class="form-input" step="0.01" style="font-weight:800; font-size: 2rem; color:var(--primary); text-align:center; background: transparent; border:none; box-shadow:none; padding:0;" required oninput="calcBackward('a')">
               </div>
@@ -345,9 +418,7 @@
         </div>
 
         <div id="view-approve" class="view-section hidden admin-only fade-enter">
-          <div class="section-header">
-            <h3>รายการรอตรวจสอบ</h3>
-          </div>
+          <div class="section-header"><h3>รายการรอตรวจสอบ</h3></div>
           <div id="admin-pending-list"></div>
         </div>
 
@@ -406,8 +477,27 @@
       document.getElementById('user-month-selector').value = currentMonthVal;
       document.getElementById('admin-profile-month').value = currentMonthVal;
       
-      setupActivityListeners(); checkSession();
+      setupActivityListeners(); checkSession(); setupFormListeners();
     };
+
+    // --- Role Selector Logic (VIP Scroll Toggle) ---
+    function selectRole(role) {
+      const slider = document.getElementById('role-slider');
+      const btnCus = document.getElementById('btn-customer');
+      const btnAdm = document.getElementById('btn-admin');
+      const input = document.getElementById('debtor-id');
+
+      if(role === 'customer') {
+        slider.style.transform = 'translateX(0)';
+        btnCus.classList.add('active'); btnAdm.classList.remove('active');
+        input.placeholder = "รหัสลูกค้า (PIN 4 หลัก)";
+      } else {
+        slider.style.transform = 'translateX(100%)';
+        btnAdm.classList.add('active'); btnCus.classList.remove('active');
+        input.placeholder = "รหัสเจ้าหน้าที่ธนาคาร";
+      }
+      input.value = ""; input.focus();
+    }
 
     function setupActivityListeners() { ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt => document.addEventListener(evt, resetInactivityTimer, true)); }
     function resetInactivityTimer() { if (!currentUser || !currentUser.pin || isWarningShowing) return; localStorage.setItem('debtBankLastActivity', Date.now().toString()); startInactivityTimer(); }
@@ -430,13 +520,15 @@
     function saveSession(user) { localStorage.setItem('debtBankUser', JSON.stringify(user)); localStorage.setItem('debtBankLastActivity', Date.now().toString()); }
     function clearSession() { localStorage.removeItem('debtBankUser'); localStorage.removeItem('debtBankLastActivity'); clearTimeout(inactivityTimer); }
     function logout() { clearSession(); location.reload(); }
+    
     function togglePassword() { const input = document.getElementById('debtor-id'); const svg = document.getElementById('eye-icon-svg'); if (input.type === 'password') { input.type = 'text'; svg.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>'; } else { input.type = 'password'; svg.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>'; } }
     document.getElementById('debtor-id').addEventListener('keypress', function(e) { if(e.key === 'Enter') triggerLogin(); });
 
     async function apiCall(action, data = {}) {
-      Swal.fire({ title: 'กำลังสื่อสารระบบธนาคาร...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-      try { const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: action, ...data }) }); const result = await res.json(); Swal.close(); return result; } 
-      catch (e) { Swal.close(); Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error'); throw e; }
+      // ปิด Swal เดิมทั้งหมดถ้ามีอยู่ เพื่อไม่ให้มันทับซ้อนกันตอนเปลี่ยนหน้า
+      Swal.close(); 
+      try { const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: action, ...data }) }); const result = await res.json(); return result; } 
+      catch (e) { Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error'); throw e; }
     }
 
     async function triggerLogin() {
@@ -447,9 +539,37 @@
 
       try {
         const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'login', pin: pin }) }); const data = await res.json();
-        if (data.status === 'success') { currentUser = data.user; saveSession(currentUser); setTimeout(() => { transitionToDashboard(); }, 600); } 
-        else { btn.disabled = false; btnText.innerText = "เข้าสู่ระบบอย่างปลอดภัย"; loader.style.display = "none"; Swal.fire({ icon: 'error', title: 'ไม่สำเร็จ', text: data.message }); }
-      } catch (e) { btn.disabled = false; btnText.innerText = "เข้าสู่ระบบ"; loader.style.display = "none"; Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อได้', 'error'); }
+        
+        btn.disabled = false; btnText.innerText = "เข้าสู่ระบบอย่างปลอดภัย"; loader.style.display = "none";
+        
+        if (data.status === 'success') { 
+          currentUser = data.user; saveSession(currentUser); 
+          
+          if(currentUser.role === 'admin') {
+            Swal.fire({
+              title: '<span style="color:#0EA5E9">Secure Connection</span>',
+              html: '<div style="margin-top:10px; font-size:1.1rem; color:#94A3B8;">กำลังเข้ารหัสรักษาความปลอดภัยธนาคาร<br>โปรดรอสักครู่...</div>',
+              showConfirmButton: false,
+              timer: 2500,
+              allowOutsideClick: false,
+              background: '#1E293B',
+              color: '#FFF',
+              didOpen: () => { Swal.showLoading(); }
+            }).then(() => { transitionToDashboard(); });
+          } else {
+             Swal.fire({
+              title: '<span style="color:#10B981">เข้าสู่ระบบสำเร็จ</span>',
+              html: `<div style="margin-top:10px; font-size:1.2rem; color:#475569;">ยินดีต้อนรับลูกค้า<br><b style="color:#1E293B; font-size:1.4rem;">คุณ ${currentUser.name}</b></div>`,
+              icon: 'success',
+              showConfirmButton: false,
+              timer: 2000,
+              allowOutsideClick: false
+            }).then(() => { transitionToDashboard(); });
+          }
+
+        } 
+        else { Swal.fire({ icon: 'error', title: 'การตรวจสอบล้มเหลว', text: data.message }); }
+      } catch (e) { btn.disabled = false; btnText.innerText = "เข้าสู่ระบบอย่างปลอดภัย"; loader.style.display = "none"; Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อได้', 'error'); }
     }
 
     function transitionToDashboard(instant = false) {
@@ -460,7 +580,7 @@
         if (currentUser.role === 'admin') { document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden')); switchView('overview'); } 
         else { fetchAndRenderUserData(); switchView('dashboard'); } startInactivityTimer();
       };
-      if (instant) doTransition(); else { document.getElementById('login-wrapper').classList.add('hide-login'); setTimeout(doTransition, 500); }
+      if (instant) doTransition(); else { document.getElementById('login-wrapper').classList.add('hide-login'); setTimeout(doTransition, 600); }
     }
 
     function switchView(viewName) {
@@ -478,9 +598,11 @@
       if(viewName === 'approve') { titleEl.innerText = "รายการรอตรวจสอบ"; subEl.innerText = "ตรวจสอบและยืนยันการรับเงินจากลูกหนี้"; loadAdminData(); }
     }
 
-    // --- USER DASHBOARD (Triple Summary & Smart Notice) ---
+    // --- USER DASHBOARD ---
     async function fetchAndRenderUserData() {
+      Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
       const res = await apiCall('getUserData', { pin: currentUser.pin });
+      Swal.close();
       globalUserDebts = res.items; 
       renderUserDashboard();
     }
@@ -490,9 +612,7 @@
       if(!selectedMonthStr) return;
       const [vYear, vMonth] = selectedMonthStr.split('-');
       
-      let monthRemainingPay = 0;
-      let monthTotalExpected = 0;
-      let totalOverallRemaining = 0;
+      let monthRemainingPay = 0; let monthTotalExpected = 0; let totalOverallRemaining = 0;
       
       const list = document.getElementById('user-debt-list'); list.innerHTML = '';
       const sortedDebts = [...globalUserDebts].sort((a, b) => a.dueDay - b.dueDay);
@@ -501,7 +621,6 @@
         const [sYear, sMonth] = item.startMonth.split('-');
         const targetInstallment = (parseInt(vYear) - parseInt(sYear)) * 12 + (parseInt(vMonth) - parseInt(sMonth)) + 1;
         
-        // Triple Summary Math
         totalOverallRemaining += item.remainAmt;
         if (targetInstallment > 0 && targetInstallment <= item.totalMonths) {
           monthTotalExpected += item.monthlyPayment;
@@ -517,9 +636,9 @@
         
         let dueNoticeHtml = '';
         if (item.paidMonths < targetInstallment && item.status !== 'ปิดยอดแล้ว' && !item.status.includes('รอตรวจสอบ')) {
-          if (diffDays > 0 && diffDays <= 5) dueNoticeHtml = `<span style="color: var(--warning); font-size: 0.8rem; font-weight: 600;">⏰ ใกล้กำหนด (เหลือ ${diffDays} วัน)</span>`;
-          else if (diffDays === 0) dueNoticeHtml = `<span style="color: var(--danger); font-size: 0.8rem; font-weight: 600;">🚨 ครบกำหนดวันนี้!</span>`;
-          else if (diffDays < 0) dueNoticeHtml = `<span style="color: var(--danger); font-size: 0.8rem; font-weight: 600;">⚠️ เลยกำหนดชำระ ${Math.abs(diffDays)} วัน</span>`;
+          if (diffDays > 0 && diffDays <= 5) dueNoticeHtml = `<span style="color: var(--warning); font-weight: 600;">⏰ ใกล้กำหนด (เหลือ ${diffDays} วัน)</span>`;
+          else if (diffDays === 0) dueNoticeHtml = `<span style="color: var(--danger); font-weight: 600;">🚨 ครบกำหนดวันนี้!</span>`;
+          else if (diffDays < 0) dueNoticeHtml = `<span style="color: var(--danger); font-weight: 600;">⚠️ เลยกำหนดชำระ ${Math.abs(diffDays)} วัน</span>`;
         }
 
         let statusText = '', badgeClass = '', borderColor = '', actionButton = '', payoffButton = '';
@@ -529,7 +648,7 @@
         else if (item.status === 'รอตรวจสอบปิดยอด') { statusText = '⏳ แจ้งปิดยอดแล้ว'; badgeClass = 'status-warning'; borderColor = 'var(--warning)'; actionButton = `<button class="btn-action btn-disabled" disabled>รอตรวจสอบปิดยอด</button>`; }
         else if (item.paidMonths >= targetInstallment || item.status === 'ปิดยอดแล้ว') { statusText = '✅ ชำระแล้ว'; badgeClass = 'status-success'; borderColor = 'var(--success)'; actionButton = `<button class="btn-action btn-disabled" disabled>ชำระเรียบร้อย</button>`; } 
         else if (targetInstallment > item.paidMonths + 1) { statusText = '⚠️ ค้างชำระ (เลยกำหนด)'; badgeClass = 'status-danger'; borderColor = 'var(--danger)'; actionButton = `<button class="btn-action btn-danger" onclick="notifyPayment('${item.id}')">แจ้งชำระ (บิลค้าง)</button>`; } 
-        else { statusText = '🔵 รอชำระงวดนี้'; badgeClass = 'status-info'; borderColor = 'var(--info)'; actionButton = `<button class="btn-action btn-primary" onclick="notifyPayment('${item.id}')">แจ้งชำระเงินงวดนี้</button>`; }
+        else { statusText = '🔵 รอชำระงวดนี้'; badgeClass = 'status-info'; borderColor = 'var(--action-blue)'; actionButton = `<button class="btn-action btn-primary" onclick="notifyPayment('${item.id}')">แจ้งชำระเงินงวดนี้</button>`; }
 
         if (item.remainAmt > 0 && !item.status.includes('รอตรวจสอบ') && item.status !== 'ปิดยอดแล้ว') {
           payoffButton = `<button class="btn-outline" style="width:100%; border-color:var(--purple); color:var(--purple); margin-top:8px;" onclick="notifyPayOff('${item.id}', ${item.remainAmt})">✨ แจ้งปิดยอด (฿${money.format(item.remainAmt)})</button>`;
@@ -560,7 +679,7 @@
 
     async function notifyPayment(id) {
       const confirm = await Swal.fire({ title: 'ยืนยันแจ้งโอนเงิน?', text: "การจ่ายค่างวดปกติ (1 งวด)", icon: 'question', showCancelButton: true, confirmButtonColor: '#10B981', confirmButtonText: 'ยืนยันแจ้งชำระ' });
-      if (confirm.isConfirmed) { const res = await apiCall('notifyPayment', { debtId: id }); if(res.status === 'success') { Swal.fire('สำเร็จ', 'ส่งเรื่องแจ้งชำระแล้ว รอแอดมินอนุมัติ', 'success'); fetchAndRenderUserData(); } }
+      if (confirm.isConfirmed) { Swal.fire({ title: 'กำลังดำเนินการ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() }); const res = await apiCall('notifyPayment', { debtId: id }); if(res.status === 'success') { Swal.fire('สำเร็จ', 'ส่งเรื่องแจ้งชำระแล้ว รอแอดมินอนุมัติ', 'success'); fetchAndRenderUserData(); } }
     }
     
     async function notifyPayOff(id, amount) {
@@ -569,13 +688,15 @@
         html: `คุณต้องการที่จะปิดยอดจำนวนนี้ <br><b style="font-size:1.8rem; color:var(--purple); display:block; margin: 15px 0;">฿${money.format(amount)}</b><p style="font-size:0.9rem; color:var(--text-muted);">โปรดรอให้ทางเจ้าหน้าที่ธนาคารตรวจสอบยอดปิดสักครู่และจะแจ้งเตือนท่านยอดชำระสุทธิอีกครั้ง</p>`, 
         icon: 'warning', showCancelButton: true, confirmButtonColor: '#8B5CF6', confirmButtonText: 'ยืนยันปิดยอด', cancelButtonText: 'ยกเลิก' 
       });
-      if (confirm.isConfirmed) { const res = await apiCall('notifyPayOff', { debtId: id }); if(res.status === 'success') { Swal.fire('สำเร็จ', 'ส่งคำร้องขอปิดยอดให้ธนาคารแล้ว', 'success'); fetchAndRenderUserData(); } }
+      if (confirm.isConfirmed) { Swal.fire({ title: 'กำลังดำเนินการ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() }); const res = await apiCall('notifyPayOff', { debtId: id }); if(res.status === 'success') { Swal.fire('สำเร็จ', 'ส่งคำร้องขอปิดยอดให้ธนาคารแล้ว', 'success'); fetchAndRenderUserData(); } }
     }
 
     // --- ADMIN OVERVIEW ---
     async function loadAdminData() {
       if(currentUser.role !== 'admin') return;
+      Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
       const res = await apiCall('getAdminData');
+      Swal.close();
       allCards = res.cards;
       
       const badge = document.getElementById('pending-badge');
@@ -594,7 +715,7 @@
         debtorList.innerHTML += `
           <div class="debt-item clickable" style="border-left-color: var(--primary);" onclick="viewDebtorProfile('${d.pin}')">
             <div class="debt-info"><h3>👤 ${d.name} <span class="status-badge status-gray">รหัส: ${d.pin}</span></h3><div class="debt-meta">สถานะบัญชี: ${d.activeDebts} สัญญาที่กำลังผ่อนชำระ</div></div>
-            <div class="debt-actions"><div style="font-size: 0.85rem; color: var(--text-muted);">เรียกเก็บต่อเดือน: ฿${money.format(d.monthlyExpected)}</div><div class="debt-amount" style="color: var(--danger); font-size: 1.2rem;">ยอดคงค้างพอร์ต: ฿${money.format(d.totalRemaining)}</div></div>
+            <div class="debt-actions"><div class="due-text" style="margin-bottom:2px;">เรียกเก็บต่อเดือน: ฿${money.format(d.monthlyExpected)}</div><div class="debt-amount" style="color: var(--danger);">ยอดคงค้างพอร์ต: ฿${money.format(d.totalRemaining)}</div></div>
           </div>`;
       });
 
@@ -610,14 +731,16 @@
         pList.innerHTML += `
           <div class="debt-item" style="border-left-color: ${isPayOff ? 'var(--purple)' : 'var(--warning)'};">
             <div class="debt-info"><h3 style="color:${isPayOff ? 'var(--purple)' : 'inherit'};">${titleText}</h3><div class="debt-meta">บัตร: ${p.cardName} | ยืนยันชำระงวดที่ ${p.paidMonths + 1}/${p.totalMonths}</div></div>
-            <div class="debt-actions"><div class="debt-amount" style="color: ${isPayOff ? 'var(--purple)' : 'var(--info)'}; font-size:1.2rem; margin-bottom:10px;">${amountText}</div><div style="display:flex; gap:10px; justify-content:flex-end;">${btnHtml}</div></div>
+            <div class="debt-actions"><div class="debt-amount" style="color: ${isPayOff ? 'var(--purple)' : 'var(--action-blue)'}; margin-bottom:10px;">${amountText}</div><div style="display:flex; gap:10px; justify-content:flex-end;">${btnHtml}</div></div>
           </div>`;
       });
     }
 
     // --- ADMIN PROFILE TABS ---
     async function viewDebtorProfile(pin) {
+      Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
       const res = await apiCall('getDebtorProfile', { targetPin: pin });
+      Swal.close();
       globalAdminCurrentDebtorProfile = res.items; 
       document.getElementById('profile-user-name').innerText = `ประวัติลูกหนี้: ${res.userName} (รหัส ${pin})`;
       switchProfileTab('monthly'); 
@@ -637,6 +760,7 @@
       const selectedMonthStr = document.getElementById('admin-profile-month').value; 
       if(!selectedMonthStr) return;
       const [vYear, vMonth] = selectedMonthStr.split('-');
+      
       let monthRemainingPay = 0; let monthTotalExpected = 0; let totalOverallRemaining = 0;
 
       const list = document.getElementById('profile-debt-list-monthly'); list.innerHTML = '';
@@ -668,7 +792,7 @@
             <div class="debt-actions"><div class="debt-amount">฿${money.format(item.monthlyPayment)}</div>${actionBtn}</div>
           </div>`;
       });
-      if(list.innerHTML === '') list.innerHTML = `<div class="white-card" style="text-align:center; color:var(--text-muted);">ไม่มียอดเรียกเก็บในเดือนนี้</div>`;
+      if(list.innerHTML === '') list.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding: 20px;">ไม่มียอดเรียกเก็บในเดือนนี้</div>`;
 
       const summaryHTML = `<div class="summary-box highlight"><span>ยอดเดือนนี้คงเหลือชำระ</span><h2 class="blue-text">฿${money.format(monthRemainingPay)}</h2></div><div class="summary-box"><span>ยอดเรียกเก็บของเดือนนี้</span><h2 style="color: var(--text-main);">฿${money.format(monthTotalExpected)}</h2></div><div class="summary-box"><span>ยอดหนี้รวมคงเหลือทั้งหมด</span><h2 class="red-text">฿${money.format(totalOverallRemaining)}</h2></div>`;
       document.getElementById('profile-monthly-summary').innerHTML = summaryHTML;
@@ -689,12 +813,22 @@
                 <button class="btn-outline" style="border-color:var(--danger); color:var(--danger);" onclick="deleteDebt('${item.id}')">🗑️ ลบข้อมูล</button>
               </div>
             </div>
-            <div class="debt-actions"><div class="due-text" style="margin-bottom:0;">ตัดบัญชีเดือนละ: ฿${money.format(item.monthlyPayment)}</div><div class="debt-amount">หนี้คงเหลือ: ฿${money.format(item.remainAmt)}</div></div>
+            <div class="debt-actions" style="width:180px;"><div class="due-text" style="margin-bottom:2px;">ตัดบัญชีเดือนละ: ฿${money.format(item.monthlyPayment)}</div><div class="debt-amount">หนี้คงเหลือ: ฿${money.format(item.remainAmt)}</div></div>
           </div>`;
       });
     }
 
-    // --- 2-WAY BINDING MATH & PILLS ---
+    // --- FORM LOGIC ---
+    function setupFormListeners() {
+      ['a', 'e'].forEach(prefix => {
+        document.getElementById(`${prefix}-amount`).addEventListener('input', () => calcForward(prefix));
+        document.getElementById(`${prefix}-interest`).addEventListener('input', () => calcForward(prefix));
+        document.getElementById(`${prefix}-months`).addEventListener('input', () => { calcForward(prefix); renderPillSelector(prefix); });
+        document.getElementById(`${prefix}-start`).addEventListener('change', () => renderPillSelector(prefix));
+        document.getElementById(`${prefix}-monthly`).addEventListener('input', () => calcBackward(prefix)); 
+      });
+    }
+
     function calcForward(prefix) { const a = parseFloat(document.getElementById(`${prefix}-amount`).value) || 0; const i = parseFloat(document.getElementById(`${prefix}-interest`).value) || 0; const m = parseInt(document.getElementById(`${prefix}-months`).value) || 0; if (a > 0 && m > 0) document.getElementById(`${prefix}-monthly`).value = ((a + (a * (i / 100) * (m / 12))) / m).toFixed(2); }
     function calcBackward(prefix) { const a = parseFloat(document.getElementById(`${prefix}-amount`).value) || 0; const monthly = parseFloat(document.getElementById(`${prefix}-monthly`).value) || 0; const m = parseInt(document.getElementById(`${prefix}-months`).value) || 0; if (a > 0 && m > 0 && monthly > 0) { const totalInterest = (monthly * m) - a; if (totalInterest >= 0) document.getElementById(`${prefix}-interest`).value = (((totalInterest / a) / (m / 12)) * 100).toFixed(2); else document.getElementById(`${prefix}-interest`).value = 0; } }
 
@@ -712,6 +846,7 @@
     // --- ADMIN CRUD ---
     async function submitAddDebt() {
       const payload = { userPin: document.getElementById('a-user').value, cardName: document.getElementById('a-card').value, type: document.getElementById('a-type').value, amount: parseFloat(document.getElementById('a-amount').value), interest: parseFloat(document.getElementById('a-interest').value), months: parseInt(document.getElementById('a-months').value), startMonth: document.getElementById('a-start').value, dueDay: parseInt(document.getElementById('a-due').value), monthly: parseFloat(document.getElementById('a-monthly').value), paidMonths: parseInt(document.getElementById('a-paid').value) || 0 };
+      Swal.fire({ title: 'กำลังดำเนินการ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
       const res = await apiCall('addDebt', { data: payload });
       if(res.status === 'success') { Swal.fire('สำเร็จ', 'บันทึกสัญญาเข้าระบบแล้ว', 'success'); document.querySelectorAll('#view-add .form-input').forEach(i => i.value = ''); document.getElementById('a-paid').value = '0'; renderPillSelector('a'); loadAdminData(); switchView('overview'); }
     }
@@ -726,34 +861,54 @@
 
     async function submitEditDebt() {
       const payload = { id: document.getElementById('e-id').value, cardName: document.getElementById('e-card').value, type: document.getElementById('e-type').value, amount: parseFloat(document.getElementById('e-amount').value), interest: parseFloat(document.getElementById('e-interest').value), months: parseInt(document.getElementById('e-months').value), startMonth: document.getElementById('e-start').value, dueDay: parseInt(document.getElementById('e-due').value), monthly: parseFloat(document.getElementById('e-monthly').value), paidMonths: parseInt(document.getElementById('e-paid').value) || 0 };
-      closeEditModal(); const res = await apiCall('editDebt', { data: payload });
+      closeEditModal(); 
+      Swal.fire({ title: 'กำลังอัปเดต...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      const res = await apiCall('editDebt', { data: payload });
       if(res.status === 'success') { Swal.fire('สำเร็จ', 'อัปเดตข้อมูลสำเร็จ', 'success'); const updatedProfile = await apiCall('getDebtorProfile', { targetPin: globalAdminCurrentDebtorProfile[0].userPin }); globalAdminCurrentDebtorProfile = updatedProfile.items; renderAdminProfileOverview(); }
     }
 
     async function deleteDebt(id) {
       const confirm = await Swal.fire({ title: 'ลบข้อมูลสัญญานี้?', text: "ข้อมูลนี้จะถูกลบอย่างถาวรจากฐานข้อมูล", icon: 'error', showCancelButton: true, confirmButtonColor: '#EF4444', confirmButtonText: 'ลบทิ้ง' });
-      if (confirm.isConfirmed) { const res = await apiCall('deleteDebt', { debtId: id }); if(res.status === 'success') { Swal.fire('ลบแล้ว', 'ลบข้อมูลสำเร็จ', 'success'); loadAdminData(); switchView('overview'); } }
+      if (confirm.isConfirmed) { Swal.fire({ title: 'กำลังดำเนินการ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() }); const res = await apiCall('deleteDebt', { debtId: id }); if(res.status === 'success') { Swal.fire('ลบแล้ว', 'ลบข้อมูลสำเร็จ', 'success'); loadAdminData(); switchView('overview'); } }
     }
 
     async function approvePayment(id, fromPendingList = false) {
       const confirm = await Swal.fire({ title: 'ยืนยันการตัดยอด?', text: "ระบบจะปรับสถานะและบวกจำนวนงวดให้ 1 งวด", icon: 'warning', showCancelButton: true, confirmButtonColor: '#10B981', confirmButtonText: 'ยืนยันตัดยอด' });
       if (confirm.isConfirmed) {
+        Swal.fire({ title: 'กำลังดำเนินการ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
         const res = await apiCall('approvePayment', { debtId: id });
-        if(res.status === 'success') { Swal.fire('สำเร็จ', 'ตัดยอดให้ลูกหนี้เรียบร้อย', 'success'); if(fromPendingList) { loadAdminData(); } else { const updatedProfile = await apiCall('getDebtorProfile', { targetPin: globalAdminCurrentDebtorProfile[0].userPin }); globalAdminCurrentDebtorProfile = updatedProfile.items; renderAdminProfileMonthly(); } }
+        if(res.status === 'success') { 
+          Swal.fire('สำเร็จ', 'ตัดยอดให้ลูกหนี้เรียบร้อย', 'success'); 
+          if(fromPendingList) { loadAdminData(); } else { const updatedProfile = await apiCall('getDebtorProfile', { targetPin: globalAdminCurrentDebtorProfile[0].userPin }); globalAdminCurrentDebtorProfile = updatedProfile.items; renderAdminProfileMonthly(); } 
+        }
       }
     }
 
     async function approvePayOff(id) {
       const confirm = await Swal.fire({ title: 'ยืนยันปิดยอดบัญชี', text: "ระบบจะเคลียร์ค่างวดทั้งหมดและเปลี่ยนสถานะเป็น ปิดยอดแล้ว", icon: 'warning', showCancelButton: true, confirmButtonColor: '#8B5CF6', confirmButtonText: 'อนุมัติการปิดยอด' });
       if (confirm.isConfirmed) {
+        Swal.fire({ title: 'กำลังดำเนินการ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
         const res = await apiCall('approvePayOff', { debtId: id });
-        if(res.status === 'success') { Swal.fire('ปิดยอดสำเร็จ', 'สถานะสัญญาถูกเปลี่ยนเป็นปิดยอดแล้ว', 'success'); await loadAdminData(); if (!document.getElementById('view-profile').classList.contains('hidden') && globalAdminCurrentDebtorProfile.length > 0) { const updatedProfile = await apiCall('getDebtorProfile', { targetPin: globalAdminCurrentDebtorProfile[0].userPin }); globalAdminCurrentDebtorProfile = updatedProfile.items; renderAdminProfileMonthly(); } }
+        if(res.status === 'success') { 
+          Swal.fire('ปิดยอดสำเร็จ', 'สถานะสัญญาถูกเปลี่ยนเป็นปิดยอดแล้ว', 'success'); 
+          await loadAdminData(); 
+          if (!document.getElementById('view-profile').classList.contains('hidden') && globalAdminCurrentDebtorProfile.length > 0) { const updatedProfile = await apiCall('getDebtorProfile', { targetPin: globalAdminCurrentDebtorProfile[0].userPin }); globalAdminCurrentDebtorProfile = updatedProfile.items; renderAdminProfileMonthly(); } 
+        }
       }
     }
 
     async function promptReject(id) {
       const { value: reason } = await Swal.fire({ title: 'ปฏิเสธการชำระเงิน', input: 'select', inputOptions: { 'ไม่พบยอดเงินโอนเข้า': 'ไม่พบยอดเงินโอนเข้า', 'ยอดโอนไม่ถูกต้อง': 'ยอดโอนไม่ถูกต้อง', 'หลักฐานไม่ชัดเจน': 'หลักฐานไม่ชัดเจน', 'อื่นๆ': 'อื่นๆ (ระบุเพิ่มเติม)' }, inputPlaceholder: 'เลือกเหตุผลการปฏิเสธ', showCancelButton: true, confirmButtonColor: '#EF4444', confirmButtonText: 'ยืนยันปฏิเสธ' });
-      if (reason) { let finalReason = reason; if(reason === 'อื่นๆ') { const { value: text } = await Swal.fire({ title: 'ระบุเหตุผล', input: 'text', showCancelButton: true }); if(!text) return; finalReason = text; } const res = await apiCall('rejectPayment', { debtId: id, reason: finalReason }); if(res.status === 'success') { Swal.fire('สำเร็จ', 'ส่งแจ้งเตือนปฏิเสธให้ลูกค้าแล้ว', 'success'); loadAdminData(); } }
+      if (reason) { 
+        let finalReason = reason; 
+        if(reason === 'อื่นๆ') { 
+          const { value: text } = await Swal.fire({ title: 'ระบุเหตุผล', input: 'text', showCancelButton: true }); 
+          if(!text) return; finalReason = text; 
+        } 
+        Swal.fire({ title: 'กำลังดำเนินการ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        const res = await apiCall('rejectPayment', { debtId: id, reason: finalReason }); 
+        if(res.status === 'success') { Swal.fire('สำเร็จ', 'ส่งแจ้งเตือนปฏิเสธให้ลูกค้าแล้ว', 'success'); loadAdminData(); } 
+      }
     }
   </script>
 </body>
