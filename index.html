@@ -3,236 +3,329 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Debt Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Debt Management System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
   <style>
     :root {
-      --bg-color: #F4F6F9;
-      --card-bg: #FFFFFF;
-      --primary: #0F172A; /* Dark Blue / Black */
-      --primary-light: #334155;
-      --accent: #2563EB; /* Bright Blue */
-      --text-main: #0F172A;
-      --text-muted: #64748B;
-      --border: #E2E8F0;
-      --danger: #EF4444;
+      --bg: #F3F4F6; --white: #FFFFFF; --primary: #2563EB; --primary-dark: #1E40AF;
+      --text-main: #111827; --text-muted: #6B7280; --border: #E5E7EB;
+      --success: #10B981; --warning: #F59E0B; --danger: #EF4444;
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Sarabun', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text-main); }
     .hidden { display: none !important; }
-    .fade-in { animation: fadeIn 0.4s ease-out forwards; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* ---- Login UI ---- */
-    #login-section { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 20px; }
-    .login-box { background: var(--card-bg); padding: 40px 30px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); width: 100%; max-width: 360px; text-align: center; }
-    .login-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
-    .login-sub { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 30px; }
     
-    .pin-input-container { position: relative; width: 100%; max-width: 200px; margin: 0 auto; }
-    .pin-input {
-      width: 100%; padding: 15px; font-size: 2rem; font-weight: 700; text-align: center; letter-spacing: 12px;
-      border: 2px solid var(--border); border-radius: 16px; outline: none; transition: border 0.3s;
-      background: #F8FAFC; color: var(--primary);
-    }
-    .pin-input:focus { border-color: var(--accent); background: #FFFFFF; }
-    .pin-input::placeholder { letter-spacing: normal; font-size: 1rem; font-weight: 400; color: #94A3B8; }
+    /* Layouts */
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; padding-bottom: 80px; }
+    .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 15px; border-bottom: 2px solid var(--border); }
+    .user-greeting { font-size: 1.2rem; font-weight: 600; }
+    .btn-outline { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 6px 12px; border-radius: 8px; font-weight: 500; cursor: pointer; }
 
-    /* ---- Dashboard UI ---- */
-    #dashboard-section { max-width: 600px; margin: 0 auto; padding: 20px 20px 80px; }
-    .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-top: 10px; }
-    .greeting { font-size: 1.1rem; font-weight: 600; color: var(--text-muted); }
-    .user-name-display { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
-    .btn-logout { background: #FEE2E2; color: var(--danger); border: none; padding: 8px 16px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
+    /* Login Box */
+    #login-section { display: flex; align-items: center; justify-content: center; height: 100vh; }
+    .login-box { background: var(--white); padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; width: 90%; max-width: 350px; }
+    .pin-input { width: 100%; padding: 15px; font-size: 2rem; font-weight: 700; text-align: center; letter-spacing: 15px; border: 2px solid var(--border); border-radius: 12px; outline: none; background: #F9FAFB; color: var(--primary); }
+    .pin-input:focus { border-color: var(--primary); background: var(--white); }
 
-    /* Summary Header */
-    .summary-card { background: var(--primary); color: white; padding: 30px 24px; border-radius: 24px; margin-bottom: 30px; box-shadow: 0 12px 24px rgba(15, 23, 42, 0.15); }
-    .sum-label { font-size: 0.9rem; color: #94A3B8; font-weight: 500; margin-bottom: 5px; }
-    .sum-total { font-size: 2.6rem; font-weight: 700; margin-bottom: 24px; line-height: 1; }
-    .sum-footer { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
-    .sum-footer .sum-label { margin-bottom: 2px; }
-    .sum-remaining { font-size: 1.2rem; font-weight: 600; }
+    /* User Summary */
+    .summary-card { background: var(--primary); color: var(--white); padding: 25px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2); }
+    .summary-card span { font-size: 0.9rem; opacity: 0.9; }
+    .summary-card h2 { font-size: 2.5rem; margin: 5px 0 15px; }
+    .summary-footer { display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; }
 
-    /* Card Grouping */
-    .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; color: var(--primary); }
+    /* Cards */
+    .card { background: var(--white); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+    .card-title { font-size: 1.1rem; font-weight: 600; display: flex; flex-direction: column; }
+    .card-type { font-size: 0.75rem; color: var(--primary); background: #EFF6FF; padding: 2px 8px; border-radius: 6px; width: fit-content; margin-top: 4px; }
     
-    .card-group { background: var(--card-bg); border-radius: 24px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--border); }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
-    .card-name { font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-    .card-total-badge { background: #EFF6FF; color: var(--accent); padding: 6px 12px; border-radius: 12px; font-weight: 700; font-size: 0.9rem; }
+    .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .status-active { background: #ECFDF5; color: var(--success); }
+    .status-pending { background: #FEF3C7; color: var(--warning); }
 
-    /* Individual Items */
-    .debt-item { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-    .debt-item:last-child { margin-bottom: 0; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+    .data-box { background: var(--bg); padding: 10px; border-radius: 10px; }
+    .data-box span { display: block; font-size: 0.75rem; color: var(--text-muted); }
+    .data-box strong { font-size: 1.1rem; color: var(--text-main); }
     
-    .item-row { display: flex; justify-content: space-between; align-items: center; }
-    .item-title { font-size: 0.95rem; font-weight: 600; color: var(--text-main); }
-    .item-amount { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
+    .btn-action { width: 100%; background: var(--primary); color: var(--white); border: none; padding: 12px; border-radius: 10px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s; }
+    .btn-disabled { background: var(--bg); color: var(--text-muted); cursor: not-allowed; }
+
+    /* Admin Form */
+    .form-group { margin-bottom: 15px; }
+    .form-label { display: block; font-size: 0.9rem; font-weight: 500; margin-bottom: 5px; }
+    .form-input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 1rem; outline: none; font-family: inherit; }
+    .form-input:focus { border-color: var(--primary); }
     
-    .item-meta { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); }
-    .due-date { background: #F1F5F9; padding: 2px 8px; border-radius: 6px; font-weight: 500; font-size: 0.8rem; }
+    .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+    .tab-btn { flex: 1; padding: 10px; border: none; background: var(--bg); border-radius: 10px; font-weight: 600; cursor: pointer; color: var(--text-muted); }
+    .tab-btn.active { background: var(--primary); color: var(--white); }
   </style>
 </head>
 <body>
 
-  <section id="login-section" class="fade-in">
+  <div id="login-section">
     <div class="login-box">
-      <div class="login-title">เข้าสู่ระบบ</div>
-      <div class="login-sub">กรุณาใส่รหัสผ่าน 4 หลักของคุณ</div>
-      
-      <div class="pin-input-container">
-        <input type="password" id="pin-input" class="pin-input" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="••••">
-      </div>
+      <h2 style="color: var(--primary); margin-bottom: 5px;">ระบบจัดการผ่อนชำระ</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">กรุณาระบุรหัส PIN 4 หลัก</p>
+      <input type="password" id="pin-input" class="pin-input" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="••••">
     </div>
-  </section>
+  </div>
 
-  <section id="dashboard-section" class="hidden fade-in">
-    <div class="top-nav">
-      <div>
-        <div class="greeting">สวัสดี,</div>
-        <div class="user-name-display" id="display-name">...</div>
-      </div>
-      <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
+  <div id="user-section" class="container hidden">
+    <div class="nav-bar">
+      <div class="user-greeting">สวัสดี, <span id="user-name" style="color: var(--primary);">User</span></div>
+      <button class="btn-outline" onclick="logout()">ออกจากระบบ</button>
     </div>
 
     <div class="summary-card">
-      <div class="sum-label">ยอดที่ต้องชำระเดือนนี้รวม</div>
-      <div class="sum-total">฿<span id="sum-monthly">0.00</span></div>
-      <div class="sum-footer">
-        <div>
-          <div class="sum-label">หนี้คงเหลือทั้งหมด</div>
-          <div class="sum-remaining">฿<span id="sum-remaining">0.00</span></div>
-        </div>
+      <span>ยอดที่ต้องชำระงวดนี้รวม</span>
+      <h2 id="sum-monthly">฿0.00</h2>
+      <div class="summary-footer">
+        <div><span>หนี้คงเหลือรวม</span><br><strong style="font-size: 1.2rem;" id="sum-remaining">฿0.00</strong></div>
       </div>
     </div>
 
-    <div class="section-title">รายการผ่อนชำระแยกตามบัตร</div>
-    <div id="debt-list">
-      </div>
-  </section>
+    <h3 style="margin-bottom: 15px;">รายการผ่อนชำระของคุณ</h3>
+    <div id="user-debt-list"></div>
+  </div>
+
+  <div id="admin-section" class="container hidden">
+    <div class="nav-bar">
+      <div class="user-greeting">⚙️ โหมดผู้ดูแลระบบ</div>
+      <button class="btn-outline" onclick="logout()">ออกจากระบบ</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchAdminTab('form')">➕ เพิ่มรายการหนี้</button>
+      <button class="tab-btn" onclick="switchAdminTab('approve')">🔔 รออนุมัติ <span id="pending-count" style="background: var(--danger); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem;">0</span></button>
+    </div>
+
+    <div id="admin-tab-form" class="card">
+      <form onsubmit="event.preventDefault(); submitAddDebt();">
+        <div class="form-group">
+          <label class="form-label">ผู้ใช้งาน</label>
+          <select id="a-user" class="form-input" required></select>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">บัตรที่ใช้</label>
+            <select id="a-card" class="form-input" required></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">ประเภทรายการ</label>
+            <select id="a-type" class="form-input" required>
+              <option value="ผ่อนสินค้า">ผ่อนสินค้า</option>
+              <option value="กดเงินสด">กดเงินสด</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">ยอดจัดเต็มจำนวน (฿)</label>
+            <input type="number" id="a-amount" class="form-input" required oninput="calc()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">ดอกเบี้ยต่อปี (%)</label>
+            <input type="number" id="a-interest" class="form-input" value="0" step="0.01" required oninput="calc()">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">จำนวนงวด (เดือน)</label>
+            <input type="number" id="a-months" class="form-input" required oninput="calc()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">เริ่มผ่อน (ดด/ปปปป)</label>
+            <input type="month" id="a-start" class="form-input" required>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">วันครบกำหนด (1-31)</label>
+            <input type="number" id="a-due" class="form-input" min="1" max="31" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="color: var(--primary);">ยอดชำระ/เดือน (แก้ไขได้)</label>
+            <input type="number" id="a-monthly" class="form-input" step="0.01" style="font-weight:bold; background: #EFF6FF;" required>
+          </div>
+        </div>
+        <button type="submit" class="btn-action">💾 บันทึกรายการ</button>
+      </form>
+    </div>
+
+    <div id="admin-tab-approve" class="hidden">
+      <div id="admin-pending-list"></div>
+    </div>
+  </div>
 
   <script>
-    // 🛑 นำ URL จาก Google Apps Script มาใส่ตรงนี้
-    const API_URL = "https://script.google.com/macros/s/AKfycbwgm70NMQltAIgKGIbaRBsYOqyIjtfAvLxLbGPw92WYkMefTAJiYTS1t-wf_WAjxGCw/exec";
+    // 🛑 ใส่ API URL ของคุณตรงนี้
+    const API_URL = "https://script.google.com/macros/s/AKfycbx46vQfmMPQbiEzaquFIFu4EbjERUjUyEJZfzpZEy9PPjVmNJsgUERYE764rvzSF0of/exec";
+    
+    let currentPin = "";
+    const money = new Intl.NumberFormat('th-TH', { minimumFractionDigits: 2 });
 
-    const pinInput = document.getElementById('pin-input');
-    const formatter = new Intl.NumberFormat('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-    // Auto-trigger เมื่อกรอกครบ 4 ตัว
-    pinInput.addEventListener('input', function() {
-      // อนุญาตเฉพาะตัวเลข
+    // Auto Login
+    document.getElementById('pin-input').addEventListener('input', function() {
       this.value = this.value.replace(/[^0-9]/g, '');
-      
       if (this.value.length === 4) {
-        this.blur(); // ซ่อนคีย์บอร์ด
-        processLoginAndLoadData(this.value);
+        this.blur();
+        currentPin = this.value;
+        processLogin(this.value);
       }
     });
 
-    async function processLoginAndLoadData(pin) {
-      // Pop-up โหลดดิ้ง
-      Swal.fire({
-        title: 'กำลังตรวจสอบข้อมูล...',
-        allowOutsideClick: false,
-        didOpen: () => { Swal.showLoading(); }
-      });
-
+    async function apiCall(action, data = {}) {
+      Swal.fire({ title: 'กำลังประมวลผล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
       try {
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ action: 'getDashboard', pin: pin })
-        });
-        
-        const data = await response.json();
-
-        if (data.status === 'success') {
-          // แจ้งทักทายและโหลดสำเร็จ
-          Swal.fire({
-            icon: 'success',
-            title: `สวัสดีคุณ ${data.user.name}`,
-            text: 'โหลดข้อมูลเรียบร้อยแล้ว',
-            timer: 1500,
-            showConfirmButton: false
-          });
-
-          renderDashboard(data);
-        } else {
-          Swal.fire({ icon: 'error', title: 'เข้าสู่ระบบไม่สำเร็จ', text: data.message });
-          pinInput.value = '';
-          pinInput.focus();
-        }
-      } catch (error) {
-        Swal.fire({ icon: 'error', title: 'การเชื่อมต่อขัดข้อง', text: 'กรุณาตรวจสอบอินเทอร์เน็ต' });
-        pinInput.value = '';
+        const payload = { action: action, ...data };
+        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+        const result = await res.json();
+        Swal.close();
+        return result;
+      } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
+        throw e;
       }
     }
 
-    function renderDashboard(data) {
-      // สลับหน้า
-      document.getElementById('login-section').classList.add('hidden');
-      document.getElementById('dashboard-section').classList.remove('hidden');
-
-      // แสดงชื่อและสรุปยอด
-      document.getElementById('display-name').innerText = data.user.name;
-      document.getElementById('sum-monthly').innerText = formatter.format(data.summary.monthly);
-      document.getElementById('sum-remaining').innerText = formatter.format(data.summary.remaining);
-
-      // วาดข้อมูลบัตรที่จัดกลุ่มแล้ว
-      const listContainer = document.getElementById('debt-list');
-      listContainer.innerHTML = '';
-
-      if (data.cards.length === 0) {
-        listContainer.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--text-muted); background: var(--card-bg); border-radius: 24px;">🎉 ไม่มีรายการผ่อนชำระ</div>`;
-        return;
+    async function processLogin(pin) {
+      const res = await apiCall('login', { pin: pin });
+      if (res.status === 'success') {
+        document.getElementById('login-section').classList.add('hidden');
+        if (res.user.role === 'admin') {
+          document.getElementById('admin-section').classList.remove('hidden');
+          loadAdminData();
+        } else {
+          document.getElementById('user-section').classList.remove('hidden');
+          document.getElementById('user-name').innerText = res.user.name;
+          loadUserData();
+        }
+      } else {
+        Swal.fire('ไม่สำเร็จ', res.message, 'error');
+        document.getElementById('pin-input').value = '';
       }
+    }
 
-      data.cards.forEach(card => {
-        let itemsHtml = '';
-        
-        // วาดรายการย่อยในบัตรนั้นๆ
-        card.items.forEach(item => {
-          itemsHtml += `
-            <div class="debt-item">
-              <div class="item-row">
-                <div class="item-title">งวดที่ ${item.paidMonths}/${item.totalMonths} <span class="due-date">จ่ายวันที่ ${item.dueDay}</span></div>
-                <div class="item-amount">฿${formatter.format(item.monthlyPayment)}</div>
-              </div>
-              <div class="item-meta">
-                <span>เหลืออีก ${item.remainingMonths} งวด</span>
-                <span>ยอดคงเหลือ: ฿${formatter.format(item.remainingAmount)}</span>
-              </div>
-            </div>
-          `;
-          
-          // ใส่เส้นคั่นถ้ารายการยังไม่หมด
-          if (item !== card.items[card.items.length - 1]) {
-            itemsHtml += `<div style="height: 1px; background: var(--border); margin: 8px 0;"></div>`;
-          }
-        });
+    // --- ส่วนของ User ---
+    async function loadUserData() {
+      const res = await apiCall('getUserData', { pin: currentPin });
+      document.getElementById('sum-monthly').innerText = "฿" + money.format(res.summary.monthly);
+      document.getElementById('sum-remaining').innerText = "฿" + money.format(res.summary.remaining);
+      
+      const list = document.getElementById('user-debt-list');
+      list.innerHTML = res.items.length === 0 ? '<div class="card" style="text-align:center; color:gray;">ไม่มีรายการผ่อนชำระ</div>' : '';
 
-        // ประกอบร่างเป็น Card Group
-        const cardHtml = `
-          <div class="card-group fade-in">
+      res.items.forEach(item => {
+        const isPending = item.status === "รอตรวจสอบ";
+        list.innerHTML += `
+          <div class="card">
             <div class="card-header">
-              <div class="card-name">💳 ${card.cardName}</div>
-              <div class="card-total-badge">ยอดบัตรนี้: ฿${formatter.format(card.cardTotalMonthly)}</div>
+              <div class="card-title">💳 ${item.cardName} <span class="card-type">${item.type}</span></div>
+              <div class="status-badge ${isPending ? 'status-pending' : 'status-active'}">${item.status}</div>
             </div>
-            ${itemsHtml}
+            <div class="grid-2">
+              <div class="data-box"><span>ต้องจ่ายงวดนี้ (วันที่ ${item.dueDay})</span><strong>฿${money.format(item.monthlyPayment)}</strong></div>
+              <div class="data-box"><span>หนี้คงเหลือ</span><strong>฿${money.format(item.remainAmt)}</strong></div>
+            </div>
+            <div style="font-size: 0.8rem; color: gray; margin-bottom: 12px;">งวดที่ ${item.paidMonths}/${item.totalMonths} (เริ่มผ่อน ${item.startMonth})</div>
+            ${isPending 
+              ? `<button class="btn-action btn-disabled" disabled>รอแอดมินตรวจสอบ...</button>`
+              : `<button class="btn-action" onclick="notifyPayment('${item.id}')">แจ้งชำระเงินงวดนี้</button>`
+            }
           </div>
         `;
-        listContainer.innerHTML += cardHtml;
       });
     }
 
-    function logout() {
-      pinInput.value = '';
-      document.getElementById('dashboard-section').classList.add('hidden');
-      document.getElementById('login-section').classList.remove('hidden');
+    async function notifyPayment(id) {
+      const confirm = await Swal.fire({ title: 'ยืนยันแจ้งชำระ?', text: "คุณได้โอนเงินชำระยอดนี้แล้วใช่หรือไม่", icon: 'question', showCancelButton: true, confirmButtonText: 'ใช่, ชำระแล้ว' });
+      if (confirm.isConfirmed) {
+        const res = await apiCall('notifyPayment', { debtId: id });
+        if(res.status === 'success') { Swal.fire('สำเร็จ', 'ส่งเรื่องให้แอดมินแล้ว', 'success'); loadUserData(); }
+      }
     }
+
+    // --- ส่วนของ Admin ---
+    function switchAdminTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector(`button[onclick="switchAdminTab('${tab}')"]`).classList.add('active');
+      document.getElementById('admin-tab-form').classList.add('hidden');
+      document.getElementById('admin-tab-approve').classList.add('hidden');
+      document.getElementById(`admin-tab-${tab}`).classList.remove('hidden');
+    }
+
+    async function loadAdminData() {
+      const res = await apiCall('getAdminData');
+      
+      const userSel = document.getElementById('a-user');
+      userSel.innerHTML = '<option value="">- เลือกผู้ใช้ -</option>';
+      res.users.forEach(u => userSel.innerHTML += `<option value="${u.pin}">${u.name}</option>`);
+
+      const cardSel = document.getElementById('a-card');
+      cardSel.innerHTML = '<option value="">- เลือกบัตร -</option>';
+      res.cards.forEach(c => cardSel.innerHTML += `<option value="${c.name}">${c.name}</option>`);
+
+      document.getElementById('pending-count').innerText = res.pending.length;
+      
+      const pList = document.getElementById('admin-pending-list');
+      pList.innerHTML = res.pending.length === 0 ? '<div class="card" style="text-align:center;">ไม่มีรายการรออนุมัติ</div>' : '';
+      
+      res.pending.forEach(p => {
+        pList.innerHTML += `
+          <div class="card">
+            <div style="font-weight: bold; margin-bottom: 10px;">👤 รหัสผู้ใช้: ${p.userPin}</div>
+            <div class="grid-2">
+              <div class="data-box"><span>บัตร</span><strong>${p.cardName}</strong></div>
+              <div class="data-box"><span>ยอดที่แจ้งโอน</span><strong style="color:var(--primary);">฿${money.format(p.monthlyPayment)}</strong></div>
+            </div>
+            <button class="btn-action" style="background: var(--success); margin-top:10px;" onclick="approvePayment('${p.id}')">✅ อนุมัติการชำระเงิน (งวดที่ ${p.paidMonths + 1})</button>
+          </div>
+        `;
+      });
+    }
+
+    function calc() {
+      const a = parseFloat(document.getElementById('a-amount').value)||0;
+      const i = parseFloat(document.getElementById('a-interest').value)||0;
+      const m = parseInt(document.getElementById('a-months').value)||0;
+      if(a && m) {
+        const total = a + (a * (i/100) * (m/12));
+        document.getElementById('a-monthly').value = (total/m).toFixed(2);
+      }
+    }
+
+    async function submitAddDebt() {
+      const payload = {
+        userPin: document.getElementById('a-user').value,
+        cardName: document.getElementById('a-card').value,
+        type: document.getElementById('a-type').value,
+        amount: parseFloat(document.getElementById('a-amount').value),
+        interest: parseFloat(document.getElementById('a-interest').value),
+        months: parseInt(document.getElementById('a-months').value),
+        startMonth: document.getElementById('a-start').value,
+        dueDay: parseInt(document.getElementById('a-due').value),
+        monthly: parseFloat(document.getElementById('a-monthly').value)
+      };
+      
+      const res = await apiCall('addDebt', { data: payload });
+      if(res.status === 'success') {
+        Swal.fire('สำเร็จ', 'บันทึกรายการผ่อนแล้ว', 'success');
+        document.querySelectorAll('input').forEach(i => i.value = '');
+        document.getElementById('a-interest').value = '0';
+        loadAdminData(); // Refresh admin data
+      }
+    }
+
+    async function approvePayment(id) {
+      const res = await apiCall('approvePayment', { debtId: id });
+      if(res.status === 'success') { Swal.fire('อนุมัติแล้ว', 'อัปเดตยอดสำเร็จ', 'success'); loadAdminData(); }
+    }
+
+    function logout() { location.reload(); }
   </script>
 </body>
 </html>
