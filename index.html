@@ -3,332 +3,346 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Debt Tracker Pro</title>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <title>DebtFlow Pro - มิติใหม่ของการจัดการหนี้</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
   <style>
     :root {
-      --primary: #4F46E5; --primary-dark: #4338CA; --bg: #F9FAFB;
-      --card: #FFFFFF; --text: #111827; --text-light: #6B7280;
-      --success: #10B981; --danger: #EF4444; --border: #E5E7EB;
+      --glass: rgba(255, 255, 255, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.3);
+      --primary: #6366F1;
+      --accent: #A855F7;
+      --text: #1E293B;
+      --success: #10B981;
+      --danger: #F43F5E;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Sarabun', sans-serif; }
-    body { background-color: var(--bg); color: var(--text); overflow-x: hidden; }
 
-    /* Utilities */
-    .hidden { display: none !important; }
-    .fade-in { animation: fadeIn 0.5s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif;
+      background: linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 100%);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Animations */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-in { animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+
+    /* Glass Effect UI */
+    .glass-card {
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
+    }
 
     /* Loader */
-    #loader { position: fixed; inset: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
-    .spinner { border: 4px solid var(--border); border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    #loader {
+      position: fixed; inset: 0; background: rgba(255,255,255,0.7);
+      display: flex; justify-content: center; align-items: center; z-index: 10000;
+      backdrop-filter: blur(4px);
+    }
+    .spinner {
+      width: 40px; height: 40px; border: 4px solid #E2E8F0; border-top-color: var(--primary);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Login UI */
-    #login-section { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-    .login-card { background: var(--card); padding: 40px 20px; border-radius: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
-    .pin-dots { display: flex; justify-content: center; gap: 15px; margin: 30px 0; }
-    .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); transition: 0.2s; }
-    .dot.active { background: var(--primary); border-color: var(--primary); transform: scale(1.2); }
-    .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-    .btn-num { background: var(--bg); border: none; padding: 20px; font-size: 1.5rem; font-weight: 600; border-radius: 16px; cursor: pointer; transition: 0.1s; }
-    .btn-num:active { background: #E5E7EB; transform: scale(0.95); }
-    .btn-num.action { color: var(--danger); font-size: 1rem; }
+    /* Login Section */
+    #login-section {
+      display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 20px;
+    }
+    .login-container { width: 100%; max-width: 360px; text-align: center; }
+    .pin-display { display: flex; justify-content: center; gap: 12px; margin: 32px 0; }
+    .pin-dot { width: 14px; height: 14px; border-radius: 50%; background: #CBD5E1; transition: 0.2s; }
+    .pin-dot.active { background: var(--primary); transform: scale(1.3); box-shadow: 0 0 10px rgba(99,102,241,0.5); }
+    
+    .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+    .btn-num {
+      background: white; border: none; padding: 18px; font-size: 1.4rem; font-weight: 600;
+      border-radius: 20px; cursor: pointer; transition: 0.15s; color: var(--text);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .btn-num:active { transform: scale(0.9); background: #F1F5F9; }
+    .btn-num.del { color: var(--danger); font-size: 1rem; }
 
     /* Dashboard UI */
-    #dashboard-section, #admin-section { max-width: 600px; margin: 0 auto; padding: 20px 20px 100px; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-    .user-info { font-weight: 700; font-size: 1.2rem; }
-    .header-btns { display: flex; gap: 10px; }
-    .btn-logout { background: #FEE2E2; color: var(--danger); border: none; padding: 8px 16px; border-radius: 10px; font-weight: 600; cursor: pointer; }
-    .btn-admin { background: #FEF3C7; color: #D97706; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 600; cursor: pointer; }
-
-    .summary-box { background: linear-gradient(135deg, var(--primary), #6366F1); color: white; padding: 30px; border-radius: 24px; margin-bottom: 30px; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4); }
-    .sum-label { font-size: 0.9rem; opacity: 0.8; margin-bottom: 5px; }
-    .sum-value { font-size: 2.4rem; font-weight: 800; margin-bottom: 20px; }
-    .sum-grid { display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; }
-
-    .debt-item { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-    .item-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
-    .card-label { font-weight: 700; font-size: 1.1rem; }
-    .due-label { background: #FEF2F2; color: var(--danger); font-size: 0.75rem; padding: 4px 10px; border-radius: 10px; font-weight: 600; }
+    #dashboard-section { max-width: 500px; margin: 0 auto; padding: 24px 20px 120px; }
     
-    .item-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-    .data-card { background: var(--bg); padding: 12px; border-radius: 12px; text-align: center; }
-    .data-card span { display: block; font-size: 0.7rem; color: var(--text-light); margin-bottom: 4px; }
-    .data-card strong { font-size: 1rem; color: var(--primary); }
+    .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .user-tag { font-size: 1.1rem; font-weight: 800; background: white; padding: 8px 16px; border-radius: 99px; }
+    
+    /* Month Selector */
+    .month-picker {
+      display: flex; align-items: center; justify-content: space-between;
+      background: white; border-radius: 16px; padding: 8px 12px; margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    .month-btn { background: none; border: none; padding: 10px; cursor: pointer; font-size: 1.2rem; border-radius: 12px; }
+    .month-btn:hover { background: #F8FAFC; }
+    .current-month { font-weight: 700; font-size: 1rem; color: var(--primary); }
 
-    .progress-bar { width: 100%; background: #E5E7EB; height: 8px; border-radius: 10px; overflow: hidden; margin-top: 10px; }
-    .progress-fill { background: var(--success); height: 100%; border-radius: 10px; transition: 1s ease-out; }
-    .progress-info { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-light); margin-top: 5px; }
+    /* Summary Section */
+    .summary-card {
+      background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+      color: white; padding: 28px; border-radius: 32px; margin-bottom: 32px;
+      position: relative; overflow: hidden;
+    }
+    .summary-card::after {
+      content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px;
+      background: rgba(255,255,255,0.1); border-radius: 50%;
+    }
+    .sum-val { font-size: 2.5rem; font-weight: 800; margin: 8px 0; letter-spacing: -1px; }
+    .sum-sub { font-size: 0.9rem; opacity: 0.8; }
 
-    /* Admin Form UI */
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 5px; color: var(--text); }
-    .form-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); font-family: inherit; font-size: 1rem; outline: none; transition: border 0.2s; }
-    .form-input:focus { border-color: var(--primary); }
-    .btn-submit { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 600; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
-    .btn-submit:hover { background: var(--primary-dark); }
+    /* Grouped List */
+    .date-group-label {
+      font-size: 0.85rem; font-weight: 800; color: #64748B; margin: 24px 0 12px 8px;
+      text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center;
+    }
+    .date-group-label::after { content: ''; flex: 1; height: 1px; background: #E2E8F0; margin-left: 12px; }
+
+    .debt-item {
+      background: white; border-radius: 24px; padding: 20px; margin-bottom: 16px;
+      transition: 0.3s; border: 1px solid transparent;
+    }
+    .debt-item:active { transform: scale(0.98); border-color: var(--primary); }
+    
+    .item-top { display: flex; justify-content: space-between; margin-bottom: 16px; align-items: center; }
+    .item-name { font-weight: 700; font-size: 1.05rem; }
+    .item-tag { font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 99px; }
+    .tag-blue { background: #EEF2FF; color: #4F46E5; }
+    
+    .item-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .item-box { background: #F8FAFC; padding: 12px; border-radius: 16px; }
+    .item-box span { font-size: 0.7rem; color: #94A3B8; display: block; margin-bottom: 2px; }
+    .item-box strong { font-size: 1rem; color: var(--text); }
+
+    .progress-container { margin-top: 16px; }
+    .bar-bg { width: 100%; height: 6px; background: #F1F5F9; border-radius: 10px; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--primary); border-radius: 10px; transition: 1s ease-out; }
+    .bar-labels { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 600; color: #94A3B8; margin-top: 6px; }
+
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-  <div id="loader" class="hidden"><div class="spinner"></div><p style="margin-top:15px; color:var(--text-light)">กำลังประมวลผล...</p></div>
+  <div id="loader" class="hidden"><div class="spinner"></div></div>
 
-  <section id="login-section" class="fade-in">
-    <div class="login-card">
-      <h2 style="margin-bottom:10px">ยินดีต้อนรับ</h2>
-      <p style="color:var(--text-light); font-size:0.9rem">กรุณาใส่รหัสผ่าน 4 หลักของคุณ</p>
-      <div class="pin-dots">
-        <div class="dot" id="dot-0"></div><div class="dot" id="dot-1"></div>
-        <div class="dot" id="dot-2"></div><div class="dot" id="dot-3"></div>
+  <section id="login-section" class="animate-in">
+    <div class="login-container">
+      <h1 style="font-weight: 800; font-size: 1.8rem;">DebtFlow</h1>
+      <p style="color: #64748B; font-size: 0.9rem; margin-top: 4px;">เข้าใช้งานด้วยรหัส PIN 4 หลัก</p>
+      
+      <div class="pin-display">
+        <div class="pin-dot" id="dot-0"></div>
+        <div class="pin-dot" id="dot-1"></div>
+        <div class="pin-dot" id="dot-2"></div>
+        <div class="pin-dot" id="dot-3"></div>
       </div>
+
       <div class="numpad">
-        <button class="btn-num" onclick="pressNum(1)">1</button><button class="btn-num" onclick="pressNum(2)">2</button><button class="btn-num" onclick="pressNum(3)">3</button>
-        <button class="btn-num" onclick="pressNum(4)">4</button><button class="btn-num" onclick="pressNum(5)">5</button><button class="btn-num" onclick="pressNum(6)">6</button>
-        <button class="btn-num" onclick="pressNum(7)">7</button><button class="btn-num" onclick="pressNum(8)">8</button><button class="btn-num" onclick="pressNum(9)">9</button>
-        <button class="btn-num action" onclick="clearPin()">C</button><button class="btn-num" onclick="pressNum(0)">0</button><button class="btn-num action" onclick="backspace()">⌫</button>
+        <button class="btn-num" onclick="press(1)">1</button>
+        <button class="btn-num" onclick="press(2)">2</button>
+        <button class="btn-num" onclick="press(3)">3</button>
+        <button class="btn-num" onclick="press(4)">4</button>
+        <button class="btn-num" onclick="press(5)">5</button>
+        <button class="btn-num" onclick="press(6)">6</button>
+        <button class="btn-num" onclick="press(7)">7</button>
+        <button class="btn-num" onclick="press(8)">8</button>
+        <button class="btn-num" onclick="press(9)">9</button>
+        <button class="btn-num del" onclick="clearAll()">C</button>
+        <button class="btn-num" onclick="press(0)">0</button>
+        <button class="btn-num del" onclick="back()">⌫</button>
       </div>
     </div>
   </section>
 
-  <section id="dashboard-section" class="hidden fade-in">
-    <div class="header">
-      <div class="user-info">👤 <span id="user-name">...</span></div>
-      <div class="header-btns">
-        <button id="btn-admin-panel" class="btn-admin hidden" onclick="openAdminPanel()">⚙️ จัดการระบบ</button>
-        <button class="btn-logout" onclick="logout()">ออก</button>
+  <section id="dashboard-section" class="hidden">
+    <div class="nav-header">
+      <div class="user-tag">👤 <span id="user-name">...</span></div>
+      <button onclick="location.reload()" style="background:none; border:none; color:var(--danger); font-weight:700;">ออก</button>
+    </div>
+
+    <div class="month-picker animate-in">
+      <button class="month-btn" onclick="changeMonth(-1)">‹</button>
+      <div class="current-month" id="month-display">เมษายน 2026</div>
+      <button class="month-btn" onclick="changeMonth(1)">›</button>
+    </div>
+
+    <div class="summary-card animate-in">
+      <div class="sum-sub">ยอดที่ต้องจ่ายในเดือนนี้</div>
+      <div class="sum-val">฿<span id="sum-monthly">0.00</span></div>
+      <div style="display: flex; justify-content: space-between; margin-top: 12px; opacity: 0.9; font-size: 0.85rem;">
+        <span>หนี้คงเหลือรวม</span>
+        <span id="sum-remaining">฿0.00</span>
       </div>
     </div>
 
-    <div class="summary-box">
-      <div class="sum-label">ยอดที่ต้องชำระเดือนนี้รวม</div>
-      <div class="sum-value">฿<span id="sum-monthly">0.00</span></div>
-      <div class="sum-grid">
-        <div><div class="sum-label">หนี้คงเหลือรวม</div><strong>฿<span id="sum-remaining">0.00</span></strong></div>
+    <div id="debt-timeline">
       </div>
-    </div>
-
-    <h3 style="margin-bottom:15px; font-size:1rem">รายการบัตรและการผ่อนชำระ</h3>
-    <div id="debt-list"></div>
-  </section>
-
-  <section id="admin-section" class="hidden fade-in">
-    <div class="header">
-      <div class="user-info">⚙️ จัดการระบบ (Admin)</div>
-      <button class="btn-logout" onclick="closeAdminPanel()">กลับหน้าหลัก</button>
-    </div>
-
-    <div class="debt-item">
-      <h3 style="margin-bottom: 20px; text-align:center; color: var(--primary);">เพิ่มรายการผ่อนชำระใหม่</h3>
-      <form onsubmit="event.preventDefault(); submitNewDebt();">
-        <div class="form-group">
-          <label>เลือกผู้ใช้งาน</label>
-          <select id="form-user" class="form-input" required><option value="">-- กำลังโหลด --</option></select>
-        </div>
-        <div class="form-group">
-          <label>เลือกบัตรเครดิต/บัตรกดเงินสด</label>
-          <select id="form-card" class="form-input" required><option value="">-- กำลังโหลด --</option></select>
-        </div>
-        
-        <div class="item-grid">
-          <div class="form-group">
-            <label>ยอดหนี้เต็มจำนวน (฿)</label>
-            <input type="number" id="form-amount" class="form-input" required oninput="calcMonthly()">
-          </div>
-          <div class="form-group">
-            <label>ดอกเบี้ยต่อปี (%)</label>
-            <input type="number" id="form-interest" class="form-input" value="0" step="0.01" required oninput="calcMonthly()">
-          </div>
-        </div>
-        
-        <div class="item-grid">
-          <div class="form-group">
-            <label>จำนวนเดือน (งวด)</label>
-            <input type="number" id="form-months" class="form-input" required oninput="calcMonthly()">
-          </div>
-          <div class="form-group">
-            <label>วันที่ครบกำหนดของเดือน</label>
-            <input type="number" id="form-due" class="form-input" min="1" max="31" placeholder="1 - 31" required>
-          </div>
-        </div>
-
-        <div class="form-group" style="background: #F3F4F6; padding: 15px; border-radius: 10px;">
-          <label style="color: var(--primary);">ยอดชำระต่อเดือน (ระบบคำนวณเบื้องต้น สามารถแก้ไขได้)</label>
-          <input type="number" id="form-monthly" class="form-input" required step="0.01" style="font-weight: bold; font-size: 1.2rem; color: var(--primary-dark);">
-        </div>
-
-        <button type="submit" class="btn-submit">💾 บันทึกข้อมูลลงระบบ</button>
-      </form>
-    </div>
   </section>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbz3jTiRxyZdEq-x82exZRZBCZ9Gq3U56cZvuV6RCkLntxZRxBmDeSXJO7FKxRIyP5g/exec";
+    // 🛑 ใส่ API URL ของคุณที่นี่
+    const API_URL = "https://script.google.com/macros/s/AKfycbwwZ1c9Ym-zZ0lErZwxgoW_t_k-PKYNIEGgwHQiViQ9T-iujOorIN_WJKnmvXtyFjWO/exec";
 
     let pin = "";
-    let userRole = "";
+    let allDebts = [];
+    let currentViewDate = new Date(); // เดือนที่กำลังดูอยู่
     const money = new Intl.NumberFormat('th-TH', { minimumFractionDigits: 2 });
+    const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
 
-    function pressNum(n) {
-      if (pin.length < 4) { pin += n; updateDots(); if (pin.length === 4) handleLogin(); }
+    // Keyboard support
+    document.addEventListener('keydown', (e) => {
+      if(e.key >= 0 && e.key <= 9) press(e.key);
+      if(e.key === 'Backspace') back();
+      if(e.key === 'Escape') clearAll();
+    });
+
+    function press(n) {
+      if(pin.length < 4) {
+        pin += n;
+        updateDots();
+        if(pin.length === 4) handleLogin();
+      }
     }
-    function backspace() { pin = pin.slice(0,-1); updateDots(); }
-    function clearPin() { pin = ""; updateDots(); }
+    function back() { pin = pin.slice(0,-1); updateDots(); }
+    function clearAll() { pin = ""; updateDots(); }
     function updateDots() {
-      for(let i=0; i<4; i++) document.getElementById(`dot-${i}`).className = i < pin.length ? 'dot active' : 'dot';
+      for(let i=0; i<4; i++) {
+        document.getElementById(`dot-${i}`).className = i < pin.length ? 'pin-dot active' : 'pin-dot';
+      }
     }
 
     async function handleLogin() {
       toggleLoader(true);
       try {
         const res = await fetch(API_URL, {
-          method: 'POST', headers: { 'Content-Type': 'text/plain' },
+          method: 'POST',
           body: JSON.stringify({ action: 'login', pin: pin })
         });
         const data = await res.json();
-        
         if (data.status === 'success') {
-          userRole = data.role; // จำสถานะว่าเปน Admin ไหม
           document.getElementById('user-name').innerText = data.name;
-          
-          if(userRole === 'Admin' || userRole === 'admin') {
-            document.getElementById('btn-admin-panel').classList.remove('hidden');
-          } else {
-            document.getElementById('btn-admin-panel').classList.add('hidden');
-          }
-          await loadDashboard();
+          await fetchData();
         } else {
-          toggleLoader(false); Swal.fire('ผิดพลาด', data.message, 'error'); clearPin();
+          toggleLoader(false);
+          Swal.fire('รหัสไม่ถูกต้อง', 'กรุณาลองใหม่อีกครั้ง', 'error');
+          clearAll();
         }
       } catch (e) {
-        toggleLoader(false); Swal.fire('เชื่อมต่อไม่ได้', 'กรุณาเช็ค URL หรืออินเทอร์เน็ต', 'error');
+        toggleLoader(false);
+        Swal.fire('เชื่อมต่อล้มเหลว', 'ตรวจสอบอินเทอร์เน็ต', 'error');
       }
     }
 
-    async function loadDashboard() {
+    async function fetchData() {
       const res = await fetch(API_URL, {
-        method: 'POST', headers: { 'Content-Type': 'text/plain' },
+        method: 'POST',
         body: JSON.stringify({ action: 'getDebts', pin: pin })
       });
       const data = await res.json();
+      allDebts = data.items;
+      renderDashboard();
       toggleLoader(false);
-
       document.getElementById('login-section').classList.add('hidden');
-      document.getElementById('admin-section').classList.add('hidden');
       document.getElementById('dashboard-section').classList.remove('hidden');
+    }
 
-      document.getElementById('sum-monthly').innerText = money.format(data.summary.totalMonthly);
-      document.getElementById('sum-remaining').innerText = money.format(data.summary.totalRemaining);
+    function changeMonth(step) {
+      currentViewDate.setMonth(currentViewDate.getMonth() + step);
+      renderDashboard();
+    }
 
-      const list = document.getElementById('debt-list');
-      list.innerHTML = data.items.length ? '' : '<p style="text-align:center; color:gray; padding:20px;">ไม่มีรายการหนี้</p>';
+    function renderDashboard() {
+      const viewMonth = currentViewDate.getMonth();
+      const viewYear = currentViewDate.getFullYear();
+      document.getElementById('month-display').innerText = `${monthNames[viewMonth]} ${viewYear}`;
 
-      data.items.forEach(item => {
-        const prog = Math.min(item.Progress_Percent, 100);
-        list.innerHTML += `
-          <div class="debt-item fade-in">
-            <div class="item-header">
-              <div class="card-label">💳 ${item.Card_Name}</div>
-              <div class="due-label">ดีลวันที่ ${item.Due_Day}</div>
+      const list = document.getElementById('debt-timeline');
+      list.innerHTML = '';
+      
+      let sumMonthly = 0;
+      let sumRemaining = 0;
+
+      // จัดกลุ่มข้อมูลตามวันที่จ่าย (Due Day)
+      const grouped = allDebts.reduce((acc, d) => {
+        const day = d.Due_Day;
+        if (!acc[day]) acc[day] = [];
+        acc[day].push(d);
+        return acc;
+      }, {});
+
+      // เรียงวันที่จากน้อยไปมาก
+      const sortedDays = Object.keys(grouped).sort((a, b) => a - b);
+
+      sortedDays.forEach(day => {
+        let groupHtml = `<div class="date-group-label animate-in">ทุกวันที่ ${day} ของเดือน</div>`;
+        
+        grouped[day].forEach(debt => {
+          // คำนวณยอด
+          const paid = debt.Paid_Months;
+          const total = debt.Total_Months;
+          const monthly = debt.Monthly_Payment;
+          
+          // เช็คว่าในเดือนที่ดูอยู่ ยังต้องจ่ายไหม?
+          // (ถ้าจ่ายครบแล้ว หรือยังไม่ถึงกำหนดเริ่ม จะไม่โชว์ยอดในเดือนนั้น)
+          // สมมติในระบบง่ายๆ คือโชว์ยอดจนกว่าจะครบงวด
+          if (paid < total) {
+            sumMonthly += monthly;
+            sumRemaining += (total - paid) * monthly;
+          }
+
+          const prog = (paid / total) * 100;
+
+          groupHtml += `
+            <div class="debt-item animate-in">
+              <div class="item-top">
+                <span class="item-name">💳 ${debt.Card_Name}</span>
+                <span class="item-tag tag-blue">งวดที่ ${paid}/${total}</span>
+              </div>
+              <div class="item-grid">
+                <div class="item-box">
+                  <span>จ่ายงวดนี้</span>
+                  <strong>฿${money.format(monthly)}</strong>
+                </div>
+                <div class="item-box">
+                  <span>คงเหลือ</span>
+                  <strong>฿${money.format((total-paid)*monthly)}</strong>
+                </div>
+              </div>
+              <div class="progress-container">
+                <div class="bar-bg"><div class="bar-fill" style="width: ${prog}%"></div></div>
+                <div class="bar-labels">
+                  <span>ความคืบหน้า</span>
+                  <span>${Math.round(prog)}%</span>
+                </div>
+              </div>
             </div>
-            <div class="item-grid">
-              <div class="data-card"><span>จ่ายงวดนี้</span><strong>฿${money.format(item.Monthly_Payment)}</strong></div>
-              <div class="data-card"><span>คงเหลือ</span><strong>฿${money.format(item.Remaining_Amount)}</strong></div>
-            </div>
-            <div class="progress-bar"><div class="progress-fill" style="width:${prog}%"></div></div>
-            <div class="progress-info"><span>งวดที่ ${item.Paid_Months}/${item.Total_Months}</span><span>${Math.round(prog)}%</span></div>
-          </div>
-        `;
+          `;
+        });
+        list.innerHTML += groupHtml;
       });
-    }
 
-    // --- ส่วนของระบบ Admin ---
-
-    async function openAdminPanel() {
-      toggleLoader(true);
-      document.getElementById('dashboard-section').classList.add('hidden');
-      document.getElementById('admin-section').classList.remove('hidden');
-
-      try {
-        const res = await fetch(API_URL, {
-          method: 'POST', headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ action: 'getAdminData' })
-        });
-        const data = await res.json();
-        
-        // ใส่ข้อมูล Dropdown ผู้ใช้งาน
-        const userSelect = document.getElementById('form-user');
-        userSelect.innerHTML = '<option value="">-- เลือกผู้ใช้งาน --</option>';
-        data.users.forEach(u => userSelect.innerHTML += `<option value="${u.pin}">${u.name} (PIN: ${u.pin})</option>`);
-
-        // ใส่ข้อมูล Dropdown บัตร
-        const cardSelect = document.getElementById('form-card');
-        cardSelect.innerHTML = '<option value="">-- เลือกบัตร --</option>';
-        data.cards.forEach(c => cardSelect.innerHTML += `<option value="${c.name}">${c.name}</option>`);
-
-      } catch (e) {
-        Swal.fire('ข้อผิดพลาด', 'ดึงข้อมูลไม่สำเร็จ', 'error');
+      if (allDebts.length === 0) {
+        list.innerHTML = `<div style="text-align:center; padding:60px; color:#94A3B8;">ไม่พบข้อมูลรายการผ่อน</div>`;
       }
-      toggleLoader(false);
+
+      document.getElementById('sum-monthly').innerText = money.format(sumMonthly);
+      document.getElementById('sum-remaining').innerText = "฿" + money.format(sumRemaining);
     }
 
-    function closeAdminPanel() {
-      document.getElementById('admin-section').classList.add('hidden');
-      document.getElementById('dashboard-section').classList.remove('hidden');
-    }
-
-    function calcMonthly() {
-      const amount = parseFloat(document.getElementById('form-amount').value) || 0;
-      const interest = parseFloat(document.getElementById('form-interest').value) || 0;
-      const months = parseInt(document.getElementById('form-months').value) || 0;
-
-      if(amount > 0 && months > 0) {
-        // สูตรคำนวณแบบ Flat Rate (ยอดจัด + (ยอดจัด * ดอกเบี้ยต่อปี * จำนวนปี)) / จำนวนงวด
-        const totalInterest = amount * (interest / 100) * (months / 12);
-        const totalToPay = amount + totalInterest;
-        const monthly = totalToPay / months;
-        document.getElementById('form-monthly').value = monthly.toFixed(2);
-      }
-    }
-
-    async function submitNewDebt() {
-      toggleLoader(true);
-      const payload = {
-        userPin: document.getElementById('form-user').value,
-        cardName: document.getElementById('form-card').value,
-        totalAmount: parseFloat(document.getElementById('form-amount').value),
-        interestRate: parseFloat(document.getElementById('form-interest').value),
-        totalMonths: parseInt(document.getElementById('form-months').value),
-        dueDay: parseInt(document.getElementById('form-due').value),
-        monthlyPayment: parseFloat(document.getElementById('form-monthly').value)
-      };
-
-      try {
-        const res = await fetch(API_URL, {
-          method: 'POST', headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ action: 'addDebt', data: payload })
-        });
-        const data = await res.json();
-        
-        toggleLoader(false);
-        if(data.status === 'success') {
-          Swal.fire('สำเร็จ!', 'เพิ่มรายการหนี้เข้าระบบแล้ว', 'success').then(() => {
-            // ล้างฟอร์ม
-            document.querySelectorAll('.form-input').forEach(el => el.value = '');
-            document.getElementById('form-interest').value = '0';
-          });
-        } else {
-          Swal.fire('ผิดพลาด', data.message, 'error');
-        }
-      } catch (e) {
-        toggleLoader(false); Swal.fire('ข้อผิดพลาด', 'บันทึกข้อมูลไม่สำเร็จ', 'error');
-      }
-    }
-
-    function logout() { location.reload(); }
     function toggleLoader(show) { document.getElementById('loader').className = show ? '' : 'hidden'; }
   </script>
 </body>
