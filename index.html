@@ -3,270 +3,1014 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#00A87C">
   <title>Thianrawich Banking</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
+
   <style>
+    /* =========================================================
+       DESIGN TOKENS
+       Variable names below are kept identical to the original
+       so all inline styles in JS template strings keep working.
+       ========================================================= */
     :root {
-      /* Theme Modern Banking (Dashboard) */
-      --primary: #00B981; 
-      --primary-hover: #059669; 
-      --bg-color: #F8FAFC; 
+      /* --- Brand --- */
+      --primary: #00A87C;
+      --primary-hover: #047857;
+      --primary-soft: #ECFDF5;
+      --primary-glow: rgba(0, 168, 124, 0.18);
+      --primary-grad: linear-gradient(135deg, #00B981 0%, #00A87C 60%, #047857 100%);
+
+      /* --- Surfaces --- */
+      --bg-color: #F4F7FB;
+      --bg-deep: #EEF2F8;
       --sidebar-bg: #FFFFFF;
       --card-bg: #FFFFFF;
-      --text-main: #0F172A; 
-      --text-muted: #64748B; 
-      --border: #E2E8F0;
-      
-      /* Status Colors */
-      --danger: #EF4444; 
-      --warning: #F59E0B; 
-      --success: #10B981; 
-      --info: #3B82F6;
-      --purple: #8B5CF6;
+
+      /* --- Text & Borders --- */
+      --text-main: #0B1A2B;
+      --text-muted: #64748B;
+      --text-soft: #94A3B8;
+      --border: #E5EAF2;
+      --border-soft: #EEF2F7;
+
+      /* --- Status --- */
+      --danger: #E11D48;
+      --danger-soft: #FFF1F3;
+      --warning: #D97706;
+      --warning-soft: #FFFBEB;
+      --success: #059669;
+      --success-soft: #ECFDF5;
+      --info: #2563EB;
+      --info-soft: #EFF6FF;
+      --purple: #7C3AED;
+      --purple-soft: #F5F3FF;
       --action-blue: #2563EB;
-      
-      /* VIP Login Colors */
-      --vip-bg: #090E17;
-      --vip-card: rgba(15, 23, 42, 0.65);
-      --vip-accent: #0EA5E9;
-      --vip-accent-hover: #0284C7;
+
+      /* --- VIP Secure Login --- */
+      --vip-bg: #060B16;
+      --vip-card: rgba(13, 22, 39, 0.68);
+      --vip-accent: #06B6D4;
+      --vip-accent-hover: #0E7490;
+
+      /* --- Tokens --- */
+      --r-sm: 10px;
+      --r-md: 14px;
+      --r-lg: 18px;
+      --r-xl: 22px;
+      --r-pill: 999px;
+
+      --sh-xs: 0 1px 2px rgba(11, 26, 43, 0.04);
+      --sh-sm: 0 2px 6px rgba(11, 26, 43, 0.05), 0 1px 2px rgba(11, 26, 43, 0.03);
+      --sh-md: 0 8px 22px rgba(11, 26, 43, 0.06), 0 2px 6px rgba(11, 26, 43, 0.04);
+      --sh-lg: 0 22px 44px rgba(11, 26, 43, 0.10), 0 8px 16px rgba(11, 26, 43, 0.05);
+      --sh-ring: 0 0 0 4px var(--primary-glow);
+
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+      --speed-1: 160ms;
+      --speed-2: 280ms;
+      --speed-3: 480ms;
+      --speed-4: 700ms;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Prompt', sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; height: 100vh; margin: 0; }
-    .hidden { display: none !important; }
-    
-    .fade-enter { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Prompt', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-    /* =========================================
-       1. VIP SECURE LOGIN SECTION
-       ========================================= */
+    html, body { height: 100%; }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      overflow-x: hidden;
+      height: 100vh;
+      margin: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      letter-spacing: 0.01em;
+    }
+
+    .hidden { display: none !important; }
+
+    /* Subtle textured backdrop on the dashboard */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(1200px 600px at 110% -10%, rgba(0, 168, 124, 0.06), transparent 60%),
+        radial-gradient(900px 500px at -10% 100%, rgba(37, 99, 235, 0.05), transparent 60%);
+      z-index: 0;
+    }
+
+    /* ===== Page transitions ===== */
+    .fade-enter { animation: fadeIn 540ms var(--ease) both; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.995); filter: blur(2px); }
+      to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+
+    /* Stagger for direct children of an entering view */
+    .fade-enter > * { animation: fadeInChild 540ms var(--ease) both; }
+    .fade-enter > *:nth-child(1) { animation-delay: 60ms; }
+    .fade-enter > *:nth-child(2) { animation-delay: 120ms; }
+    .fade-enter > *:nth-child(3) { animation-delay: 180ms; }
+    .fade-enter > *:nth-child(4) { animation-delay: 240ms; }
+    .fade-enter > *:nth-child(5) { animation-delay: 300ms; }
+    @keyframes fadeInChild {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Honor reduced motion preferences */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* Custom scrollbars */
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #D7DEE8; border-radius: 8px; border: 2px solid var(--bg-color); }
+    ::-webkit-scrollbar-thumb:hover { background: #B9C2CF; }
+
+    /* =========================================================
+       1. VIP SECURE LOGIN
+       ========================================================= */
     #login-wrapper {
       position: fixed; inset: 0; z-index: 9999;
       background-color: var(--vip-bg);
-      background-image: radial-gradient(circle at 50% 30%, rgba(14, 165, 233, 0.15) 0%, transparent 60%);
+      background-image:
+        radial-gradient(1200px 700px at 50% 20%, rgba(6, 182, 212, 0.18), transparent 60%),
+        radial-gradient(800px 500px at 85% 90%, rgba(124, 58, 237, 0.12), transparent 60%),
+        radial-gradient(700px 400px at 10% 90%, rgba(14, 165, 233, 0.10), transparent 60%);
       display: flex; align-items: center; justify-content: center;
-      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+      transition: opacity var(--speed-3) var(--ease), visibility var(--speed-3);
+      overflow: hidden;
     }
+    #login-wrapper::before, #login-wrapper::after {
+      content: ''; position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.55; pointer-events: none;
+    }
+    #login-wrapper::before { width: 360px; height: 360px; top: -120px; left: -100px; background: #0EA5E9; animation: floatA 10s ease-in-out infinite; }
+    #login-wrapper::after  { width: 320px; height: 320px; bottom: -100px; right: -80px; background: #6366F1; animation: floatB 12s ease-in-out infinite; }
+    @keyframes floatA { 0%,100% { transform: translate(0,0); } 50% { transform: translate(40px, 30px); } }
+    @keyframes floatB { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-30px, -40px); } }
+
     #login-wrapper.hide-login { opacity: 0; visibility: hidden; transform: scale(1.02); }
-    
+
     .vip-login-card {
+      position: relative;
       background: var(--vip-card);
-      backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+      backdrop-filter: blur(34px) saturate(140%);
+      -webkit-backdrop-filter: blur(34px) saturate(140%);
       border-radius: 28px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      padding: 45px 35px; width: 90%; max-width: 400px; text-align: center;
-      animation: slideUpCard 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      box-shadow:
+        0 30px 60px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.10),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+      padding: 44px 34px 36px;
+      width: 90%;
+      max-width: 410px;
+      text-align: center;
+      animation: slideUpCard 720ms var(--ease) both;
     }
-    @keyframes slideUpCard { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+    .vip-login-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(160deg, rgba(255,255,255,0.18), rgba(255,255,255,0) 40%, rgba(6,182,212,0.18) 100%);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      pointer-events: none;
+    }
+    @keyframes slideUpCard {
+      from { opacity: 0; transform: translateY(40px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
 
     .vip-shield {
-      width: 68px; height: 68px;
-      background: linear-gradient(135deg, var(--vip-accent), #38BDF8);
-      border-radius: 20px; margin: 0 auto 24px;
+      width: 72px; height: 72px;
+      background: linear-gradient(135deg, var(--vip-accent), #38BDF8 60%, #2563EB);
+      border-radius: 22px; margin: 0 auto 22px;
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 12px 24px rgba(14, 165, 233, 0.3);
+      box-shadow:
+        0 14px 28px rgba(14, 165, 233, 0.35),
+        inset 0 1px 0 rgba(255,255,255,0.30);
       position: relative;
     }
-    .vip-shield::after {
-      content: ''; position: absolute; inset: -4px; border-radius: 24px;
-      border: 1px solid rgba(14, 165, 233, 0.4); animation: pulse-ring 2s infinite;
+    .vip-shield::before, .vip-shield::after {
+      content: ''; position: absolute; inset: -4px; border-radius: 26px;
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      animation: pulse-ring 2.4s ease-out infinite;
     }
-    @keyframes pulse-ring { 0% { transform: scale(0.9); opacity: 1; } 100% { transform: scale(1.3); opacity: 0; } }
-    .vip-shield svg { width: 34px; height: 34px; fill: none; stroke: white; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    
-    .vip-title { font-family: 'Plus Jakarta Sans', 'Prompt', sans-serif; font-size: 1.6rem; font-weight: 800; color: #FFFFFF; margin-bottom: 6px; letter-spacing: 0.5px; }
-    .vip-sub { font-size: 0.95rem; color: #94A3B8; margin-bottom: 30px; }
+    .vip-shield::after { animation-delay: 1.2s; }
+    @keyframes pulse-ring {
+      0%   { transform: scale(0.92); opacity: 0.9; }
+      80%  { opacity: 0; }
+      100% { transform: scale(1.45); opacity: 0; }
+    }
+    .vip-shield svg { width: 36px; height: 36px; fill: none; stroke: white; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25)); }
 
-    /* Scroll Bar (Role Toggle) */
+    .vip-title {
+      font-family: 'Plus Jakarta Sans', 'Prompt', sans-serif;
+      font-size: 1.7rem; font-weight: 800; color: #FFFFFF;
+      margin-bottom: 8px; letter-spacing: 0.3px;
+      background: linear-gradient(180deg, #FFFFFF, #CBE7F4);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .vip-sub { font-size: 0.95rem; color: #94A3B8; margin-bottom: 28px; line-height: 1.5; }
+
+    /* Role toggle */
     .role-selector {
-      position: relative; display: flex; background: rgba(0, 0, 0, 0.4);
-      border-radius: 100px; padding: 5px; margin-bottom: 25px;
-      border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+      position: relative; display: flex;
+      background: rgba(0, 0, 0, 0.42);
+      border-radius: 100px; padding: 5px; margin-bottom: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.35);
     }
     .role-slider {
       position: absolute; top: 5px; bottom: 5px; left: 5px; width: calc(50% - 5px);
       background: linear-gradient(135deg, var(--vip-accent), #2563EB);
-      border-radius: 100px; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-      box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3);
+      border-radius: 100px;
+      transition: transform var(--speed-3) var(--ease-bounce);
+      box-shadow: 0 6px 16px rgba(14, 165, 233, 0.35), inset 0 1px 0 rgba(255,255,255,0.2);
     }
     .role-btn {
-      position: relative; z-index: 1; flex: 1; padding: 12px 0; border: none; background: transparent;
-      color: #94A3B8; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: color 0.3s;
+      position: relative; z-index: 1; flex: 1; padding: 12px 0;
+      border: none; background: transparent;
+      color: #94A3B8; font-weight: 600; font-size: 0.92rem;
+      cursor: pointer; transition: color var(--speed-2) var(--ease);
     }
     .role-btn.active { color: #FFFFFF; }
-    
-    .vip-input-wrapper { position: relative; width: 100%; margin-bottom: 25px; }
-    .vip-input-wrapper::before { content: '🔒'; position: absolute; left: 18px; top: 50%; transform: translateY(-50%); z-index: 2; font-size: 1.1rem; filter: grayscale(1) brightness(2); opacity: 0.6; }
-    .vip-input {
-      width: 100%; padding: 18px 50px 18px 50px; font-size: 1.1rem; font-weight: 600; text-align: left;
-      border: 1.5px solid rgba(255, 255, 255, 0.1); border-radius: 16px; outline: none; transition: all 0.3s;
-      background: rgba(0, 0, 0, 0.25); color: #FFF; letter-spacing: 3px; font-family: 'Plus Jakarta Sans', sans-serif;
+    .role-btn:hover:not(.active) { color: #CBD5E1; }
+
+    .vip-input-wrapper { position: relative; width: 100%; margin-bottom: 22px; }
+    .vip-input-wrapper::before {
+      content: '';
+      position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+      z-index: 2; width: 18px; height: 18px;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='11' width='18' height='11' rx='2' ry='2'/><path d='M7 11V7a5 5 0 0 1 10 0v4'/></svg>");
+      background-repeat: no-repeat; background-size: contain; opacity: 0.85;
+      transition: opacity var(--speed-2);
     }
-    .vip-input:focus { border-color: var(--vip-accent); background: rgba(0, 0, 0, 0.4); box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15); }
+    .vip-input-wrapper:focus-within::before { opacity: 1; filter: drop-shadow(0 0 4px rgba(6,182,212,0.6)); }
+    .vip-input {
+      width: 100%; padding: 18px 50px;
+      font-size: 1.1rem; font-weight: 600; text-align: left;
+      border: 1.5px solid rgba(255, 255, 255, 0.10);
+      border-radius: 16px; outline: none;
+      transition: all var(--speed-2) var(--ease);
+      background: rgba(0, 0, 0, 0.28);
+      color: #FFF;
+      letter-spacing: 4px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .vip-input:focus {
+      border-color: var(--vip-accent);
+      background: rgba(0, 0, 0, 0.42);
+      box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.18), 0 8px 24px rgba(14,165,233,0.12);
+    }
     .vip-input::placeholder { color: #64748B; letter-spacing: normal; font-family: 'Prompt', sans-serif; font-size: 0.95rem; font-weight: 400; }
-    
-    .vip-eye { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #64748B; cursor: pointer; padding: 5px; transition: 0.2s;}
-    .vip-eye:hover { color: #FFF; }
+
+    .vip-eye {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+      color: #94A3B8; cursor: pointer; padding: 7px;
+      border-radius: 10px;
+      transition: all var(--speed-2) var(--ease);
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .vip-eye:hover { color: #FFF; background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.14); }
 
     .vip-login-btn {
-      width: 100%; padding: 18px; background: linear-gradient(135deg, var(--vip-accent), var(--vip-accent-hover));
-      border: none; border-radius: 16px; color: #FFF; font-size: 1.1rem; font-weight: 600; cursor: pointer;
-      transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;
-      box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+      width: 100%; padding: 17px;
+      background: linear-gradient(135deg, var(--vip-accent) 0%, #0EA5E9 50%, var(--vip-accent-hover) 100%);
+      background-size: 200% 200%;
+      border: none; border-radius: 16px; color: #FFF;
+      font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      transition: all var(--speed-2) var(--ease);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      box-shadow: 0 10px 24px rgba(14, 165, 233, 0.32), inset 0 1px 0 rgba(255,255,255,0.18);
+      position: relative; overflow: hidden;
+      letter-spacing: 0.3px;
     }
-    .vip-login-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(14, 165, 233, 0.4); filter: brightness(1.1); }
+    .vip-login-btn::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%);
+      transform: translateX(-100%);
+      transition: transform 800ms var(--ease);
+    }
+    .vip-login-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(14, 165, 233, 0.42); background-position: 100% 0; }
+    .vip-login-btn:hover::after { transform: translateX(100%); }
+    .vip-login-btn:active { transform: translateY(0); }
     .vip-login-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-    
-    .vip-loader { width: 24px; height: 24px; animation: vip-rotate 2s linear infinite; display: none; }
-    .vip-loader circle { stroke: #FFF; stroke-linecap: round; animation: vip-dash 1.5s ease-in-out infinite; }
-    @keyframes vip-rotate { 100% { transform: rotate(360deg); } }
-    @keyframes vip-dash { 0% { stroke-dasharray: 1, 150; stroke-dashoffset: 0; } 50% { stroke-dasharray: 90, 150; stroke-dashoffset: -35; } 100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; } }
 
-    /* =========================================
-       2. DASHBOARD LAYOUT 
-       ========================================= */
-    #app-container { display: flex; height: 100vh; overflow: hidden; }
-    
+    .vip-loader { width: 22px; height: 22px; animation: vip-rotate 1.4s linear infinite; display: none; }
+    .vip-loader circle { stroke: #FFF; stroke-linecap: round; animation: vip-dash 1.4s ease-in-out infinite; stroke-width: 4; }
+    @keyframes vip-rotate { 100% { transform: rotate(360deg); } }
+    @keyframes vip-dash {
+      0%   { stroke-dasharray: 1, 150; stroke-dashoffset: 0; }
+      50%  { stroke-dasharray: 90, 150; stroke-dashoffset: -35; }
+      100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; }
+    }
+
+    /* Tiny security note under the login card */
+    .vip-foot {
+      margin-top: 18px; font-size: 0.78rem; color: #64748B;
+      display: flex; align-items: center; justify-content: center; gap: 6px; opacity: 0.85;
+    }
+    .vip-foot::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 0 4px rgba(16,185,129,0.18);
+      animation: dotPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes dotPulse {
+      0%, 100% { box-shadow: 0 0 0 4px rgba(16,185,129,0.18); }
+      50%      { box-shadow: 0 0 0 7px rgba(16,185,129,0.05); }
+    }
+
+    /* =========================================================
+       2. DASHBOARD LAYOUT
+       ========================================================= */
+    #app-container { display: flex; height: 100vh; overflow: hidden; position: relative; z-index: 1; }
+
     /* --- Sidebar --- */
-    .sidebar { width: 260px; background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 25px 0; z-index: 10; }
-    .brand { text-align: center; padding-bottom: 25px; margin-bottom: 15px; }
-    .brand h2 { color: var(--text-main); font-size: 1.5rem; margin-top: 10px; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif;}
-    .role-badge { font-size: 0.75rem; color: var(--primary); font-weight: 600; background: #D1FAE5; padding: 4px 16px; border-radius: 20px; display: inline-block; margin-top: 5px; }
-    
-    .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 0 15px; }
-    .nav-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-radius: 12px; cursor: pointer; color: var(--text-muted); font-weight: 600; transition: all 0.2s ease; border: none; background: transparent; text-align: left; font-size: 0.95rem; }
+    .sidebar {
+      width: 270px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      padding: 26px 0 18px;
+      z-index: 10;
+      position: relative;
+    }
+    .sidebar::after {
+      content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px;
+      background: linear-gradient(180deg, transparent, var(--border) 20%, var(--border) 80%, transparent);
+      pointer-events: none;
+    }
+    .brand {
+      text-align: center; padding: 0 24px 22px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .brand h2 {
+      color: var(--text-main); font-size: 1.35rem;
+      font-weight: 800;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #0B1A2B 0%, #1E3A8A 100%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .role-badge {
+      font-size: 0.74rem; color: var(--primary-hover); font-weight: 700;
+      background: var(--primary-soft);
+      padding: 4px 14px; border-radius: 20px;
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 10px;
+      border: 1px solid rgba(0, 168, 124, 0.18);
+    }
+    .role-badge::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--primary); box-shadow: 0 0 0 3px rgba(0,168,124,0.18);
+    }
+
+    .nav-menu {
+      flex: 1;
+      display: flex; flex-direction: column; gap: 4px;
+      padding: 8px 14px;
+    }
+    .nav-item {
+      position: relative;
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-weight: 600;
+      transition: all var(--speed-2) var(--ease);
+      border: none; background: transparent;
+      text-align: left;
+      font-size: 0.94rem;
+      overflow: hidden;
+    }
+    .nav-item > span:first-child {
+      width: 22px; height: 22px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      transition: transform var(--speed-2) var(--ease);
+    }
+    .nav-item > span:first-child svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     .nav-item:hover { background: #F1F5F9; color: var(--text-main); }
-    .nav-item.active { background: var(--primary); color: #FFF; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25); }
-    
-    .badge-notification { background: var(--danger); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: bold; margin-left: auto; }
-    .logout-btn { margin: 15px; padding: 14px; border: 1px solid var(--danger); color: var(--danger); background: transparent; border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; }
-    .logout-btn:hover { background: #FEF2F2; }
+    .nav-item:hover > span:first-child { transform: scale(1.1); }
+    .nav-item.active {
+      background: var(--primary-grad);
+      color: #FFF;
+      box-shadow: 0 8px 18px rgba(0, 168, 124, 0.28), inset 0 1px 0 rgba(255,255,255,0.18);
+    }
+    .nav-item.active::before {
+      content: ''; position: absolute; left: -14px; top: 8px; bottom: 8px; width: 4px;
+      background: var(--primary); border-radius: 0 4px 4px 0;
+      box-shadow: 0 0 12px rgba(0,168,124,0.6);
+    }
+    .nav-item:active { transform: scale(0.985); }
+
+    .badge-notification {
+      background: var(--danger);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      margin-left: auto;
+      min-width: 22px; text-align: center;
+      box-shadow: 0 2px 6px rgba(225,29,72,0.35);
+      animation: badgePulse 2s ease-in-out infinite;
+    }
+    @keyframes badgePulse {
+      0%, 100% { box-shadow: 0 2px 6px rgba(225,29,72,0.35); }
+      50%      { box-shadow: 0 2px 12px rgba(225,29,72,0.55), 0 0 0 4px rgba(225,29,72,0.12); }
+    }
+    .nav-item.active .badge-notification { background: rgba(255,255,255,0.25); color: #FFF; box-shadow: none; animation: none; }
+
+    .logout-btn {
+      margin: 14px;
+      padding: 13px;
+      border: 1px solid var(--border);
+      color: var(--danger);
+      background: #FFF;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex; justify-content: center; align-items: center; gap: 8px;
+      transition: all var(--speed-2) var(--ease);
+      font-size: 0.92rem;
+    }
+    .logout-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .logout-btn:hover {
+      background: var(--danger-soft); border-color: rgba(225,29,72,0.3);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(225,29,72,0.12);
+    }
+    .logout-btn:active { transform: translateY(0); }
 
     /* --- Main Content --- */
     .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-color); overflow-y: auto; scroll-behavior: smooth; }
-    
-    .topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: #FFFFFF; position: sticky; top: 0; z-index: 5; border-bottom: 1px solid var(--border); }
-    .page-title { display: flex; align-items: center; gap: 15px; }
-    .page-title h1 { font-size: 1.4rem; color: var(--text-main); font-weight: 700; margin: 0;}
-    .page-subtitle { font-size: 0.9rem; color: var(--text-muted); margin: 0; border-left: 2px solid var(--border); padding-left: 15px; }
-    
-    .user-profile { display: flex; align-items: center; gap: 12px; background: #FFF; padding: 6px 16px 6px 6px; border-radius: 50px; border: 1px solid var(--border); }
-    .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: #FFF; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem;}
+
+    .topbar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 18px 36px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      position: sticky; top: 0; z-index: 5;
+      border-bottom: 1px solid var(--border);
+    }
+    .page-title { display: flex; align-items: center; gap: 16px; }
+    .page-title h1 {
+      font-size: 1.35rem; color: var(--text-main); font-weight: 700; margin: 0;
+      letter-spacing: -0.01em;
+      font-family: 'Plus Jakarta Sans', 'Prompt', sans-serif;
+    }
+    .page-subtitle {
+      font-size: 0.87rem; color: var(--text-muted); margin: 0;
+      border-left: 2px solid var(--border-soft);
+      padding-left: 16px;
+    }
+
+    .user-profile {
+      display: flex; align-items: center; gap: 12px;
+      background: #FFF;
+      padding: 5px 16px 5px 5px;
+      border-radius: 50px;
+      border: 1px solid var(--border);
+      transition: all var(--speed-2) var(--ease);
+    }
+    .user-profile:hover { border-color: var(--border-strong); box-shadow: var(--sh-sm); }
+    .avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--primary-grad);
+      color: #FFF;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.9rem;
+      box-shadow: 0 4px 10px rgba(0,168,124,0.32), inset 0 1px 0 rgba(255,255,255,0.25);
+    }
     .user-details { display: flex; flex-direction: column; }
-    .user-details strong { font-size: 0.85rem; line-height: 1; margin-bottom: 2px;}
-    .status-online { font-size: 0.7rem; color: var(--success); display: flex; align-items: center; gap: 4px; }
-    .status-online::before { content: ''; width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
+    .user-details strong { font-size: 0.85rem; line-height: 1.1; margin-bottom: 2px; color: var(--text-main); font-weight: 700; }
+    .status-online { font-size: 0.7rem; color: var(--success); display: flex; align-items: center; gap: 4px; font-weight: 600; }
+    .status-online::before {
+      content: ''; width: 7px; height: 7px;
+      background: var(--success); border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
+      animation: dotPulse 2s ease-in-out infinite;
+    }
 
-    .content-area { padding: 40px; max-width: 1200px; margin: 0 auto; width: 100%;}
-    
-    /* --- Modern Bank Cards & Boxes --- */
-    .white-card { background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border); padding: 35px; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
-    
-    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .section-header h3 { font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin: 0; display: flex; align-items: center; gap: 8px;}
-    
-    .month-picker-container { display: flex; align-items: center; gap: 10px; background: #FFF; padding: 6px 12px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.02);}
-    .month-picker-container span { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
-    .month-input { padding: 6px; border: none; font-size: 0.95rem; outline: none; color: var(--primary); font-weight: 700; cursor: pointer; background: transparent;}
+    .content-area { padding: 32px 36px 48px; max-width: 1240px; margin: 0 auto; width: 100%; }
 
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-    
-    .summary-box { background: #FFFFFF; padding: 25px 20px; border-radius: 16px; text-align: center; border: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.01);}
-    .summary-box.highlight { background: #F0FDF4; border: 1.5px solid var(--primary); }
-    .summary-box span { color: var(--text-muted); font-size: 0.9rem; font-weight: 600; margin-bottom: 5px;}
+    /* --- Cards & Sections --- */
+    .white-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      padding: 32px;
+      margin-bottom: 22px;
+      box-shadow: var(--sh-sm);
+      transition: box-shadow var(--speed-2) var(--ease), transform var(--speed-2) var(--ease);
+    }
+
+    .section-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 18px;
+      gap: 12px;
+    }
+    .section-header h3 {
+      font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin: 0;
+      display: flex; align-items: center; gap: 10px;
+      letter-spacing: -0.01em;
+      font-family: 'Plus Jakarta Sans', 'Prompt', sans-serif;
+    }
+    .section-header h3 svg { width: 20px; height: 20px; color: var(--primary); }
+
+    .month-picker-container {
+      display: flex; align-items: center; gap: 10px;
+      background: #FFF;
+      padding: 6px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: var(--sh-xs);
+      transition: all var(--speed-2) var(--ease);
+    }
+    .month-picker-container:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(0,168,124,0.10); }
+    .month-picker-container span { font-size: 0.88rem; font-weight: 600; color: var(--text-muted); }
+    .month-input {
+      padding: 6px; border: none; font-size: 0.95rem; outline: none;
+      color: var(--primary-hover); font-weight: 700; cursor: pointer;
+      background: transparent;
+      font-family: 'Plus Jakarta Sans', 'Prompt', sans-serif;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+
+    /* --- Summary Boxes --- */
+    .summary-box {
+      background: #FFFFFF;
+      padding: 24px 22px;
+      border-radius: 18px;
+      text-align: center;
+      border: 1px solid var(--border);
+      display: flex; flex-direction: column; justify-content: center; gap: 6px;
+      box-shadow: var(--sh-xs);
+      transition: all var(--speed-2) var(--ease);
+      position: relative; overflow: hidden;
+    }
+    .summary-box::before {
+      content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--text-soft), transparent);
+      opacity: 0.4;
+    }
+    .summary-box:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
+    .summary-box.highlight {
+      background: linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 100%);
+      border: 1.5px solid var(--primary);
+      box-shadow: 0 8px 22px rgba(0,168,124,0.10);
+    }
+    .summary-box.highlight::before { background: linear-gradient(90deg, transparent, var(--primary), transparent); opacity: 0.7; }
+    .summary-box span { color: var(--text-muted); font-size: 0.86rem; font-weight: 600; letter-spacing: 0.02em; }
     .summary-box.highlight span { color: var(--primary-hover); }
-    .summary-box h2 { color: var(--text-main); font-size: 2.2rem; margin: 0; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif;}
-    .summary-box h2.red-text { color: var(--danger); }
-    .summary-box h2.blue-text { color: var(--info); }
+    .summary-box h2 {
+      color: var(--text-main); font-size: 2.1rem; margin: 0;
+      font-weight: 800;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+    .summary-box h2.red-text   { color: var(--danger); }
+    .summary-box h2.blue-text  { color: var(--info); }
     .summary-box h2.green-text { color: var(--primary); }
 
     /* --- Debt Items --- */
-    .debt-item { 
-      border: 1px solid var(--border); border-radius: 16px; padding: 25px; 
-      margin-bottom: 16px; display: flex; justify-content: space-between; 
-      align-items: center; background: #FFFFFF; transition: all 0.3s ease; 
-      border-left-width: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    .debt-item {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px 24px;
+      margin-bottom: 14px;
+      display: flex; justify-content: space-between; align-items: center;
+      background: #FFFFFF;
+      transition: all var(--speed-2) var(--ease);
+      border-left-width: 5px;
+      box-shadow: var(--sh-xs);
+      position: relative;
+      animation: slideInRight 480ms var(--ease) both;
     }
-    .debt-item:hover { box-shadow: 0 10px 20px rgba(0,0,0,0.05); transform: translateY(-2px); border-color: var(--border); border-left-color: inherit; }
-    
-    .debt-info { flex: 1; }
-    .debt-info h3 { font-size: 1.15rem; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--text-main);}
-    .debt-meta { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;}
-    
-    .debt-actions { text-align: right; min-width: 220px; display: flex; flex-direction: column; justify-content: center; align-items: flex-end;}
-    .debt-amount { font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; font-family: 'Plus Jakarta Sans', sans-serif;}
-    .due-text { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; }
-    
-    /* --- Badges & Buttons --- */
-    .status-badge { font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; font-weight: 600; letter-spacing: 0.3px; }
-    .status-success { background: #D1FAE5; color: #059669; }
-    .status-warning { background: #FEF3C7; color: #D97706; }
-    .status-danger  { background: #FEE2E2; color: #DC2626; }
-    .status-info    { background: #DBEAFE; color: #2563EB; }
-    .status-gray    { background: #F1F5F9; color: #475569; }
-    
-    .btn-action { color: #FFF; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; width: 100%; font-size: 0.95rem; font-family: 'Prompt';}
-    .btn-action:hover { transform: translateY(-1px); filter: brightness(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.15);}
-    .btn-primary { background: var(--action-blue); box-shadow: 0 4px 10px rgba(37,99,235,0.2); }
-    .btn-danger  { background: var(--danger); box-shadow: 0 4px 10px rgba(239,68,68,0.2); }
-    .btn-success { background: var(--success); box-shadow: 0 4px 10px rgba(16,185,129,0.2); }
-    .btn-purple  { background: var(--purple); box-shadow: 0 4px 10px rgba(139,92,246,0.2); } 
-    .btn-disabled { background: #F1F5F9; color: #94A3B8; cursor: not-allowed; box-shadow: none; }
-    .btn-disabled:hover { transform: none; filter: none; box-shadow: none;}
-    
-    .btn-outline { border: 1px solid var(--border); background: #FFF; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; font-weight: 600; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px;}
-    .btn-outline:hover { background: #F8FAFC; border-color: #CBD5E1;}
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(-12px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .debt-item:hover {
+      box-shadow: var(--sh-md);
+      transform: translateY(-2px);
+      border-color: var(--border);
+    }
+    .debt-item:hover::after {
+      content: ''; position: absolute; inset: 0;
+      border-radius: inherit; pointer-events: none;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.02);
+    }
 
-    .clickable { cursor: pointer; }
-    .clickable:hover { border-right-color: var(--primary); border-top-color: var(--primary); border-bottom-color: var(--primary);}
+    .debt-info { flex: 1; }
+    .debt-info h3 {
+      font-size: 1.1rem; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      font-weight: 700; color: var(--text-main);
+      letter-spacing: -0.01em;
+    }
+    .debt-meta { color: var(--text-muted); font-size: 0.88rem; line-height: 1.65; }
+
+    .debt-actions {
+      text-align: right; min-width: 220px;
+      display: flex; flex-direction: column; justify-content: center; align-items: flex-end;
+      gap: 4px;
+    }
+    .debt-amount {
+      font-size: 1.55rem; font-weight: 800; color: var(--text-main);
+      margin-bottom: 4px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+    .due-text { font-size: 0.84rem; color: var(--text-muted); margin-bottom: 8px; }
+
+    /* --- Status Badges --- */
+    .status-badge {
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      display: inline-flex; align-items: center; gap: 4px;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .status-success { background: var(--success-soft); color: #047857; border-color: rgba(5,150,105,0.18); }
+    .status-warning { background: var(--warning-soft); color: #B45309; border-color: rgba(217,119,6,0.20); }
+    .status-danger  { background: var(--danger-soft);  color: #BE123C; border-color: rgba(225,29,72,0.18); }
+    .status-info    { background: var(--info-soft);    color: #1D4ED8; border-color: rgba(37,99,235,0.18); }
+    .status-gray    { background: #F1F5F9; color: #475569; border-color: #E2E8F0; }
+
+    /* --- Action Buttons --- */
+    .btn-action {
+      color: #FFF; border: none; padding: 12px 22px;
+      border-radius: 11px; font-weight: 600; cursor: pointer;
+      transition: all var(--speed-2) var(--ease);
+      width: 100%;
+      font-size: 0.94rem;
+      font-family: 'Prompt', sans-serif;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.01em;
+    }
+    .btn-action::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.22) 50%, transparent 70%);
+      transform: translateX(-100%);
+      transition: transform 600ms var(--ease);
+    }
+    .btn-action:hover { transform: translateY(-1px); filter: brightness(1.04); }
+    .btn-action:hover::before { transform: translateX(100%); }
+    .btn-action:active { transform: translateY(0) scale(0.98); }
+
+    .btn-primary { background: linear-gradient(135deg, #3B82F6, var(--action-blue)); box-shadow: 0 6px 14px rgba(37,99,235,0.28); }
+    .btn-primary:hover { box-shadow: 0 10px 22px rgba(37,99,235,0.36); }
+
+    .btn-danger  { background: linear-gradient(135deg, #F43F5E, var(--danger)); box-shadow: 0 6px 14px rgba(225,29,72,0.28); }
+    .btn-danger:hover { box-shadow: 0 10px 22px rgba(225,29,72,0.36); }
+
+    .btn-success { background: linear-gradient(135deg, #10B981, var(--success)); box-shadow: 0 6px 14px rgba(16,185,129,0.28); }
+    .btn-success:hover { box-shadow: 0 10px 22px rgba(16,185,129,0.36); }
+
+    .btn-purple  { background: linear-gradient(135deg, #A78BFA, var(--purple)); box-shadow: 0 6px 14px rgba(124,58,237,0.28); }
+    .btn-purple:hover { box-shadow: 0 10px 22px rgba(124,58,237,0.36); }
+
+    .btn-disabled {
+      background: #F1F5F9; color: #94A3B8; cursor: not-allowed;
+      box-shadow: none;
+    }
+    .btn-disabled::before { display: none; }
+    .btn-disabled:hover { transform: none; filter: none; box-shadow: none; }
+
+    .btn-outline {
+      border: 1px solid var(--border);
+      background: #FFF;
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all var(--speed-2) var(--ease);
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      color: var(--text-main);
+      font-family: 'Prompt', sans-serif;
+    }
+    .btn-outline:hover {
+      background: #F8FAFC;
+      border-color: #CBD5E1;
+      transform: translateY(-1px);
+      box-shadow: var(--sh-sm);
+    }
+    .btn-outline:active { transform: translateY(0); }
+
+    .clickable { cursor: pointer; transition: all var(--speed-2) var(--ease); }
+    .clickable:hover {
+      border-right-color: var(--primary);
+      border-top-color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
 
     /* --- Forms & Pickers --- */
-    .form-group { margin-bottom: 20px; }
-    .form-label { display: block; font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; color: var(--text-main);}
-    .form-input { width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; font-size: 1rem; outline: none; background: #F8FAFC; transition: 0.2s;}
-    .form-input:focus { border-color: var(--primary); background: #FFF; box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
-    
-    /* --- Profile Header (Admin) --- */
-    .profile-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; padding-bottom: 25px; border-bottom: 1px solid var(--border);}
-    .tab-container { display: flex; gap: 5px; background: #F1F5F9; padding: 5px; border-radius: 12px; }
-    .tab-btn { padding: 10px 24px; border: none; background: transparent; border-radius: 8px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.2s;}
-    .tab-btn.active { background: #FFF; color: var(--text-main); box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+    .form-group { margin-bottom: 18px; }
+    .form-label {
+      display: block; font-size: 0.92rem; font-weight: 600;
+      margin-bottom: 8px; color: var(--text-main);
+      letter-spacing: 0.01em;
+    }
+    .form-input {
+      width: 100%; padding: 13px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px; font-size: 1rem; outline: none;
+      background: #F8FAFC;
+      transition: all var(--speed-2) var(--ease);
+      color: var(--text-main);
+      font-family: 'Prompt', sans-serif;
+    }
+    .form-input::placeholder { color: var(--text-soft); }
+    .form-input:hover { border-color: #CBD5E1; }
+    .form-input:focus {
+      border-color: var(--primary);
+      background: #FFF;
+      box-shadow: 0 0 0 4px rgba(0,168,124,0.12);
+    }
+    select.form-input { cursor: pointer; appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+      background-repeat: no-repeat; background-position: right 14px center; background-size: 18px;
+      padding-right: 42px;
+    }
 
-    /* --- Visual Pill Selector --- */
-    .pill-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; max-height: 150px; overflow-y: auto; padding: 10px; border: 1px solid var(--border); border-radius: 12px; background: #FFF; }
-    .month-pill { padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; background: #F1F5F9; color: var(--text-muted); border: 1px solid transparent; transition: 0.2s; user-select: none; }
-    .month-pill:hover { border-color: var(--primary); color: var(--primary);}
-    .month-pill.paid { background: #D1FAE5; color: #059669; border-color: #059669; }
+    /* --- Profile Header (Admin) --- */
+    .profile-header {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      margin-bottom: 24px; padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      gap: 18px;
+    }
+    .tab-container {
+      display: flex; gap: 4px;
+      background: #F1F5F9;
+      padding: 4px;
+      border-radius: 12px;
+    }
+    .tab-btn {
+      padding: 10px 22px; border: none; background: transparent;
+      border-radius: 9px; font-weight: 600; color: var(--text-muted);
+      cursor: pointer; transition: all var(--speed-2) var(--ease);
+      font-family: 'Prompt', sans-serif;
+      font-size: 0.92rem;
+    }
+    .tab-btn:hover:not(.active) { color: var(--text-main); }
+    .tab-btn.active {
+      background: #FFF; color: var(--text-main);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    /* --- Pill Selector --- */
+    .pill-container {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-top: 10px;
+      max-height: 160px; overflow-y: auto;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #FFF;
+    }
+    .month-pill {
+      padding: 6px 14px; border-radius: 20px;
+      font-size: 0.84rem; font-weight: 600;
+      cursor: pointer;
+      background: #F1F5F9;
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      transition: all var(--speed-2) var(--ease);
+      user-select: none;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .month-pill:hover {
+      border-color: var(--primary);
+      color: var(--primary-hover);
+      background: var(--primary-soft);
+      transform: translateY(-1px);
+    }
+    .month-pill.paid {
+      background: var(--primary-soft);
+      color: var(--primary-hover);
+      border-color: var(--primary);
+      box-shadow: inset 0 0 0 1px rgba(5,150,105,0.20);
+    }
+    .month-pill.paid::before {
+      content: '✓'; font-weight: 800; color: var(--primary-hover); margin-right: 2px;
+    }
 
     /* --- Modal --- */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); opacity: 0; visibility: hidden; transition: 0.3s; }
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(11,26,43,0.55);
+      z-index: 10000;
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      opacity: 0; visibility: hidden;
+      transition: opacity var(--speed-2) var(--ease), visibility var(--speed-2);
+    }
     .modal-overlay.show { opacity: 1; visibility: visible; }
-    .modal-content { background: #FFF; width: 90%; max-width: 550px; border-radius: 24px; padding: 35px; max-height: 90vh; overflow-y: auto; transform: translateY(20px); transition: 0.3s; box-shadow: 0 20px 40px rgba(0,0,0,0.2);}
-    .modal-overlay.show .modal-content { transform: translateY(0); }
+    .modal-content {
+      background: #FFF;
+      width: 90%; max-width: 580px;
+      border-radius: 24px;
+      padding: 32px;
+      max-height: 90vh; overflow-y: auto;
+      transform: translateY(28px) scale(0.96);
+      opacity: 0;
+      transition: transform var(--speed-3) var(--ease-bounce), opacity var(--speed-2);
+      box-shadow: 0 30px 60px rgba(11,26,43,0.25);
+      border: 1px solid var(--border);
+    }
+    .modal-overlay.show .modal-content { transform: translateY(0) scale(1); opacity: 1; }
 
+    /* =========================================================
+       SWEETALERT2 CUSTOMIZATION
+       Override default look to match the bank theme.
+       ========================================================= */
+    .swal2-popup {
+      border-radius: 22px !important;
+      padding: 30px 28px 26px !important;
+      box-shadow: 0 30px 60px rgba(11,26,43,0.25), 0 8px 16px rgba(11,26,43,0.10) !important;
+      border: 1px solid var(--border) !important;
+      font-family: 'Prompt', sans-serif !important;
+    }
+    .swal2-title {
+      color: var(--text-main) !important;
+      font-family: 'Plus Jakarta Sans', 'Prompt', sans-serif !important;
+      font-weight: 700 !important;
+      font-size: 1.35rem !important;
+      letter-spacing: -0.01em !important;
+      padding: 0 0 4px !important;
+    }
+    .swal2-html-container {
+      color: var(--text-muted) !important;
+      font-size: 0.97rem !important;
+      line-height: 1.55 !important;
+    }
+    .swal2-styled.swal2-confirm,
+    .swal2-styled.swal2-cancel,
+    .swal2-styled.swal2-deny {
+      border-radius: 11px !important;
+      padding: 11px 22px !important;
+      font-weight: 600 !important;
+      font-size: 0.95rem !important;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.08) !important;
+      transition: transform var(--speed-2) var(--ease), box-shadow var(--speed-2) var(--ease), filter var(--speed-2) var(--ease) !important;
+      font-family: 'Prompt', sans-serif !important;
+    }
+    .swal2-styled.swal2-confirm:hover,
+    .swal2-styled.swal2-cancel:hover,
+    .swal2-styled.swal2-deny:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    .swal2-styled:focus { box-shadow: 0 0 0 4px rgba(0,168,124,0.18) !important; }
+
+    .swal2-icon { border-width: 3px !important; }
+    .swal2-icon.swal2-success { border-color: var(--success) !important; color: var(--success) !important; }
+    .swal2-icon.swal2-success [class^='swal2-success-line'] { background-color: var(--success) !important; }
+    .swal2-icon.swal2-success .swal2-success-ring { border-color: rgba(16,185,129,0.30) !important; }
+    .swal2-icon.swal2-error { border-color: var(--danger) !important; color: var(--danger) !important; }
+    .swal2-icon.swal2-error [class^='swal2-x-mark-line'] { background-color: var(--danger) !important; }
+    .swal2-icon.swal2-warning { border-color: var(--warning) !important; color: var(--warning) !important; }
+    .swal2-icon.swal2-info { border-color: var(--info) !important; color: var(--info) !important; }
+    .swal2-icon.swal2-question { border-color: var(--info) !important; color: var(--info) !important; }
+
+    /* Bank-style loader (override default Swal loader) */
+    .swal2-loader {
+      border-color: var(--primary) transparent var(--primary) transparent !important;
+      border-width: 4px !important;
+      width: 56px !important; height: 56px !important;
+    }
+    /* Add a subtle ring around the loader */
+    .swal2-popup .swal2-loader::after {
+      content: ''; position: absolute; inset: -8px; border-radius: 50%;
+      border: 2px solid rgba(0, 168, 124, 0.18);
+    }
+
+    .swal2-actions { gap: 8px !important; margin-top: 18px !important; }
+
+    .swal2-input, .swal2-select, .swal2-textarea {
+      border-radius: 12px !important;
+      border: 1px solid var(--border) !important;
+      box-shadow: none !important;
+      font-family: 'Prompt', sans-serif !important;
+      transition: all var(--speed-2) var(--ease) !important;
+    }
+    .swal2-input:focus, .swal2-select:focus, .swal2-textarea:focus {
+      border-color: var(--primary) !important;
+      box-shadow: 0 0 0 4px rgba(0,168,124,0.12) !important;
+    }
+    .swal2-timer-progress-bar { background: var(--primary) !important; height: 3px !important; }
+
+    .swal2-backdrop-show { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); background: rgba(11,26,43,0.45) !important; }
+
+    /* Smoother Swal show/hide */
+    .swal2-show { animation: swalIn 360ms var(--ease) !important; }
+    .swal2-hide { animation: swalOut 200ms var(--ease) !important; }
+    @keyframes swalIn  { from { opacity: 0; transform: translateY(16px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes swalOut { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(8px) scale(0.98); } }
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
     @media (max-width: 768px) {
       #app-container { flex-direction: column; }
-      .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 10px 0; }
-      .nav-menu { flex-direction: row; overflow-x: auto; padding: 10px; gap: 10px; }
-      .nav-item { white-space: nowrap; }
-      .brand { padding-bottom: 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; border-bottom: none; }
-      .brand h2 { margin: 0; }
-      .topbar { padding: 15px 20px; flex-direction: column; align-items: flex-start; gap: 10px; }
-      .page-subtitle { border-left: none; padding-left: 0; margin-top: 5px;}
-      .content-area { padding: 20px; }
-      .grid-2, .grid-3 { grid-template-columns: 1fr; }
-      .section-header { flex-direction: column; align-items: flex-start; gap: 15px;}
-      .debt-item { flex-direction: column; align-items: flex-start; gap: 15px; }
-      .debt-actions { width: 100%; text-align: left; display: flex; flex-direction: column; align-items: stretch;}
-      .profile-header { flex-direction: column; align-items: flex-start; gap: 15px;}
-      .tab-container { width: 100%; justify-content: space-between;}
-      .tab-btn { flex: 1; text-align: center;}
+      .sidebar {
+        width: 100%; height: auto;
+        border-right: none; border-bottom: 1px solid var(--border);
+        padding: 12px 0;
+      }
+      .sidebar::after { display: none; }
+      .nav-menu {
+        flex-direction: row; overflow-x: auto;
+        padding: 8px 12px; gap: 8px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .nav-menu::-webkit-scrollbar { display: none; }
+      .nav-item { white-space: nowrap; padding: 10px 14px; font-size: 0.88rem; }
+      .nav-item.active::before { display: none; }
+      .brand {
+        padding: 10px 16px; margin-bottom: 6px;
+        display: flex; align-items: center; justify-content: space-between; gap: 10px;
+        border-bottom: none;
+      }
+      .brand h2 { margin: 0; font-size: 1.15rem; }
+      .role-badge { margin-top: 0; }
+      .logout-btn { margin: 8px 12px; padding: 11px; }
+
+      .topbar { padding: 14px 18px; flex-direction: column; align-items: flex-start; gap: 10px; }
+      .page-title { width: 100%; }
+      .page-subtitle { border-left: none; padding-left: 0; margin-top: 2px; }
+      .user-profile { align-self: flex-end; }
+
+      .content-area { padding: 20px 16px 32px; }
+
+      .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 14px; }
+      .section-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+
+      .white-card { padding: 22px; border-radius: 18px; }
+
+      .debt-item { flex-direction: column; align-items: flex-start; gap: 14px; padding: 20px; }
+      .debt-actions { width: 100%; text-align: left; min-width: 0; align-items: stretch; }
+      .debt-amount { font-size: 1.4rem; }
+
+      .profile-header { flex-direction: column; align-items: flex-start; gap: 14px; }
+      .tab-container { width: 100%; }
+      .tab-btn { flex: 1; text-align: center; padding: 10px 8px; }
+
+      .summary-box h2 { font-size: 1.7rem; }
+
+      .modal-content { padding: 24px 20px; border-radius: 20px; }
+
+      .swal2-popup { padding: 24px 20px !important; }
+      .swal2-title { font-size: 1.18rem !important; }
+    }
+
+    @media (max-width: 420px) {
+      .vip-login-card { padding: 36px 22px 28px; }
+      .vip-title { font-size: 1.45rem; }
+    }
+
+    /* Focus-visible accessibility ring */
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
     }
   </style>
 </head>
@@ -275,11 +1019,11 @@
   <div id="login-wrapper">
     <div class="vip-login-card">
       <div class="vip-shield">
-        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg>
       </div>
       <h1 class="vip-title">Thianrawich Banking</h1>
       <p class="vip-sub">โปรดเข้าสู่ระบบเพื่อดำเนินการต่อ</p>
-      
+
       <div class="role-selector">
         <div class="role-slider" id="role-slider"></div>
         <button class="role-btn active" id="btn-customer" onclick="selectRole('customer')">ลูกค้าธนาคาร</button>
@@ -289,16 +1033,18 @@
       <div class="vip-input-wrapper">
         <input type="password" id="debtor-id" class="vip-input" placeholder="รหัสลูกค้า (PIN 4 หลัก)" autocomplete="off">
         <button type="button" class="vip-eye" onclick="togglePassword()">
-          <svg id="eye-icon-svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg id="eye-icon-svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>
           </svg>
         </button>
       </div>
-      
+
       <button class="vip-login-btn" id="login-btn" onclick="triggerLogin()">
         <svg class="vip-loader" id="btn-loader" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none"></circle></svg>
         <span id="btn-text">เข้าสู่ระบบอย่างปลอดภัย</span>
       </button>
+
+      <div class="vip-foot">การเชื่อมต่อปลอดภัย • เข้ารหัสระดับธนาคาร</div>
     </div>
   </div>
 
@@ -308,17 +1054,30 @@
         <h2>Thianrawich Banking</h2>
         <div class="role-badge" id="sidebar-role">บทบาท: -</div>
       </div>
-      
+
       <div class="nav-menu">
-        <button class="nav-item active" id="menu-dashboard" onclick="switchView('dashboard')"><span>📊</span> บัญชีของฉัน</button>
-        <button class="nav-item hidden admin-only" id="menu-overview" onclick="switchView('overview')"><span>👥</span> ภาพรวมพอร์ตลูกหนี้</button>
-        <button class="nav-item hidden admin-only" id="menu-add" onclick="switchView('add')"><span>➕</span> เพิ่มสัญญาหนี้</button>
+        <button class="nav-item active" id="menu-dashboard" onclick="switchView('dashboard')">
+          <span><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span>
+          บัญชีของฉัน
+        </button>
+        <button class="nav-item hidden admin-only" id="menu-overview" onclick="switchView('overview')">
+          <span><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+          ภาพรวมพอร์ตลูกหนี้
+        </button>
+        <button class="nav-item hidden admin-only" id="menu-add" onclick="switchView('add')">
+          <span><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+          เพิ่มสัญญาหนี้
+        </button>
         <button class="nav-item hidden admin-only" id="menu-approve" onclick="switchView('approve')">
-          <span>🔔</span> รายการตรวจสอบ 
+          <span><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span>
+          รายการตรวจสอบ
           <span id="pending-badge" class="badge-notification hidden">0</span>
         </button>
       </div>
-      <button class="logout-btn" onclick="logout()"><span>🚪</span> ออกจากระบบ</button>
+      <button class="logout-btn" onclick="logout()">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        ออกจากระบบ
+      </button>
     </aside>
 
     <main class="main-content">
@@ -334,39 +1093,51 @@
       </header>
 
       <div class="content-area">
-        
+
         <div id="view-dashboard" class="view-section fade-enter">
           <div class="section-header">
-            <h3>📅 เลือกรอบบิลตรวจสอบ</h3>
+            <h3>
+              <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              เลือกรอบบิลตรวจสอบ
+            </h3>
             <div class="month-picker-container">
               <input type="month" id="user-month-selector" class="month-input" onchange="renderUserDashboard()">
             </div>
           </div>
-          
-          <div id="user-monthly-summary" class="grid-3" style="margin-bottom: 30px;"></div>
+
+          <div id="user-monthly-summary" class="grid-3" style="margin-bottom: 28px;"></div>
           <div id="user-debt-list"></div>
         </div>
 
         <div id="view-overview" class="view-section hidden admin-only fade-enter">
           <div class="section-header"><h3>ภาพรวมพอร์ตลูกหนี้ทั้งหมด</h3></div>
-          <div class="grid-2" style="margin-bottom: 30px;">
+          <div class="grid-2" style="margin-bottom: 28px;">
             <div class="summary-box"><span>ยอดเรียกเก็บเดือนนี้ (ทั้งพอร์ต)</span><h2 id="bank-expected-monthly" class="green-text">฿0.00</h2></div>
             <div class="summary-box"><span>ยอดหนี้ลูกหนี้คงเหลือสุทธิ</span><h2 id="bank-total-remaining" class="red-text">฿0.00</h2></div>
           </div>
-          <h3 style="margin-bottom: 15px; font-size: 1.1rem; font-weight:700;">รายชื่อลูกหนี้ (คลิกเพื่อดูข้อมูลเชิงลึก)</h3>
+          <h3 style="margin-bottom: 14px; font-size: 1.05rem; font-weight:700; color: var(--text-main); letter-spacing: -0.01em;">รายชื่อลูกหนี้ <span style="font-weight:500; color: var(--text-muted); font-size: 0.92rem;">(คลิกเพื่อดูข้อมูลเชิงลึก)</span></h3>
           <div id="admin-debtor-list"></div>
         </div>
 
         <div id="view-profile" class="view-section hidden admin-only fade-enter">
-          <button onclick="switchView('overview')" style="background: none; border: none; color: var(--primary); cursor: pointer; margin-bottom: 15px; font-weight: 600; font-size: 1rem; display: flex; align-items:center; gap:5px;">← กลับไปหน้าภาพรวม</button>
-          
+          <button onclick="switchView('overview')" style="background: none; border: none; color: var(--primary-hover); cursor: pointer; margin-bottom: 14px; font-weight: 600; font-size: 0.95rem; display: inline-flex; align-items:center; gap:6px; padding: 6px 10px; border-radius: 8px; transition: background 0.2s;" onmouseover="this.style.background='var(--primary-soft)'" onmouseout="this.style.background='none'">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            กลับไปหน้าภาพรวม
+          </button>
+
           <div class="white-card">
             <div class="profile-header">
               <div>
-                <h2 id="profile-user-name" style="margin-bottom: 8px; font-size:1.6rem; color:var(--text-main);">ประวัติลูกหนี้: -</h2>
-                <div style="display:flex; gap:10px; margin-top:10px;">
-                  <button class="btn-outline">📞 โทรติดต่อ</button>
-                  <button class="btn-outline" style="color:#00B900; border-color:#00B900;">💬 ส่งแจ้งเตือน Line</button>
+                <h2 id="profile-user-name" style="margin-bottom: 8px; font-size:1.5rem; color:var(--text-main); font-weight:700; letter-spacing:-0.01em;">ประวัติลูกหนี้: -</h2>
+                <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+                  <button class="btn-outline">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    โทรติดต่อ
+                  </button>
+                  <button class="btn-outline" style="color:#00B900; border-color:rgba(0,185,0,0.3);">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    ส่งแจ้งเตือน Line
+                  </button>
                 </div>
               </div>
               <div class="tab-container">
@@ -377,12 +1148,15 @@
 
             <div id="pcontent-monthly">
               <div class="section-header">
-                <h3>📅 เลือกรอบบิลตรวจสอบ</h3>
+                <h3>
+                  <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  เลือกรอบบิลตรวจสอบ
+                </h3>
                 <div class="month-picker-container" style="background: transparent; border: none; box-shadow: none;">
                   <input type="month" id="admin-profile-month" class="month-input" onchange="renderAdminProfileMonthly()">
                 </div>
               </div>
-              <div id="profile-monthly-summary" class="grid-3" style="margin-bottom: 30px;"></div>
+              <div id="profile-monthly-summary" class="grid-3" style="margin-bottom: 28px;"></div>
               <div id="profile-debt-list-monthly"></div>
             </div>
 
@@ -394,25 +1168,25 @@
 
         <div id="view-add" class="view-section hidden admin-only fade-enter">
           <div class="white-card">
-            <h3 style="margin-bottom: 25px; color:var(--text-main); font-size: 1.5rem;">เพิ่มสัญญาหนี้</h3>
+            <h3 style="margin-bottom: 22px; color:var(--text-main); font-size: 1.4rem; font-weight: 700; letter-spacing:-0.01em; font-family: 'Plus Jakarta Sans','Prompt',sans-serif;">เพิ่มสัญญาหนี้</h3>
             <form onsubmit="event.preventDefault(); submitAddDebt();">
               <div class="grid-2"><div class="form-group"><label class="form-label">เลือกลูกหนี้</label><select id="a-user" class="form-input" required></select></div><div class="form-group"><label class="form-label">บัตรที่ใช้</label><select id="a-card" class="form-input" required></select></div></div>
               <div class="grid-2"><div class="form-group"><label class="form-label">ประเภท</label><select id="a-type" class="form-input" required><option value="ผ่อนสินค้า">ผ่อนสินค้า</option><option value="กดเงินสด">กดเงินสด</option></select></div><div class="form-group"><label class="form-label">ยอดจัดเต็มจำนวน (฿)</label><input type="number" id="a-amount" class="form-input" required oninput="calcForward('a')"></div></div>
               <div class="grid-2"><div class="form-group"><label class="form-label">ดอกเบี้ยต่อปี (%)</label><input type="number" id="a-interest" class="form-input" value="0" step="0.01" required oninput="calcForward('a')"></div><div class="form-group"><label class="form-label">จำนวนงวด (เดือน)</label><input type="number" id="a-months" class="form-input" required oninput="calcForward('a'); renderPillSelector('a');"></div></div>
               <div class="grid-2"><div class="form-group"><label class="form-label">เริ่มผ่อนงวดแรก (ดด/ปปปป)</label><input type="month" id="a-start" class="form-input" required onchange="renderPillSelector('a')"></div><div class="form-group"><label class="form-label">ดิวชำระทุกวันที่ (1-31)</label><input type="number" id="a-due" class="form-input" min="1" max="31" required></div></div>
-              
-              <div class="form-group" style="padding: 20px; border-radius: 12px; background: #F8FAFC; border: 1px solid var(--border);">
+
+              <div class="form-group" style="padding: 18px; border-radius: 14px; background: #F8FAFC; border: 1px solid var(--border);">
                 <label class="form-label" style="margin-bottom:0;">บันทึกยอดชำระย้อนหลัง</label>
-                <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">คลิกที่ปุ่มเดือนเพื่อระบุว่าจ่ายถึงเดือนไหนแล้ว (ระบบจะบันทึกสถานะให้ตรงกัน)</div>
+                <div style="font-size: 0.84rem; color: var(--text-muted); margin: 4px 0 12px; line-height:1.5;">คลิกที่ปุ่มเดือนเพื่อระบุว่าจ่ายถึงเดือนไหนแล้ว (ระบบจะบันทึกสถานะให้ตรงกัน)</div>
                 <input type="hidden" id="a-paid" value="0">
-                <div id="a-paid-selector" class="pill-container"><span style="color:gray; font-size:0.85rem; padding: 5px;">(กรุณาระบุเริ่มผ่อนงวดแรก และจำนวนงวดก่อน)</span></div>
+                <div id="a-paid-selector" class="pill-container"><span style="color:var(--text-soft); font-size:0.85rem; padding: 5px;">(กรุณาระบุเริ่มผ่อนงวดแรก และจำนวนงวดก่อน)</span></div>
               </div>
 
-              <div class="form-group" style="padding: 25px; border-radius: 16px; background: #ECFDF5; border: 2px solid var(--primary); text-align:center;">
-                <label class="form-label" style="color: var(--primary); font-size:1.1rem;">ยอดชำระต่อเดือน <br><span style="font-size:0.8rem; font-weight:normal;">(หากแก้ไขยอดชำระ ระบบจะคำนวณดอกเบี้ยกลับให้อัตโนมัติ)</span></label>
-                <input type="number" id="a-monthly" class="form-input" step="0.01" style="font-weight:800; font-size: 2rem; color:var(--primary); text-align:center; background: transparent; border:none; box-shadow:none; padding:0;" required oninput="calcBackward('a')">
+              <div class="form-group" style="padding: 24px; border-radius: 16px; background: linear-gradient(135deg,#ECFDF5,#F0FDF4); border: 2px solid var(--primary); text-align:center; box-shadow: 0 4px 14px rgba(0,168,124,0.10);">
+                <label class="form-label" style="color: var(--primary-hover); font-size:1.05rem; margin-bottom:6px;">ยอดชำระต่อเดือน <br><span style="font-size:0.78rem; font-weight:normal; color: var(--text-muted);">(หากแก้ไขยอดชำระ ระบบจะคำนวณดอกเบี้ยกลับให้อัตโนมัติ)</span></label>
+                <input type="number" id="a-monthly" class="form-input" step="0.01" style="font-weight:800; font-size: 1.95rem; color:var(--primary-hover); text-align:center; background: transparent; border:none; box-shadow:none; padding:4px 0; font-family:'Plus Jakarta Sans',sans-serif; letter-spacing:-0.02em;" required oninput="calcBackward('a')">
               </div>
-              <button type="submit" class="btn-action btn-primary" style="padding: 16px; font-size: 1.1rem;">บันทึกรายการสัญญาเข้าระบบ</button>
+              <button type="submit" class="btn-action btn-primary" style="padding: 15px; font-size: 1.05rem;">บันทึกรายการสัญญาเข้าระบบ</button>
             </form>
           </div>
         </div>
@@ -428,28 +1202,28 @@
 
   <div id="edit-modal" class="modal-overlay">
     <div class="modal-content">
-      <h3 style="margin-bottom: 25px; color: var(--text-main); font-size:1.4rem; font-weight:700;">แก้ไขข้อมูลสัญญาหนี้</h3>
+      <h3 style="margin-bottom: 22px; color: var(--text-main); font-size:1.3rem; font-weight:700; letter-spacing:-0.01em; font-family: 'Plus Jakarta Sans','Prompt',sans-serif;">แก้ไขข้อมูลสัญญาหนี้</h3>
       <form onsubmit="event.preventDefault(); submitEditDebt();">
         <input type="hidden" id="e-id">
         <div class="grid-2"><div class="form-group"><label class="form-label">บัตรที่ใช้</label><select id="e-card" class="form-input" required></select></div><div class="form-group"><label class="form-label">ประเภท</label><select id="e-type" class="form-input" required><option value="ผ่อนสินค้า">ผ่อนสินค้า</option><option value="กดเงินสด">กดเงินสด</option></select></div></div>
         <div class="grid-2"><div class="form-group"><label class="form-label">ยอดจัด (฿)</label><input type="number" id="e-amount" class="form-input" required oninput="calcForward('e')"></div><div class="form-group"><label class="form-label">ดอกเบี้ย (%)</label><input type="number" id="e-interest" class="form-input" step="0.01" required oninput="calcForward('e')"></div></div>
         <div class="grid-2"><div class="form-group"><label class="form-label">จำนวนงวดทั้งหมด</label><input type="number" id="e-months" class="form-input" required oninput="calcForward('e'); renderPillSelector('e');"></div><div class="form-group"><label class="form-label">ดิวชำระ (1-31)</label><input type="number" id="e-due" class="form-input" min="1" max="31" required></div></div>
         <div class="form-group"><label class="form-label">เริ่มผ่อนงวดแรก (ดด/ปปปป)</label><input type="month" id="e-start" class="form-input" required onchange="renderPillSelector('e')"></div>
-        
-        <div class="form-group" style="padding: 15px; border-radius: 16px; border: 1px solid var(--border); background: #F8FAFC;">
+
+        <div class="form-group" style="padding: 14px; border-radius: 14px; border: 1px solid var(--border); background: #F8FAFC;">
           <label class="form-label" style="margin-bottom:2px;">สถานะการชำระล่าสุด</label>
-          <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">คลิกที่ปุ่มเดือนเพื่อระบุว่าลูกหนี้จ่ายไปแล้วถึงงวดไหน</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; line-height:1.5;">คลิกที่ปุ่มเดือนเพื่อระบุว่าลูกหนี้จ่ายไปแล้วถึงงวดไหน</div>
           <input type="hidden" id="e-paid" value="0">
           <div id="e-paid-selector" class="pill-container"></div>
         </div>
 
-        <div class="form-group" style="padding: 20px; border-radius: 16px; background: #EFF6FF; border: 2px solid var(--info); text-align:center;">
-          <label class="form-label" style="color: var(--info);">ชำระเดือนละ (฿)</label>
-          <input type="number" id="e-monthly" class="form-input" step="0.01" style="font-weight:bold; font-size:1.8rem; color:var(--info); text-align:center; background:transparent; border:none; box-shadow:none; padding:0;" required oninput="calcBackward('e')">
+        <div class="form-group" style="padding: 20px; border-radius: 16px; background: linear-gradient(135deg,#EFF6FF,#DBEAFE); border: 2px solid var(--info); text-align:center; box-shadow: 0 4px 14px rgba(37,99,235,0.10);">
+          <label class="form-label" style="color: var(--info); margin-bottom:4px;">ชำระเดือนละ (฿)</label>
+          <input type="number" id="e-monthly" class="form-input" step="0.01" style="font-weight:800; font-size:1.7rem; color:var(--info); text-align:center; background:transparent; border:none; box-shadow:none; padding:0; font-family:'Plus Jakarta Sans',sans-serif; letter-spacing:-0.02em;" required oninput="calcBackward('e')">
         </div>
-        
-        <div class="grid-2" style="margin-top:25px;">
-          <button type="button" class="btn-outline" onclick="closeEditModal()" style="width: 100%;">ยกเลิก</button>
+
+        <div class="grid-2" style="margin-top:22px;">
+          <button type="button" class="btn-outline" onclick="closeEditModal()" style="width: 100%; padding: 12px;">ยกเลิก</button>
           <button type="submit" class="btn-action btn-primary">บันทึกการแก้ไข</button>
         </div>
       </form>
