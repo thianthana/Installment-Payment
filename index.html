@@ -2,228 +2,305 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบเช็คยอดผ่อนชำระ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Debt Tracker Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
   <style>
     :root {
-      --primary: #4F46E5;
+      --primary: #2563EB;
+      --primary-hover: #1D4ED8;
       --bg: #F3F4F6;
       --card-bg: #FFFFFF;
-      --text: #1F2937;
+      --text-main: #1F2937;
+      --text-muted: #6B7280;
+      --danger: #EF4444;
+      --success: #10B981;
+      --border: #E5E7EB;
     }
-    body {
-      font-family: 'Sarabun', sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 0;
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Sarabun', sans-serif; }
+    body { background-color: var(--bg); color: var(--text-main); -webkit-tap-highlight-color: transparent; }
+    
+    /* ---- Utility ---- */
+    .hidden { display: none !important; }
+    .fade-in { animation: fadeIn 0.4s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ---- Loader ---- */
+    #loader {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255, 255, 255, 0.8); z-index: 9999;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
     }
-    /* Login Section */
+    .spinner {
+      border: 4px solid var(--border); border-top: 4px solid var(--primary);
+      border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* ---- Login Section (Numpad) ---- */
     #login-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px;
     }
-    .login-box {
-      background: var(--card-bg);
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      text-align: center;
+    .login-container {
+      background: var(--card-bg); padding: 30px 20px; border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 380px; text-align: center;
     }
-    .pin-input {
-      font-size: 2rem;
-      letter-spacing: 0.5rem;
-      text-align: center;
-      width: 200px;
-      padding: 10px;
-      border: 2px solid #ccc;
-      border-radius: 8px;
-      margin-bottom: 1rem;
+    .login-container h2 { font-weight: 700; margin-bottom: 10px; color: var(--text-main); }
+    .pin-display {
+      display: flex; justify-content: center; gap: 15px; margin: 30px 0;
     }
-    button {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 1.1rem;
-      border-radius: 8px;
-      cursor: pointer;
+    .pin-dot {
+      width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border);
+      background: transparent; transition: all 0.2s;
     }
+    .pin-dot.filled { background: var(--primary); border-color: var(--primary); }
     
-    /* Dashboard Section */
-    #dashboard-section {
-      display: none;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
+    .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
+    .num-btn {
+      background: var(--bg); border: none; border-radius: 15px; padding: 15px;
+      font-size: 1.5rem; font-weight: 600; color: var(--text-main); cursor: pointer;
+      transition: background 0.1s;
     }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 20px;
-      border-bottom: 2px solid #ddd;
-      margin-bottom: 20px;
+    .num-btn:active { background: #D1D5DB; }
+    .num-btn.delete { color: var(--danger); font-size: 1.2rem; }
+
+    /* ---- Dashboard Section ---- */
+    #dashboard-section { max-width: 600px; margin: 0 auto; padding: 20px; padding-bottom: 80px;}
+    .nav-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
     }
-    .user-name {
-      font-weight: bold;
-      color: var(--primary);
+    .user-greeting { font-size: 1.2rem; font-weight: 700; }
+    .btn-logout {
+      background: #FEE2E2; color: var(--danger); border: none; padding: 8px 16px;
+      border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem;
     }
-    
-    /* Debt Cards */
+
+    /* Summary Card */
+    .summary-card {
+      background: linear-gradient(135deg, var(--primary), #3B82F6); color: white;
+      padding: 25px; border-radius: 16px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+    }
+    .summary-title { font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px; }
+    .summary-amount { font-size: 2.2rem; font-weight: 700; margin-bottom: 15px; }
+    .summary-footer { display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; }
+    .summary-footer div span { display: block; font-size: 0.8rem; opacity: 0.9; }
+    .summary-footer div strong { font-size: 1.1rem; }
+
+    /* Debt List */
+    .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; color: var(--text-main); }
     .debt-card {
-      background: var(--card-bg);
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      margin-bottom: 15px;
+      background: var(--card-bg); border-radius: 16px; padding: 20px; margin-bottom: 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid var(--border);
     }
-    .card-title {
-      font-size: 1.2rem;
-      font-weight: bold;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-    }
-    .due-date { color: #DC2626; font-size: 0.9rem; }
-    .debt-details { display: flex; justify-content: space-between; margin-bottom: 15px;}
-    .detail-item { text-align: center; }
-    .detail-item span { display: block; font-size: 0.8rem; color: #6B7280; }
-    .detail-item strong { font-size: 1.1rem; }
+    .debt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .card-name { font-weight: 700; font-size: 1.1rem; }
+    .due-badge { background: #FEF2F2; color: var(--danger); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
     
-    /* Progress Bar */
-    .progress-container {
-      width: 100%;
-      background-color: #E5E7EB;
-      border-radius: 999px;
-      height: 10px;
-      margin-bottom: 5px;
-    }
-    .progress-bar {
-      background-color: #10B981;
-      height: 10px;
-      border-radius: 999px;
-    }
-    .progress-text { font-size: 0.8rem; color: #6B7280; text-align: right; }
+    .debt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+    .data-box { background: var(--bg); padding: 10px; border-radius: 10px; text-align: center; }
+    .data-box span { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 3px; }
+    .data-box strong { font-size: 1.1rem; color: var(--text-main); }
+    .data-box.highlight strong { color: var(--primary); }
+
+    .progress-wrapper { margin-top: 10px; }
+    .progress-bar-bg { width: 100%; background: #E5E7EB; border-radius: 10px; height: 8px; overflow: hidden; }
+    .progress-bar-fill { background: var(--success); height: 100%; border-radius: 10px; transition: width 1s ease-in-out; }
+    .progress-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-top: 5px; }
   </style>
 </head>
 <body>
 
-  <script>
-    // หากต้องการใช้กับหน้าเว็บภายนอก (External HTML) ให้นำ URL ที่ได้จากตอน Deploy มาใส่ที่นี่
-    // const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwGHk8qP0Ka473T8zC0R57EQQb7jZyM8h3usKfFHiZV9FFAODExefOcK8Ko9aJzzNc/exec";
-    
-    // แต่ถ้าคุณรันเป็น Web App ผ่าน Apps Script อยู่แล้ว ไม่ต้องเปลี่ยนอะไรเลยครับ ระบบจะใช้ google.script.run อัตโนมัติ
-  </script>
+  <div id="loader" class="hidden">
+    <div class="spinner"></div>
+    <p style="margin-top: 15px; font-weight: 600; color: var(--text-muted);">กำลังประมวลผล...</p>
+  </div>
 
-  <div id="login-section">
-    <div class="login-box">
-      <h2>เข้าสู่ระบบ</h2>
-      <p>กรุณาใส่รหัส 4 หลัก</p>
-      <input type="password" id="pin-input" class="pin-input" maxlength="4" oninput="checkLength(this)">
-      <br>
-      <button onclick="login()">เข้าสู่ระบบ</button>
-      <p id="login-msg" style="color: red; display: none;">รหัส PIN ไม่ถูกต้อง</p>
+  <div id="login-section" class="fade-in">
+    <div class="login-container">
+      <h2>ระบบเช็คยอดผ่อนชำระ</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">กรุณาใส่รหัส PIN 4 หลัก</p>
+      
+      <div class="pin-display">
+        <div class="pin-dot" id="dot-1"></div>
+        <div class="pin-dot" id="dot-2"></div>
+        <div class="pin-dot" id="dot-3"></div>
+        <div class="pin-dot" id="dot-4"></div>
+      </div>
+
+      <div class="numpad">
+        <button class="num-btn" onclick="addPin(1)">1</button>
+        <button class="num-btn" onclick="addPin(2)">2</button>
+        <button class="num-btn" onclick="addPin(3)">3</button>
+        <button class="num-btn" onclick="addPin(4)">4</button>
+        <button class="num-btn" onclick="addPin(5)">5</button>
+        <button class="num-btn" onclick="addPin(6)">6</button>
+        <button class="num-btn" onclick="addPin(7)">7</button>
+        <button class="num-btn" onclick="addPin(8)">8</button>
+        <button class="num-btn" onclick="addPin(9)">9</button>
+        <button class="num-btn delete" onclick="clearPin()">Clear</button>
+        <button class="num-btn" onclick="addPin(0)">0</button>
+        <button class="num-btn delete" onclick="delPin()">Del</button>
+      </div>
     </div>
   </div>
 
-  <div id="dashboard-section">
-    <div class="header">
-      <h2>รายการผ่อนชำระ</h2>
-      <div class="user-name">👤 <span id="display-name">ชื่อผู้ใช้</span></div>
+  <div id="dashboard-section" class="hidden fade-in">
+    <div class="nav-header">
+      <div class="user-greeting">👋 สวัสดี, <span id="display-name">ผู้ใช้</span></div>
+      <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
     </div>
-    
+
+    <div class="summary-card">
+      <div class="summary-title">ยอดรวมที่ต้องชำระเดือนนี้</div>
+      <div class="summary-amount">฿<span id="sum-monthly">0.00</span></div>
+      <div class="summary-footer">
+        <div>
+          <span>หนี้คงเหลือรวมทั้งหมด</span>
+          <strong>฿<span id="sum-remaining">0.00</span></strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">รายการผ่อนชำระของคุณ</div>
     <div id="debt-list">
-      <p>กำลังโหลดข้อมูล...</p>
-    </div>
+      </div>
   </div>
 
   <script>
-    let currentUserPin = '';
+    let currentPin = "";
+    const formatter = new Intl.NumberFormat('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    // เช็คว่าพิมพ์ครบ 4 หลักหรือยัง (ถ้าครบให้กดปุ่มอัตโนมัติได้ แต่ตอนนี้ให้กดเองก่อน)
-    function checkLength(input) {
-      if(input.value.length === 4) {
-        // สามารถตั้งให้ login อัตโนมัติเมื่อครบ 4 หลักได้ โดยเปิด comment บรรทัดล่าง
-        // login();
+    // ---- UI Controls ----
+    function showLoader() { document.getElementById('loader').classList.remove('hidden'); }
+    function hideLoader() { document.getElementById('loader').classList.add('hidden'); }
+
+    // ---- Numpad Logic ----
+    function addPin(num) {
+      if (currentPin.length < 4) {
+        currentPin += num.toString();
+        updatePinDisplay();
+        if (currentPin.length === 4) {
+          processLogin(); // ยิงระบบออโต้เมื่อครบ 4 ตัว
+        }
+      }
+    }
+    function delPin() {
+      currentPin = currentPin.slice(0, -1);
+      updatePinDisplay();
+    }
+    function clearPin() {
+      currentPin = "";
+      updatePinDisplay();
+    }
+    function updatePinDisplay() {
+      for (let i = 1; i <= 4; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        if (i <= currentPin.length) dot.classList.add('filled');
+        else dot.classList.remove('filled');
       }
     }
 
-    // ฟังก์ชัน Login
-    function login() {
-      const pin = document.getElementById('pin-input').value;
-      if(pin.length !== 4) return;
-      
-      document.getElementById('login-msg').style.display = 'none';
-      
-      // เรียกใช้ฟังก์ชัน backend Code.gs
+    // ---- System Logic ----
+    function processLogin() {
+      showLoader();
       google.script.run.withSuccessHandler(function(response) {
-        if(response.status === 'success') {
-          currentUserPin = pin;
+        if (response.status === 'success') {
           document.getElementById('display-name').innerText = response.name;
-          document.getElementById('login-section').style.display = 'none';
-          document.getElementById('dashboard-section').style.display = 'block';
-          
-          // โหลดข้อมูลหนี้
-          loadDebts();
+          loadDashboardData(currentPin); // โหลดข้อมูลหนี้ต่อเลย
         } else {
-          document.getElementById('login-msg').style.display = 'block';
+          hideLoader();
+          clearPin();
+          Swal.fire({ icon: 'error', title: 'ไม่สำเร็จ', text: response.message, confirmButtonColor: '#2563EB' });
         }
-      }).checkLogin(pin);
+      }).checkLogin(currentPin);
     }
 
-    // ฟังก์ชันดึงและแสดงข้อมูลบัตร
-    function loadDebts() {
-      google.script.run.withSuccessHandler(function(data) {
-        const debtList = document.getElementById('debt-list');
-        debtList.innerHTML = '';
-        
-        if(data.length === 0) {
-          debtList.innerHTML = '<p style="text-align:center;">🎉 ไม่มีรายการหนี้ที่ต้องชำระ</p>';
-          return;
-        }
-
-        data.forEach(debt => {
-          // จัดรูปแบบตัวเลขให้มีคอมม่า
-          const formatter = new Intl.NumberFormat('th-TH');
-          const monthly = formatter.format(debt.Monthly_Payment);
-          const remaining = formatter.format(debt.Remaining_Amount);
+    function loadDashboardData(pin) {
+      google.script.run.withSuccessHandler(function(response) {
+        hideLoader();
+        if (response.status === 'success' || response.status === 'empty') {
           
-          const cardHtml = `
-            <div class="debt-card">
-              <div class="card-title">
-                <span>💳 ${debt.Card_Name}</span>
-                <span class="due-date">ชำระภายในวันที่ ${debt.Due_Day} ของเดือน</span>
-              </div>
-              
-              <div class="debt-details">
-                <div class="detail-item">
-                  <span>ยอดที่ต้องชำระงวดนี้</span>
-                  <strong>฿${monthly}</strong>
-                </div>
-                <div class="detail-item">
-                  <span>งวดที่</span>
-                  <strong>${debt.Paid_Months} / ${debt.Total_Months}</strong>
-                </div>
-                <div class="detail-item">
-                  <span>หนี้คงเหลือ</span>
-                  <strong>฿${remaining}</strong>
-                </div>
-              </div>
+          // สลับหน้าจอ
+          document.getElementById('login-section').classList.add('hidden');
+          document.getElementById('dashboard-section').classList.remove('hidden');
+          
+          // แสดง Summary
+          document.getElementById('sum-monthly').innerText = response.summary.totalMonthly ? formatter.format(response.summary.totalMonthly) : "0.00";
+          document.getElementById('sum-remaining').innerText = response.summary.totalRemaining ? formatter.format(response.summary.totalRemaining) : "0.00";
 
-              <div class="progress-container">
-                <div class="progress-bar" style="width: ${debt.Progress_Percent}%"></div>
+          // วาดรายการบัตร
+          const listContainer = document.getElementById('debt-list');
+          listContainer.innerHTML = '';
+
+          if (response.items.length === 0) {
+            listContainer.innerHTML = `
+              <div style="text-align: center; padding: 40px 20px; color: #6B7280; background: white; border-radius: 16px;">
+                <div style="font-size: 3rem; margin-bottom: 10px;">🎉</div>
+                <p>ยินดีด้วย! คุณไม่มีรายการผ่อนชำระในระบบ</p>
+              </div>`;
+            return;
+          }
+
+          response.items.forEach(debt => {
+            const progress = Math.min(Math.max(debt.Progress_Percent, 0), 100); // ป้องกันค่าเกิน 100%
+            
+            const card = `
+              <div class="debt-card fade-in">
+                <div class="debt-header">
+                  <div class="card-name">💳 ${debt.Card_Name}</div>
+                  <div class="due-badge">ชำระภายในวันที่ ${debt.Due_Day}</div>
+                </div>
+                
+                <div class="debt-grid">
+                  <div class="data-box highlight">
+                    <span>ต้องชำระงวดนี้</span>
+                    <strong>฿${formatter.format(debt.Monthly_Payment)}</strong>
+                  </div>
+                  <div class="data-box">
+                    <span>หนี้คงเหลือ</span>
+                    <strong>฿${formatter.format(debt.Remaining_Amount)}</strong>
+                  </div>
+                </div>
+
+                <div class="progress-wrapper">
+                  <div class="progress-labels">
+                    <span>งวดที่ ${debt.Paid_Months} / ${debt.Total_Months}</span>
+                    <span>${Math.round(progress)}%</span>
+                  </div>
+                  <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width: ${progress}%"></div>
+                  </div>
+                </div>
               </div>
-              <div class="progress-text">ผ่อนไปแล้ว ${Math.round(debt.Progress_Percent)}%</div>
-            </div>
-          `;
-          debtList.innerHTML += cardHtml;
-        });
-        
-      }).getDebtData(currentUserPin);
+            `;
+            listContainer.innerHTML += card;
+          });
+        } else {
+          Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: response.message });
+        }
+      }).getDebtData(pin);
+    }
+
+    function logout() {
+      Swal.fire({
+        title: 'ยืนยันออกจากระบบ?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#EF4444',
+        cancelButtonColor: '#9CA3AF',
+        confirmButtonText: 'ออกจากระบบ',
+        cancelButtonText: 'ยกเลิก'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          currentPin = "";
+          updatePinDisplay();
+          document.getElementById('dashboard-section').classList.add('hidden');
+          document.getElementById('login-section').classList.remove('hidden');
+        }
+      });
     }
   </script>
 </body>
