@@ -22,10 +22,7 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     /* Loader */
-    #loader {
-      position: fixed; inset: 0; background: rgba(255,255,255,0.9);
-      display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999;
-    }
+    #loader { position: fixed; inset: 0; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
     .spinner { border: 4px solid var(--border); border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -41,10 +38,12 @@
     .btn-num.action { color: var(--danger); font-size: 1rem; }
 
     /* Dashboard UI */
-    #dashboard-section { max-width: 600px; margin: 0 auto; padding: 20px 20px 100px; }
+    #dashboard-section, #admin-section { max-width: 600px; margin: 0 auto; padding: 20px 20px 100px; }
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
     .user-info { font-weight: 700; font-size: 1.2rem; }
+    .header-btns { display: flex; gap: 10px; }
     .btn-logout { background: #FEE2E2; color: var(--danger); border: none; padding: 8px 16px; border-radius: 10px; font-weight: 600; cursor: pointer; }
+    .btn-admin { background: #FEF3C7; color: #D97706; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 600; cursor: pointer; }
 
     .summary-box { background: linear-gradient(135deg, var(--primary), #6366F1); color: white; padding: 30px; border-radius: 24px; margin-bottom: 30px; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4); }
     .sum-label { font-size: 0.9rem; opacity: 0.8; margin-bottom: 5px; }
@@ -64,6 +63,14 @@
     .progress-bar { width: 100%; background: #E5E7EB; height: 8px; border-radius: 10px; overflow: hidden; margin-top: 10px; }
     .progress-fill { background: var(--success); height: 100%; border-radius: 10px; transition: 1s ease-out; }
     .progress-info { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-light); margin-top: 5px; }
+
+    /* Admin Form UI */
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 5px; color: var(--text); }
+    .form-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); font-family: inherit; font-size: 1rem; outline: none; transition: border 0.2s; }
+    .form-input:focus { border-color: var(--primary); }
+    .btn-submit { width: 100%; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 600; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
+    .btn-submit:hover { background: var(--primary-dark); }
   </style>
 </head>
 <body>
@@ -90,7 +97,10 @@
   <section id="dashboard-section" class="hidden fade-in">
     <div class="header">
       <div class="user-info">👤 <span id="user-name">...</span></div>
-      <button class="btn-logout" onclick="logout()">ออก</button>
+      <div class="header-btns">
+        <button id="btn-admin-panel" class="btn-admin hidden" onclick="openAdminPanel()">⚙️ จัดการระบบ</button>
+        <button class="btn-logout" onclick="logout()">ออก</button>
+      </div>
     </div>
 
     <div class="summary-box">
@@ -105,61 +115,109 @@
     <div id="debt-list"></div>
   </section>
 
+  <section id="admin-section" class="hidden fade-in">
+    <div class="header">
+      <div class="user-info">⚙️ จัดการระบบ (Admin)</div>
+      <button class="btn-logout" onclick="closeAdminPanel()">กลับหน้าหลัก</button>
+    </div>
+
+    <div class="debt-item">
+      <h3 style="margin-bottom: 20px; text-align:center; color: var(--primary);">เพิ่มรายการผ่อนชำระใหม่</h3>
+      <form onsubmit="event.preventDefault(); submitNewDebt();">
+        <div class="form-group">
+          <label>เลือกผู้ใช้งาน</label>
+          <select id="form-user" class="form-input" required><option value="">-- กำลังโหลด --</option></select>
+        </div>
+        <div class="form-group">
+          <label>เลือกบัตรเครดิต/บัตรกดเงินสด</label>
+          <select id="form-card" class="form-input" required><option value="">-- กำลังโหลด --</option></select>
+        </div>
+        
+        <div class="item-grid">
+          <div class="form-group">
+            <label>ยอดหนี้เต็มจำนวน (฿)</label>
+            <input type="number" id="form-amount" class="form-input" required oninput="calcMonthly()">
+          </div>
+          <div class="form-group">
+            <label>ดอกเบี้ยต่อปี (%)</label>
+            <input type="number" id="form-interest" class="form-input" value="0" step="0.01" required oninput="calcMonthly()">
+          </div>
+        </div>
+        
+        <div class="item-grid">
+          <div class="form-group">
+            <label>จำนวนเดือน (งวด)</label>
+            <input type="number" id="form-months" class="form-input" required oninput="calcMonthly()">
+          </div>
+          <div class="form-group">
+            <label>วันที่ครบกำหนดของเดือน</label>
+            <input type="number" id="form-due" class="form-input" min="1" max="31" placeholder="1 - 31" required>
+          </div>
+        </div>
+
+        <div class="form-group" style="background: #F3F4F6; padding: 15px; border-radius: 10px;">
+          <label style="color: var(--primary);">ยอดชำระต่อเดือน (ระบบคำนวณเบื้องต้น สามารถแก้ไขได้)</label>
+          <input type="number" id="form-monthly" class="form-input" required step="0.01" style="font-weight: bold; font-size: 1.2rem; color: var(--primary-dark);">
+        </div>
+
+        <button type="submit" class="btn-submit">💾 บันทึกข้อมูลลงระบบ</button>
+      </form>
+    </div>
+  </section>
+
   <script>
-    // 🛑 แก้ไข URL ตรงนี้ด้วยลิงก์ Web App ที่ได้จาก Google Apps Script
-    const API_URL = "https://script.google.com/macros/s/AKfycbw4dI1zp3Nx4sCrL5leolB3Ad1QP2xMLI2ZInb-ue4IX-BbZ8_AiAnG_PWpcOTDs1zP/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbz3jTiRxyZdEq-x82exZRZBCZ9Gq3U56cZvuV6RCkLntxZRxBmDeSXJO7FKxRIyP5g/exec";
 
     let pin = "";
+    let userRole = "";
     const money = new Intl.NumberFormat('th-TH', { minimumFractionDigits: 2 });
 
     function pressNum(n) {
-      if (pin.length < 4) {
-        pin += n;
-        updateDots();
-        if (pin.length === 4) handleLogin();
-      }
+      if (pin.length < 4) { pin += n; updateDots(); if (pin.length === 4) handleLogin(); }
     }
     function backspace() { pin = pin.slice(0,-1); updateDots(); }
     function clearPin() { pin = ""; updateDots(); }
     function updateDots() {
-      for(let i=0; i<4; i++) {
-        document.getElementById(`dot-${i}`).className = i < pin.length ? 'dot active' : 'dot';
-      }
+      for(let i=0; i<4; i++) document.getElementById(`dot-${i}`).className = i < pin.length ? 'dot active' : 'dot';
     }
 
     async function handleLogin() {
       toggleLoader(true);
       try {
         const res = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
+          method: 'POST', headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify({ action: 'login', pin: pin })
         });
         const data = await res.json();
+        
         if (data.status === 'success') {
+          userRole = data.role; // จำสถานะว่าเปน Admin ไหม
           document.getElementById('user-name').innerText = data.name;
+          
+          if(userRole === 'Admin' || userRole === 'admin') {
+            document.getElementById('btn-admin-panel').classList.remove('hidden');
+          } else {
+            document.getElementById('btn-admin-panel').classList.add('hidden');
+          }
           await loadDashboard();
         } else {
-          toggleLoader(false);
-          Swal.fire('ผิดพลาด', data.message, 'error');
-          clearPin();
+          toggleLoader(false); Swal.fire('ผิดพลาด', data.message, 'error'); clearPin();
         }
       } catch (e) {
-        toggleLoader(false);
-        Swal.fire('เชื่อมต่อไม่ได้', 'กรุณาเช็ค URL หรืออินเทอร์เน็ต', 'error');
+        toggleLoader(false); Swal.fire('เชื่อมต่อไม่ได้', 'กรุณาเช็ค URL หรืออินเทอร์เน็ต', 'error');
       }
     }
 
     async function loadDashboard() {
       const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
+        method: 'POST', headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({ action: 'getDebts', pin: pin })
       });
       const data = await res.json();
       toggleLoader(false);
 
       document.getElementById('login-section').classList.add('hidden');
+      document.getElementById('admin-section').classList.add('hidden');
       document.getElementById('dashboard-section').classList.remove('hidden');
 
       document.getElementById('sum-monthly').innerText = money.format(data.summary.totalMonthly);
@@ -185,6 +243,89 @@
           </div>
         `;
       });
+    }
+
+    // --- ส่วนของระบบ Admin ---
+
+    async function openAdminPanel() {
+      toggleLoader(true);
+      document.getElementById('dashboard-section').classList.add('hidden');
+      document.getElementById('admin-section').classList.remove('hidden');
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST', headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ action: 'getAdminData' })
+        });
+        const data = await res.json();
+        
+        // ใส่ข้อมูล Dropdown ผู้ใช้งาน
+        const userSelect = document.getElementById('form-user');
+        userSelect.innerHTML = '<option value="">-- เลือกผู้ใช้งาน --</option>';
+        data.users.forEach(u => userSelect.innerHTML += `<option value="${u.pin}">${u.name} (PIN: ${u.pin})</option>`);
+
+        // ใส่ข้อมูล Dropdown บัตร
+        const cardSelect = document.getElementById('form-card');
+        cardSelect.innerHTML = '<option value="">-- เลือกบัตร --</option>';
+        data.cards.forEach(c => cardSelect.innerHTML += `<option value="${c.name}">${c.name}</option>`);
+
+      } catch (e) {
+        Swal.fire('ข้อผิดพลาด', 'ดึงข้อมูลไม่สำเร็จ', 'error');
+      }
+      toggleLoader(false);
+    }
+
+    function closeAdminPanel() {
+      document.getElementById('admin-section').classList.add('hidden');
+      document.getElementById('dashboard-section').classList.remove('hidden');
+    }
+
+    function calcMonthly() {
+      const amount = parseFloat(document.getElementById('form-amount').value) || 0;
+      const interest = parseFloat(document.getElementById('form-interest').value) || 0;
+      const months = parseInt(document.getElementById('form-months').value) || 0;
+
+      if(amount > 0 && months > 0) {
+        // สูตรคำนวณแบบ Flat Rate (ยอดจัด + (ยอดจัด * ดอกเบี้ยต่อปี * จำนวนปี)) / จำนวนงวด
+        const totalInterest = amount * (interest / 100) * (months / 12);
+        const totalToPay = amount + totalInterest;
+        const monthly = totalToPay / months;
+        document.getElementById('form-monthly').value = monthly.toFixed(2);
+      }
+    }
+
+    async function submitNewDebt() {
+      toggleLoader(true);
+      const payload = {
+        userPin: document.getElementById('form-user').value,
+        cardName: document.getElementById('form-card').value,
+        totalAmount: parseFloat(document.getElementById('form-amount').value),
+        interestRate: parseFloat(document.getElementById('form-interest').value),
+        totalMonths: parseInt(document.getElementById('form-months').value),
+        dueDay: parseInt(document.getElementById('form-due').value),
+        monthlyPayment: parseFloat(document.getElementById('form-monthly').value)
+      };
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST', headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ action: 'addDebt', data: payload })
+        });
+        const data = await res.json();
+        
+        toggleLoader(false);
+        if(data.status === 'success') {
+          Swal.fire('สำเร็จ!', 'เพิ่มรายการหนี้เข้าระบบแล้ว', 'success').then(() => {
+            // ล้างฟอร์ม
+            document.querySelectorAll('.form-input').forEach(el => el.value = '');
+            document.getElementById('form-interest').value = '0';
+          });
+        } else {
+          Swal.fire('ผิดพลาด', data.message, 'error');
+        }
+      } catch (e) {
+        toggleLoader(false); Swal.fire('ข้อผิดพลาด', 'บันทึกข้อมูลไม่สำเร็จ', 'error');
+      }
     }
 
     function logout() { location.reload(); }
