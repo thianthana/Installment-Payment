@@ -3,347 +3,236 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>DebtFlow Pro - มิติใหม่ของการจัดการหนี้</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+  <title>Debt Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
   <style>
     :root {
-      --glass: rgba(255, 255, 255, 0.7);
-      --glass-border: rgba(255, 255, 255, 0.3);
-      --primary: #6366F1;
-      --accent: #A855F7;
-      --text: #1E293B;
-      --success: #10B981;
-      --danger: #F43F5E;
+      --bg-color: #F4F6F9;
+      --card-bg: #FFFFFF;
+      --primary: #0F172A; /* Dark Blue / Black */
+      --primary-light: #334155;
+      --accent: #2563EB; /* Bright Blue */
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --danger: #EF4444;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    
-    body {
-      font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif;
-      background: linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 100%);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* Animations */
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-in { animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-
-    /* Glass Effect UI */
-    .glass-card {
-      background: var(--glass);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--glass-border);
-      border-radius: 24px;
-      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
-    }
-
-    /* Loader */
-    #loader {
-      position: fixed; inset: 0; background: rgba(255,255,255,0.7);
-      display: flex; justify-content: center; align-items: center; z-index: 10000;
-      backdrop-filter: blur(4px);
-    }
-    .spinner {
-      width: 40px; height: 40px; border: 4px solid #E2E8F0; border-top-color: var(--primary);
-      border-radius: 50%; animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Login Section */
-    #login-section {
-      display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 20px;
-    }
-    .login-container { width: 100%; max-width: 360px; text-align: center; }
-    .pin-display { display: flex; justify-content: center; gap: 12px; margin: 32px 0; }
-    .pin-dot { width: 14px; height: 14px; border-radius: 50%; background: #CBD5E1; transition: 0.2s; }
-    .pin-dot.active { background: var(--primary); transform: scale(1.3); box-shadow: 0 0 10px rgba(99,102,241,0.5); }
-    
-    .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
-    .btn-num {
-      background: white; border: none; padding: 18px; font-size: 1.4rem; font-weight: 600;
-      border-radius: 20px; cursor: pointer; transition: 0.15s; color: var(--text);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    }
-    .btn-num:active { transform: scale(0.9); background: #F1F5F9; }
-    .btn-num.del { color: var(--danger); font-size: 1rem; }
-
-    /* Dashboard UI */
-    #dashboard-section { max-width: 500px; margin: 0 auto; padding: 24px 20px 120px; }
-    
-    .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-    .user-tag { font-size: 1.1rem; font-weight: 800; background: white; padding: 8px 16px; border-radius: 99px; }
-    
-    /* Month Selector */
-    .month-picker {
-      display: flex; align-items: center; justify-content: space-between;
-      background: white; border-radius: 16px; padding: 8px 12px; margin-bottom: 24px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-    }
-    .month-btn { background: none; border: none; padding: 10px; cursor: pointer; font-size: 1.2rem; border-radius: 12px; }
-    .month-btn:hover { background: #F8FAFC; }
-    .current-month { font-weight: 700; font-size: 1rem; color: var(--primary); }
-
-    /* Summary Section */
-    .summary-card {
-      background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
-      color: white; padding: 28px; border-radius: 32px; margin-bottom: 32px;
-      position: relative; overflow: hidden;
-    }
-    .summary-card::after {
-      content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px;
-      background: rgba(255,255,255,0.1); border-radius: 50%;
-    }
-    .sum-val { font-size: 2.5rem; font-weight: 800; margin: 8px 0; letter-spacing: -1px; }
-    .sum-sub { font-size: 0.9rem; opacity: 0.8; }
-
-    /* Grouped List */
-    .date-group-label {
-      font-size: 0.85rem; font-weight: 800; color: #64748B; margin: 24px 0 12px 8px;
-      text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center;
-    }
-    .date-group-label::after { content: ''; flex: 1; height: 1px; background: #E2E8F0; margin-left: 12px; }
-
-    .debt-item {
-      background: white; border-radius: 24px; padding: 20px; margin-bottom: 16px;
-      transition: 0.3s; border: 1px solid transparent;
-    }
-    .debt-item:active { transform: scale(0.98); border-color: var(--primary); }
-    
-    .item-top { display: flex; justify-content: space-between; margin-bottom: 16px; align-items: center; }
-    .item-name { font-weight: 700; font-size: 1.05rem; }
-    .item-tag { font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 99px; }
-    .tag-blue { background: #EEF2FF; color: #4F46E5; }
-    
-    .item-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .item-box { background: #F8FAFC; padding: 12px; border-radius: 16px; }
-    .item-box span { font-size: 0.7rem; color: #94A3B8; display: block; margin-bottom: 2px; }
-    .item-box strong { font-size: 1rem; color: var(--text); }
-
-    .progress-container { margin-top: 16px; }
-    .bar-bg { width: 100%; height: 6px; background: #F1F5F9; border-radius: 10px; overflow: hidden; }
-    .bar-fill { height: 100%; background: var(--primary); border-radius: 10px; transition: 1s ease-out; }
-    .bar-labels { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 600; color: #94A3B8; margin-top: 6px; }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Sarabun', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; }
     .hidden { display: none !important; }
+    .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ---- Login UI ---- */
+    #login-section { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 20px; }
+    .login-box { background: var(--card-bg); padding: 40px 30px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); width: 100%; max-width: 360px; text-align: center; }
+    .login-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
+    .login-sub { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 30px; }
+    
+    .pin-input-container { position: relative; width: 100%; max-width: 200px; margin: 0 auto; }
+    .pin-input {
+      width: 100%; padding: 15px; font-size: 2rem; font-weight: 700; text-align: center; letter-spacing: 12px;
+      border: 2px solid var(--border); border-radius: 16px; outline: none; transition: border 0.3s;
+      background: #F8FAFC; color: var(--primary);
+    }
+    .pin-input:focus { border-color: var(--accent); background: #FFFFFF; }
+    .pin-input::placeholder { letter-spacing: normal; font-size: 1rem; font-weight: 400; color: #94A3B8; }
+
+    /* ---- Dashboard UI ---- */
+    #dashboard-section { max-width: 600px; margin: 0 auto; padding: 20px 20px 80px; }
+    .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-top: 10px; }
+    .greeting { font-size: 1.1rem; font-weight: 600; color: var(--text-muted); }
+    .user-name-display { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+    .btn-logout { background: #FEE2E2; color: var(--danger); border: none; padding: 8px 16px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
+
+    /* Summary Header */
+    .summary-card { background: var(--primary); color: white; padding: 30px 24px; border-radius: 24px; margin-bottom: 30px; box-shadow: 0 12px 24px rgba(15, 23, 42, 0.15); }
+    .sum-label { font-size: 0.9rem; color: #94A3B8; font-weight: 500; margin-bottom: 5px; }
+    .sum-total { font-size: 2.6rem; font-weight: 700; margin-bottom: 24px; line-height: 1; }
+    .sum-footer { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
+    .sum-footer .sum-label { margin-bottom: 2px; }
+    .sum-remaining { font-size: 1.2rem; font-weight: 600; }
+
+    /* Card Grouping */
+    .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; color: var(--primary); }
+    
+    .card-group { background: var(--card-bg); border-radius: 24px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--border); }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+    .card-name { font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .card-total-badge { background: #EFF6FF; color: var(--accent); padding: 6px 12px; border-radius: 12px; font-weight: 700; font-size: 0.9rem; }
+
+    /* Individual Items */
+    .debt-item { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .debt-item:last-child { margin-bottom: 0; }
+    
+    .item-row { display: flex; justify-content: space-between; align-items: center; }
+    .item-title { font-size: 0.95rem; font-weight: 600; color: var(--text-main); }
+    .item-amount { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
+    
+    .item-meta { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); }
+    .due-date { background: #F1F5F9; padding: 2px 8px; border-radius: 6px; font-weight: 500; font-size: 0.8rem; }
   </style>
 </head>
 <body>
 
-  <div id="loader" class="hidden"><div class="spinner"></div></div>
-
-  <section id="login-section" class="animate-in">
-    <div class="login-container">
-      <h1 style="font-weight: 800; font-size: 1.8rem;">DebtFlow</h1>
-      <p style="color: #64748B; font-size: 0.9rem; margin-top: 4px;">เข้าใช้งานด้วยรหัส PIN 4 หลัก</p>
+  <section id="login-section" class="fade-in">
+    <div class="login-box">
+      <div class="login-title">เข้าสู่ระบบ</div>
+      <div class="login-sub">กรุณาใส่รหัสผ่าน 4 หลักของคุณ</div>
       
-      <div class="pin-display">
-        <div class="pin-dot" id="dot-0"></div>
-        <div class="pin-dot" id="dot-1"></div>
-        <div class="pin-dot" id="dot-2"></div>
-        <div class="pin-dot" id="dot-3"></div>
-      </div>
-
-      <div class="numpad">
-        <button class="btn-num" onclick="press(1)">1</button>
-        <button class="btn-num" onclick="press(2)">2</button>
-        <button class="btn-num" onclick="press(3)">3</button>
-        <button class="btn-num" onclick="press(4)">4</button>
-        <button class="btn-num" onclick="press(5)">5</button>
-        <button class="btn-num" onclick="press(6)">6</button>
-        <button class="btn-num" onclick="press(7)">7</button>
-        <button class="btn-num" onclick="press(8)">8</button>
-        <button class="btn-num" onclick="press(9)">9</button>
-        <button class="btn-num del" onclick="clearAll()">C</button>
-        <button class="btn-num" onclick="press(0)">0</button>
-        <button class="btn-num del" onclick="back()">⌫</button>
+      <div class="pin-input-container">
+        <input type="password" id="pin-input" class="pin-input" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="••••">
       </div>
     </div>
   </section>
 
-  <section id="dashboard-section" class="hidden">
-    <div class="nav-header">
-      <div class="user-tag">👤 <span id="user-name">...</span></div>
-      <button onclick="location.reload()" style="background:none; border:none; color:var(--danger); font-weight:700;">ออก</button>
+  <section id="dashboard-section" class="hidden fade-in">
+    <div class="top-nav">
+      <div>
+        <div class="greeting">สวัสดี,</div>
+        <div class="user-name-display" id="display-name">...</div>
+      </div>
+      <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
     </div>
 
-    <div class="month-picker animate-in">
-      <button class="month-btn" onclick="changeMonth(-1)">‹</button>
-      <div class="current-month" id="month-display">เมษายน 2026</div>
-      <button class="month-btn" onclick="changeMonth(1)">›</button>
-    </div>
-
-    <div class="summary-card animate-in">
-      <div class="sum-sub">ยอดที่ต้องจ่ายในเดือนนี้</div>
-      <div class="sum-val">฿<span id="sum-monthly">0.00</span></div>
-      <div style="display: flex; justify-content: space-between; margin-top: 12px; opacity: 0.9; font-size: 0.85rem;">
-        <span>หนี้คงเหลือรวม</span>
-        <span id="sum-remaining">฿0.00</span>
+    <div class="summary-card">
+      <div class="sum-label">ยอดที่ต้องชำระเดือนนี้รวม</div>
+      <div class="sum-total">฿<span id="sum-monthly">0.00</span></div>
+      <div class="sum-footer">
+        <div>
+          <div class="sum-label">หนี้คงเหลือทั้งหมด</div>
+          <div class="sum-remaining">฿<span id="sum-remaining">0.00</span></div>
+        </div>
       </div>
     </div>
 
-    <div id="debt-timeline">
+    <div class="section-title">รายการผ่อนชำระแยกตามบัตร</div>
+    <div id="debt-list">
       </div>
   </section>
 
   <script>
-    // 🛑 ใส่ API URL ของคุณที่นี่
-    const API_URL = "https://script.google.com/macros/s/AKfycbwwZ1c9Ym-zZ0lErZwxgoW_t_k-PKYNIEGgwHQiViQ9T-iujOorIN_WJKnmvXtyFjWO/exec";
+    // 🛑 นำ URL จาก Google Apps Script มาใส่ตรงนี้
+    const API_URL = "https://script.google.com/macros/s/AKfycbwgm70NMQltAIgKGIbaRBsYOqyIjtfAvLxLbGPw92WYkMefTAJiYTS1t-wf_WAjxGCw/exec";
 
-    let pin = "";
-    let allDebts = [];
-    let currentViewDate = new Date(); // เดือนที่กำลังดูอยู่
-    const money = new Intl.NumberFormat('th-TH', { minimumFractionDigits: 2 });
-    const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+    const pinInput = document.getElementById('pin-input');
+    const formatter = new Intl.NumberFormat('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    // Keyboard support
-    document.addEventListener('keydown', (e) => {
-      if(e.key >= 0 && e.key <= 9) press(e.key);
-      if(e.key === 'Backspace') back();
-      if(e.key === 'Escape') clearAll();
+    // Auto-trigger เมื่อกรอกครบ 4 ตัว
+    pinInput.addEventListener('input', function() {
+      // อนุญาตเฉพาะตัวเลข
+      this.value = this.value.replace(/[^0-9]/g, '');
+      
+      if (this.value.length === 4) {
+        this.blur(); // ซ่อนคีย์บอร์ด
+        processLoginAndLoadData(this.value);
+      }
     });
 
-    function press(n) {
-      if(pin.length < 4) {
-        pin += n;
-        updateDots();
-        if(pin.length === 4) handleLogin();
-      }
-    }
-    function back() { pin = pin.slice(0,-1); updateDots(); }
-    function clearAll() { pin = ""; updateDots(); }
-    function updateDots() {
-      for(let i=0; i<4; i++) {
-        document.getElementById(`dot-${i}`).className = i < pin.length ? 'pin-dot active' : 'pin-dot';
-      }
-    }
-
-    async function handleLogin() {
-      toggleLoader(true);
-      try {
-        const res = await fetch(API_URL, {
-          method: 'POST',
-          body: JSON.stringify({ action: 'login', pin: pin })
-        });
-        const data = await res.json();
-        if (data.status === 'success') {
-          document.getElementById('user-name').innerText = data.name;
-          await fetchData();
-        } else {
-          toggleLoader(false);
-          Swal.fire('รหัสไม่ถูกต้อง', 'กรุณาลองใหม่อีกครั้ง', 'error');
-          clearAll();
-        }
-      } catch (e) {
-        toggleLoader(false);
-        Swal.fire('เชื่อมต่อล้มเหลว', 'ตรวจสอบอินเทอร์เน็ต', 'error');
-      }
-    }
-
-    async function fetchData() {
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'getDebts', pin: pin })
+    async function processLoginAndLoadData(pin) {
+      // Pop-up โหลดดิ้ง
+      Swal.fire({
+        title: 'กำลังตรวจสอบข้อมูล...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
       });
-      const data = await res.json();
-      allDebts = data.items;
-      renderDashboard();
-      toggleLoader(false);
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ action: 'getDashboard', pin: pin })
+        });
+        
+        const data = await response.json();
+
+        if (data.status === 'success') {
+          // แจ้งทักทายและโหลดสำเร็จ
+          Swal.fire({
+            icon: 'success',
+            title: `สวัสดีคุณ ${data.user.name}`,
+            text: 'โหลดข้อมูลเรียบร้อยแล้ว',
+            timer: 1500,
+            showConfirmButton: false
+          });
+
+          renderDashboard(data);
+        } else {
+          Swal.fire({ icon: 'error', title: 'เข้าสู่ระบบไม่สำเร็จ', text: data.message });
+          pinInput.value = '';
+          pinInput.focus();
+        }
+      } catch (error) {
+        Swal.fire({ icon: 'error', title: 'การเชื่อมต่อขัดข้อง', text: 'กรุณาตรวจสอบอินเทอร์เน็ต' });
+        pinInput.value = '';
+      }
+    }
+
+    function renderDashboard(data) {
+      // สลับหน้า
       document.getElementById('login-section').classList.add('hidden');
       document.getElementById('dashboard-section').classList.remove('hidden');
-    }
 
-    function changeMonth(step) {
-      currentViewDate.setMonth(currentViewDate.getMonth() + step);
-      renderDashboard();
-    }
+      // แสดงชื่อและสรุปยอด
+      document.getElementById('display-name').innerText = data.user.name;
+      document.getElementById('sum-monthly').innerText = formatter.format(data.summary.monthly);
+      document.getElementById('sum-remaining').innerText = formatter.format(data.summary.remaining);
 
-    function renderDashboard() {
-      const viewMonth = currentViewDate.getMonth();
-      const viewYear = currentViewDate.getFullYear();
-      document.getElementById('month-display').innerText = `${monthNames[viewMonth]} ${viewYear}`;
+      // วาดข้อมูลบัตรที่จัดกลุ่มแล้ว
+      const listContainer = document.getElementById('debt-list');
+      listContainer.innerHTML = '';
 
-      const list = document.getElementById('debt-timeline');
-      list.innerHTML = '';
-      
-      let sumMonthly = 0;
-      let sumRemaining = 0;
+      if (data.cards.length === 0) {
+        listContainer.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--text-muted); background: var(--card-bg); border-radius: 24px;">🎉 ไม่มีรายการผ่อนชำระ</div>`;
+        return;
+      }
 
-      // จัดกลุ่มข้อมูลตามวันที่จ่าย (Due Day)
-      const grouped = allDebts.reduce((acc, d) => {
-        const day = d.Due_Day;
-        if (!acc[day]) acc[day] = [];
-        acc[day].push(d);
-        return acc;
-      }, {});
-
-      // เรียงวันที่จากน้อยไปมาก
-      const sortedDays = Object.keys(grouped).sort((a, b) => a - b);
-
-      sortedDays.forEach(day => {
-        let groupHtml = `<div class="date-group-label animate-in">ทุกวันที่ ${day} ของเดือน</div>`;
+      data.cards.forEach(card => {
+        let itemsHtml = '';
         
-        grouped[day].forEach(debt => {
-          // คำนวณยอด
-          const paid = debt.Paid_Months;
-          const total = debt.Total_Months;
-          const monthly = debt.Monthly_Payment;
-          
-          // เช็คว่าในเดือนที่ดูอยู่ ยังต้องจ่ายไหม?
-          // (ถ้าจ่ายครบแล้ว หรือยังไม่ถึงกำหนดเริ่ม จะไม่โชว์ยอดในเดือนนั้น)
-          // สมมติในระบบง่ายๆ คือโชว์ยอดจนกว่าจะครบงวด
-          if (paid < total) {
-            sumMonthly += monthly;
-            sumRemaining += (total - paid) * monthly;
-          }
-
-          const prog = (paid / total) * 100;
-
-          groupHtml += `
-            <div class="debt-item animate-in">
-              <div class="item-top">
-                <span class="item-name">💳 ${debt.Card_Name}</span>
-                <span class="item-tag tag-blue">งวดที่ ${paid}/${total}</span>
+        // วาดรายการย่อยในบัตรนั้นๆ
+        card.items.forEach(item => {
+          itemsHtml += `
+            <div class="debt-item">
+              <div class="item-row">
+                <div class="item-title">งวดที่ ${item.paidMonths}/${item.totalMonths} <span class="due-date">จ่ายวันที่ ${item.dueDay}</span></div>
+                <div class="item-amount">฿${formatter.format(item.monthlyPayment)}</div>
               </div>
-              <div class="item-grid">
-                <div class="item-box">
-                  <span>จ่ายงวดนี้</span>
-                  <strong>฿${money.format(monthly)}</strong>
-                </div>
-                <div class="item-box">
-                  <span>คงเหลือ</span>
-                  <strong>฿${money.format((total-paid)*monthly)}</strong>
-                </div>
-              </div>
-              <div class="progress-container">
-                <div class="bar-bg"><div class="bar-fill" style="width: ${prog}%"></div></div>
-                <div class="bar-labels">
-                  <span>ความคืบหน้า</span>
-                  <span>${Math.round(prog)}%</span>
-                </div>
+              <div class="item-meta">
+                <span>เหลืออีก ${item.remainingMonths} งวด</span>
+                <span>ยอดคงเหลือ: ฿${formatter.format(item.remainingAmount)}</span>
               </div>
             </div>
           `;
+          
+          // ใส่เส้นคั่นถ้ารายการยังไม่หมด
+          if (item !== card.items[card.items.length - 1]) {
+            itemsHtml += `<div style="height: 1px; background: var(--border); margin: 8px 0;"></div>`;
+          }
         });
-        list.innerHTML += groupHtml;
+
+        // ประกอบร่างเป็น Card Group
+        const cardHtml = `
+          <div class="card-group fade-in">
+            <div class="card-header">
+              <div class="card-name">💳 ${card.cardName}</div>
+              <div class="card-total-badge">ยอดบัตรนี้: ฿${formatter.format(card.cardTotalMonthly)}</div>
+            </div>
+            ${itemsHtml}
+          </div>
+        `;
+        listContainer.innerHTML += cardHtml;
       });
-
-      if (allDebts.length === 0) {
-        list.innerHTML = `<div style="text-align:center; padding:60px; color:#94A3B8;">ไม่พบข้อมูลรายการผ่อน</div>`;
-      }
-
-      document.getElementById('sum-monthly').innerText = money.format(sumMonthly);
-      document.getElementById('sum-remaining').innerText = "฿" + money.format(sumRemaining);
     }
 
-    function toggleLoader(show) { document.getElementById('loader').className = show ? '' : 'hidden'; }
+    function logout() {
+      pinInput.value = '';
+      document.getElementById('dashboard-section').classList.add('hidden');
+      document.getElementById('login-section').classList.remove('hidden');
+    }
   </script>
 </body>
 </html>
